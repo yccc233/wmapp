@@ -2,7 +2,6 @@ import {NextResponse} from 'next/server'
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request) {
-    console.log("req.nextUrl,", request.cookies.has('userid'), request.nextUrl.pathname)
     if (request.nextUrl.pathname === "/riskview/login") {
         return NextResponse.next();
     } else if (request.cookies.has('userid')) {

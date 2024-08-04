@@ -1,6 +1,6 @@
-import Login from "@/src/login"
-import "@/styles/login.scss"
+import RootManage from "@/src/rootManage"
+import "@/styles/rootManage.scss"
 
 export default function Page() {
-    return <Login/>
+    return <RootManage/>
 }

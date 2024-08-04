@@ -9,7 +9,6 @@ export default function Index() {
     const [errMsg, setErrMsg] = useState(null);
 
     const onFinish = (values) => {
-        console.log('Success:', values);
         setErrMsg(null);
         makePost("/um/login", {username: values.username, password: values.password})
             .then(res => {
@@ -17,7 +16,11 @@ export default function Index() {
                 if (data.userId) {
                     setCookieKey('username', values.username);
                     setCookieKey('userid', data.userId);
-                    window.location.href = "/riskview";
+                    if (values.username==="root") {
+                        window.location.href = "/riskview/rootManage";
+                    }else {
+                        window.location.href = "/riskview";
+                    }
                 } else {
                     setErrMsg("用户名或密码错误！");
                 }
@@ -25,9 +28,6 @@ export default function Index() {
             .catch(err => {
                 setErrMsg("服务异常！");
             });
-    };
-    const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
     };
 
     return <div className={"login relative"}>
@@ -44,7 +44,6 @@ export default function Index() {
                 wrapperCol={{span: 16,}}
                 style={{maxWidth: 600,}}
                 onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
                 autoComplete="off"
             >
                 <Form.Item

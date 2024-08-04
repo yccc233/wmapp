@@ -3,8 +3,9 @@ import cors from "cors";
 
 import bodyParser from "body-parser";
 import nextConfig from "../next.config.mjs";
-import umController from "./controller/umController.js";
 import DATABASE from "./common/DATABASE.js";
+import umController from "./controller/umController.js";
+import imgController from "./controller/imgController.js";
 
 const app = express();
 const serverName = nextConfig.serverName;
@@ -20,6 +21,7 @@ app.set('port', nextConfig.serverPort);
 
 
 app.use(`/${serverName}/um`, umController);
+app.use(`/${serverName}/img`, imgController);
 
 app.listen(app.get('port'), () => {
     console.log(`start the server at: http://127.0.0.1:${app.get('port')}/`);
