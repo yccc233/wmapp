@@ -1,14 +1,12 @@
 "use client"
-import {useRouter} from "next/navigation.js"
 import {useEffect} from "react";
 
 
 export default function Page() {
-    const router = useRouter();
 
     useEffect(() => {
-        if (router) {
-            router.replace('/riskview');
+        if (window && window.location) {
+            window.location.href = '/riskview';
         }
     }, []);
 
