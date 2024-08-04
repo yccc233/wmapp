@@ -12,6 +12,6 @@ export default function Page() {
 
 
     return <div>
-        正在重定向至/riskview
+        正在跳转页面
     </div>
 }

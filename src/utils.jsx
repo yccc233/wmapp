@@ -8,7 +8,7 @@ export const makePost = (url, params) => {
     };
 
     // 使用fetch API发送POST请求
-    return fetch(`/riskview${url}`, {
+    return fetch(`/riskserver${url}`, {
         method: 'POST',
         headers: headers,
         body: jsonData,

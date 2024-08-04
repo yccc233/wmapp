@@ -7,7 +7,7 @@ import umController from "./controller/umController.js";
 import DATABASE from "./common/DATABASE.js";
 
 const app = express();
-const appName = nextConfig.appName;
+const serverName = nextConfig.serverName;
 
 // 使用body-parser中间件解析JSON请求体
 app.use(bodyParser.json());
@@ -19,7 +19,7 @@ app.use(cors());
 app.set('port', nextConfig.serverPort);
 
 
-app.use(`/${appName}/um`, umController);
+app.use(`/${serverName}/um`, umController);
 
 app.listen(app.get('port'), () => {
     console.log(`start the server at: http://127.0.0.1:${app.get('port')}/`);
