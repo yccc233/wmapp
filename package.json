@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:front": "next dev",
+    "front": "next dev",
     "server": "node ./server/app.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "dev": "concurrently \"npm run dev:front\" \"npm run server\"",
+    "dev": "concurrently \"npm run front\" \"npm run server\"",
     "prod": "concurrently \"npm run start\" \"npm run server\""
   },
   "dependencies": {
