@@ -1,0 +1,29 @@
+{
+    "portaltitle": "测试",
+    "portalstaus": 1,
+    "portalimg": "7687699",
+    "commentTime": "2024-07-18",
+    "commentMemebers": "a,v,d,d",
+    "events": [
+        {
+            "eventTitle": "钢卷小车",
+            "eventspoint": [
+                12,
+                16
+            ],
+            "eventsRadius": 2.4,
+            "lineswidth": 5,
+            "linecolor": "#ff0000",
+            "risklist": [
+                {
+                    "title": "XXX故障",
+                    "img": "345345",
+                    "level": 3,
+                    "dutier": "胖子",
+                    "consequence": "可能造成停机",
+                    "measure": "整体更换（周期）"
+                }
+            ]
+        }
+    ]
+}

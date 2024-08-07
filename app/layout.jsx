@@ -2,6 +2,9 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import "@/styles/common.css";
 import { ReduxProvider } from "@/src/store";
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/es/locale/zh_CN'; // 引入中文语言包
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,9 +17,11 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body className={inter.className}>
-                <ReduxProvider>
-                    {children}
-                </ReduxProvider>
+                <ConfigProvider locale={zhCN}>
+                    <ReduxProvider>
+                        {children}
+                    </ReduxProvider>
+                </ConfigProvider>
             </body>
         </html>
     );

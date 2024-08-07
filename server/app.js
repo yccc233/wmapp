@@ -11,7 +11,7 @@ const app = express();
 const serverName = nextConfig.serverName;
 
 // 使用body-parser中间件解析JSON请求体
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb', extended: true }));
 
 // 解决CORS跨域请求
 app.use(cors());

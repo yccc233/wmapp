@@ -7,6 +7,39 @@
     background: #121212;
     color: #f1f1f1;
 
+    .view-top {
+
+        .ant-tabs {
+            margin: 0 30px;
+            width: 100%;
+
+            .ant-tabs-nav {
+                margin: 0;
+                flex: 1;
+
+                &::before {
+                    border-color: transparent;
+                }
+
+                .ant-tabs-tab {
+                    color: #fff;
+                }
+
+                .ant-tabs-tab-active .ant-tabs-tab-btn {
+                    color: #05fafa;
+                }
+
+                .ant-tabs-ink-bar {
+                    background: #05fafa;
+                }
+            }
+
+            .ant-tabs-content-holder {
+                flex: unset;
+            }
+        }
+    }
+
     .content {
         padding: 20px;
         display: flex;
@@ -26,5 +59,24 @@
         width: calc(100% - 100px);
         height: calc(100% - 100px);
         border: 1px solid #f1f1f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .img-div {
+            position: relative;
+        }
+    }
+}
+
+.circle-event {
+    position: absolute;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: box-shadow 0.2s linear;
+
+    &:hover {
+        box-shadow: 0 0 10px 0px #aaa;
     }
 }
