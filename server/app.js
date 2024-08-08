@@ -6,6 +6,7 @@ import nextConfig from "../next.config.mjs";
 import DATABASE from "./common/DATABASE.js";
 import umController from "./controller/umController.js";
 import imgController from "./controller/imgController.js";
+import rootController from "./controller/rootController.js";
 
 const app = express();
 const serverName = nextConfig.serverName;
@@ -22,6 +23,7 @@ app.set('port', nextConfig.serverPort);
 
 app.use(`/${serverName}/um`, umController);
 app.use(`/${serverName}/img`, imgController);
+app.use(`/${serverName}/root`, rootController);
 
 app.listen(app.get('port'), () => {
     console.log(`start the server at: http://127.0.0.1:${app.get('port')}/`);

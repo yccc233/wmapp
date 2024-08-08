@@ -18,9 +18,18 @@ const verifyUser = async (userName, password) => {
     } else {
         return null;
     }
-
 };
 
+/**
+ * 获取用户列表
+ * @return array user
+ */
+const getUserList = async () => {
+    return await userManageDao.getAllUserListExceptRoot();
+};
+
+
 export default {
-    verifyUser
+    verifyUser,
+    getUserList
 }

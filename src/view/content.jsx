@@ -4,7 +4,7 @@ export default function Content({ portal }) {
 
 
     return <div className="flex1 content">
-        <div className="left-content" style={{ width: 200 }}>
+        <div className="left-content" style={{ width: 360 }}>
 
         </div>
         <div className="right-content">

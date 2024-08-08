@@ -41,6 +41,26 @@ export default function Index() {
                                 "measure": "整体更换（周期）"
                             }
                         ]
+                    },
+                    {
+                        "eventTitle": "钢卷da车",
+                        "eventPoint": [
+                            68,
+                            35
+                        ],
+                        "pointRadius": 15,
+                        "lineswidth": 12,
+                        "linecolor": "#ff0000",
+                        "risklist": [
+                            {
+                                "title": "XXX故障",
+                                "img": "LKDLUNBOQGZMBMDCPUEG",
+                                "level": 3,
+                                "dutier": "胖子",
+                                "consequence": "可能造成停机",
+                                "measure": "整体更换（周期）"
+                            }
+                        ]
                     }
                 ]
             }, {

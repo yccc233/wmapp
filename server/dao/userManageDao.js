@@ -14,6 +14,22 @@ const getUsersByUserName = async (userName) => {
     });
 };
 
+const getAllUserListExceptRoot = async () => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `select * from tbl_user_manage where username != 'root'`;
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
+
 export default {
-    getUsersByUserName
+    getUsersByUserName,
+    getAllUserListExceptRoot
 }

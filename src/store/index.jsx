@@ -1,15 +1,17 @@
 "use client";
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import viewReducer from './viewReducer';
+import viewReducer from '@/src/store/viewReducer';
+import rootReducer from '@/src/store/rootReducer';
 import { Provider } from "react-redux";
 
-const rootReducer = combineReducers({
-    viewReducer
+const allReducer = combineReducers({
+    viewReducer,
+    rootReducer
 });
 
 export const store = configureStore({
-    reducer: rootReducer
+    reducer: allReducer
 });
 
 export function ReduxProvider({ children }) {

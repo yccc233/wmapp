@@ -44,7 +44,6 @@ export default function Index() {
                 wrapperCol={{span: 16,}}
                 style={{maxWidth: 600,}}
                 onFinish={onFinish}
-                autoComplete="off"
             >
                 <Form.Item
                     label="用户名"
