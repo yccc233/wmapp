@@ -1,9 +1,12 @@
-import { Form, Input, Modal } from "antd";
+import { DatePicker, Form, Input, Modal } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setActivePortalId } from "@/src/store/rootReducer";
 import { useEffect, useState, useRef } from "react"
 import { CircleEvent } from "@/src/view/ctnMain";
 import UploadFile, { uploadFile, validFile } from "../components/UploadFile";
+import moment from "moment";
+import { allTimeFormat } from "@/src/config";
+import dayjs from "dayjs";
 
 
 
@@ -91,7 +94,7 @@ export default function PortalEditModal() {
 
     return <Modal
         title={isNew ? "新增门户" : curPortal.portal_title}
-        width={1000}
+        width={1400}
         closable={false}
         maskClosable={false}
         visible={activePortalId}
@@ -104,7 +107,9 @@ export default function PortalEditModal() {
             <div className={"edit-left"}>
                 <div ref={imgRef} className="img-div">
                     {
-                        curPortal.portal_img ? <img src={`/riskserver/img/getImageFromServer/${curPortal.portal_img}`} /> : <div>请上传图片</div>
+                        curPortal.portal_img ?
+                            <img src={`/riskserver/img/getImageFromServer/${curPortal.portal_img}`} /> :
+                            <div>请右侧上传图片</div>
                     }
                     {
                         curPortal.events?.map((e, i) => <CircleEvent
@@ -124,6 +129,8 @@ export default function PortalEditModal() {
             <div className={"edit-right"}>
                 <Form
                     form={form}
+                    labelCol={{ span: 3 }}
+                    wrapperCol={{ span: 20 }}
                     onValuesChange={formChange}
                 >
                     <Form.Item
@@ -136,7 +143,7 @@ export default function PortalEditModal() {
                             },
                         ]}
                     >
-                        <Input />
+                        <Input style={{ width: 200 }} />
                     </Form.Item>
                     <Form.Item
                         name="portal_img"
@@ -149,6 +156,42 @@ export default function PortalEditModal() {
                         ]}
                     >
                         <ItemImgUpload />
+                    </Form.Item>
+                    <Form.Item
+                        name="comment_members"
+                        label="参与人"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入参与的人员',
+                            },
+                        ]}
+                    >
+                        <Input style={{ width: 200 }} />
+                    </Form.Item>
+                    <Form.Item
+                        name="comment_time"
+                        label="参与时间"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入参与的时间',
+                            },
+                        ]}
+                    >
+                        <ItemDataPicker />
+                    </Form.Item>
+                    <Form.Item
+                        name="events"
+                        label="事件"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入参与的时间',
+                            },
+                        ]}
+                    >
+                        <ItemEvents />
                     </Form.Item>
                 </Form>
             </div>
@@ -170,4 +213,18 @@ const ItemImgUpload = ({ value, onChange }) => {
         <UploadFile onChange={upFile} />
         <span>{value}</span>
     </>
+}
+
+const ItemDataPicker = ({ value, onChange, style }) => {
+    return <DatePicker inputReadOnly style={style} value={dayjs(value)} onChange={t => onChange(t.format("YYYY-MM-DD"))} />
+}
+
+const ItemEvents = (value, onChange,) => {
+
+    console.log("value");
+
+
+    return <div>
+        hhh
+    </div>
 }

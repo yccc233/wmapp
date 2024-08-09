@@ -7,7 +7,7 @@
 }
 
 .portal-edit-modal {
-    height: 500px;
+    height: 600px;
     display: flex;
 
     .edit-left {
@@ -42,6 +42,10 @@
     }
 
     .edit-right {
-        width: 300px;
+        width: 800px;
+
+        .ant-picker-input {
+            flex-wrap: nowrap;
+        }
     }
 }
