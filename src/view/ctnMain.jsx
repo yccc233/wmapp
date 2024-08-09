@@ -9,9 +9,7 @@ export default function CtnMain({ portal }) {
 
     const imgRef = useRef()
 
-    console.log("portal", portal);
     const events = portal.events || []
-
 
     const getBase = () => {
         const height = imgRef.current.clientHeight
@@ -32,11 +30,7 @@ export default function CtnMain({ portal }) {
     return <div className="content-main">
 
         <div ref={imgRef} className="img-div">
-            <img
-                onresize={e => console.log("sasas")
-                }
-                src={`/riskserver/img/getImageFromServer/${portal.portalImg}`}
-            />
+            <img src={`/riskserver/img/getImageFromServer/${portal.portalImg}`} />
             {
                 events.map((e, i) => <CircleEvent
                     key={`event-${i}`}
@@ -57,7 +51,7 @@ export default function CtnMain({ portal }) {
 /**
  * 计算的方式：base表示以第一象限为坐标的位置，单位是像素；point是x，y对应的比例 百分比算，radius也是百分比，lineWidth以r为基数，以base最小的为基数
  */
-const CircleEvent = ({ base = [], point, radius, lineWidth, lineColor, title, risklist }) => {
+export const CircleEvent = ({ base = [], point, radius, lineWidth, lineColor, title, risklist }) => {
 
     const minBase = base[0] < base[1] ? base[0] : base[1]
     const r = minBase * radius / 100

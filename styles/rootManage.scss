@@ -1,8 +1,47 @@
-
 .root-manage {
 
     .top-manage {
         height: 80px;
         display: flex;
+    }
+}
+
+.portal-edit-modal {
+    height: 500px;
+    display: flex;
+
+    .edit-left {
+        flex: 1;
+        border: 1px solid #f1f1f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .img-div {
+            position: relative;
+        }
+
+
+        .circle-event {
+            position: absolute;
+            background: transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: box-shadow 0.2s linear;
+
+            &:hover {
+                box-shadow: 0 0 10px 0px #aaa;
+            }
+        }
+    }
+
+    .divide-line {
+        width: 5px;
+        background: #6bbaff;
+        margin: 0 5px;
+    }
+
+    .edit-right {
+        width: 300px;
     }
 }

@@ -6,7 +6,7 @@ export default function Logo({style}) {
         <div>
             <div className={"vhcenter"}>
                 <div className={"app-name"}>探风</div>
-                <div className={"flex1 v_center"}>
+                <div className={"flex1 h_center"}>
                     <div className={"app-beta"}>beta</div>
                 </div>
             </div>

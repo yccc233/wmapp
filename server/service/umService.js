@@ -25,7 +25,11 @@ const verifyUser = async (userName, password) => {
  * @return array user
  */
 const getUserList = async () => {
-    return await userManageDao.getAllUserListExceptRoot();
+    const users = await userManageDao.getAllUserListExceptRoot();
+    users.forEach(u => {
+        delete u.pwmd5
+    });
+    return users;
 };
 
 

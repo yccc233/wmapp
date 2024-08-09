@@ -1,12 +1,13 @@
+import moment from "moment";
 import DATABASE from "../common/DATABASE.js";
-import {getRandomId} from "../common/utils.js";
+import { getMoment, getRandomId } from "../common/utils.js";
 
 const uploadFile = async (userId, base64) => {
     return new Promise((resolve, reject) => {
         const db = DATABASE.getDatabase();
         const imgId = getRandomId(20)
-        const sql = `insert into tbl_imgs(img_id, img_base64, user_id) VALUES (?,?,?)`;
-        db.run(sql, [imgId, base64, userId], (err) => {
+        const sql = `insert into tbl_imgs(img_id, img_base64, user_id, insert_time) VALUES (?,?,?,?)`;
+        db.run(sql, [imgId, base64, userId, getMoment()], (err) => {
             if (err) {
                 reject(err);
             } else {

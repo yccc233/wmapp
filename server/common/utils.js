@@ -1,4 +1,5 @@
 import crypto from "crypto"
+import moment from "moment";
 
 export const getRandomId = (length) => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -12,3 +13,7 @@ export const getRandomId = (length) => {
     }
     return result;
 };
+
+export const getMoment = () => {
+    return moment().format("yyyy-MM-DD HH:mm:ss");
+}

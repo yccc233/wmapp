@@ -1,10 +1,10 @@
 "use client"
 
-import {message} from "antd"
-import {makePost} from "@/src/utils.jsx";
+import { message } from "antd"
+import { makePost } from "@/src/utils.jsx";
 
-export default function UploadFile() {
-    return <input type="file" id="fileInputCom" accept=".png,.jpg,.jpeg" onChange={validFile}/>
+export default function UploadFile({ onChange }) {
+    return <input type="file" id="fileInputCom" accept=".png,.jpg,.jpeg" onChange={onChange} />
 }
 
 export const validFile = () => {
@@ -41,7 +41,7 @@ export const getFileBlob = async () => {
 export const uploadFile = async () => {
     return new Promise(async (resolve, reject) => {
         const blob = await getFileBlob();
-        makePost("/img/upload", {source: blob})
+        makePost("/img/upload", { source: blob })
             .then(res => {
                 if (res.code === 0) {
                     const imgId = res.data;
