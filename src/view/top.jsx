@@ -13,7 +13,7 @@ export default function Top({ currentId, portals }) {
     const dispatch = useDispatch()
 
     const changePortal = (nextId) => {
-        const nextPortal = portals.find(p => p.portalId === nextId)
+        const nextPortal = portals.find(p => p.portal_id === nextId)
         if (nextPortal) {
             dispatch(setCurrentPortal(nextPortal))
         }
@@ -22,8 +22,8 @@ export default function Top({ currentId, portals }) {
     useEffect(() => {
         if (portals?.length > 0) {
             const items = portals.map(p => ({
-                key: p.portalId,
-                label: p.portalTitle,
+                key: p.portal_id,
+                label: p.portal_title,
             }))
             setTabs(items)
         }

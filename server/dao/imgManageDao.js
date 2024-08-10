@@ -1,4 +1,3 @@
-import moment from "moment";
 import DATABASE from "../common/DATABASE.js";
 import { getMoment, getRandomId } from "../common/utils.js";
 

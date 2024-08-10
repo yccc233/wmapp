@@ -1,12 +1,10 @@
-import { Image, Modal, Table } from "antd";
+import { Modal, Table } from "antd";
 import { useEffect, useRef, useState } from "react";
 
 
 export default function CtnMain({ portal }) {
 
-
     const [baseNum, setBaseNum] = useState([0, 0])
-
     const imgRef = useRef()
 
     const events = portal.events || []
@@ -20,27 +18,28 @@ export default function CtnMain({ portal }) {
     useEffect(() => {
         setTimeout(() => {
             getBase()
-        }, 10)
+        }, 50);
+    }, [portal])
+
+    useEffect(() => {
         // 为window对象的resize事件添加事件监听器  
         window.addEventListener('resize', getBase)
         return () => window.removeEventListener('resize', getBase)
     }, [])
 
-
     return <div className="content-main">
-
         <div ref={imgRef} className="img-div">
-            <img src={`/riskserver/img/getImageFromServer/${portal.portalImg}`} />
+            <img src={`/riskserver/img/getImageFromServer/${portal.portal_img}`} />
             {
                 events.map((e, i) => <CircleEvent
                     key={`event-${i}`}
                     base={baseNum}
-                    point={e.eventPoint}
-                    radius={e.pointRadius}
-                    lineWidth={e.lineswidth}
-                    lineColor={e.linecolor}
-                    title={e.eventTitle}
-                    risklist={e.risklist}
+                    point={e.event_point}
+                    radius={e.point_radius}
+                    lineWidth={e.lines_width}
+                    lineColor={e.line_color}
+                    title={e.event_title}
+                    risklist={e.risk_list}
                 />)
             }
         </div>
@@ -51,7 +50,12 @@ export default function CtnMain({ portal }) {
 /**
  * 计算的方式：base表示以第一象限为坐标的位置，单位是像素；point是x，y对应的比例 百分比算，radius也是百分比，lineWidth以r为基数，以base最小的为基数
  */
-export const CircleEvent = ({ base = [], point, radius, lineWidth, lineColor, title, risklist }) => {
+export const CircleEvent = ({ base, point, radius, lineWidth, lineColor, title, risklist }) => {
+    const [vis, setVis] = useState(false)
+
+    if (!base || !point) {
+        return null
+    }
 
     const minBase = base[0] < base[1] ? base[0] : base[1]
     const r = minBase * radius / 100
@@ -66,11 +70,6 @@ export const CircleEvent = ({ base = [], point, radius, lineWidth, lineColor, ti
         title: '标题',
         dataIndex: 'title',
         key: 'title',
-    }, {
-        title: '图片',
-        dataIndex: 'img',
-        key: 'img',
-        render: txt => <Image width={50} height={50} src={`/riskserver/img/getImageFromServer/${txt}`} />
     }, {
         title: '责任人',
         dataIndex: 'dutier',
@@ -89,9 +88,6 @@ export const CircleEvent = ({ base = [], point, radius, lineWidth, lineColor, ti
         key: 'level',
     }]
 
-    const [vis, setVis] = useState(false)
-
-    console.log("ppp", { p: [left, bottom], minBase, r, lWidth, risklist });
 
     return <>
         <div

@@ -27,12 +27,31 @@ const getPortalsByUserId = async (userId) => {
 const updatePortal = async (portalId, portalConfig) => {
     portalConfig.events = typeof portalConfig.events === "object" ? JSON.stringify(portalConfig.events) : null;
     portalConfig.update_time = getMoment();
-    const rowCount = await rootManageDao.updatePortals(portalId, portalConfig);
-    console.log('updatePortal', rowCount);
-    return rowCount;
+    const effectRows = await rootManageDao.updatePortals(portalId, portalConfig);
+    return effectRows;
 };
+
+/**
+ * 新建门户
+ */
+const insertPortal = async (portalConfig) => {
+    portalConfig.events = typeof portalConfig.events === "object" ? JSON.stringify(portalConfig.events) : null;
+    const effectRows = await rootManageDao.insertPortal(portalConfig);
+    return effectRows;
+};
+
+/**
+ * 删除门户
+ */
+const dropPortal = async (portalId) => {
+    const effectRows = await rootManageDao.dropPortal(portalId);
+    return effectRows;
+};
+
 
 export default {
     getPortalsByUserId,
-    updatePortal
+    updatePortal,
+    insertPortal,
+    dropPortal
 }

@@ -1,5 +1,4 @@
 "use client"
-
 import { message } from "antd"
 import { makePost } from "@/src/utils.jsx";
 
@@ -15,8 +14,9 @@ export const validFile = () => {
             message.error("上传的图片不要大于1MB")
             return false
         }
+        return true
     }
-    return true
+    return false
 }
 
 export const getFileBlob = async () => {

@@ -13,8 +13,21 @@ router.post("/getPortalsByTargetId", async function (req, res) {
 
 router.post("/editPortalById", async function (req, res) {
     const { portalId, portalConfig } = req.body;
-    const rowCount = await rootService.updatePortal(portalId, portalConfig);
-    RESPONSE.SUCCESS(req, res, { count: rowCount });
+    const effectRows = await rootService.updatePortal(portalId, portalConfig);
+    RESPONSE.SUCCESS(req, res, { rows: effectRows });
+})
+
+router.post("/addPortal", async function (req, res) {
+    const { portalConfig } = req.body;
+    const effectRows = await rootService.insertPortal(portalConfig);
+    RESPONSE.SUCCESS(req, res, { rows: effectRows });
+})
+
+
+router.post("/dropPortal", async function (req, res) {
+    const { portalId } = req.body;
+    const effectRows = await rootService.dropPortal(portalId);
+    RESPONSE.SUCCESS(req, res, { rows: effectRows });
 })
 
 export default router;

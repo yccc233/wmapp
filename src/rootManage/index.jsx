@@ -1,17 +1,14 @@
 "use client"
-import { Button, Select, Table, Image, Space, message } from "antd"
+import { Button, Select, Table, Image, Space, message, Popconfirm, Badge } from "antd"
 import { UserOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from "react-redux"
 import { setActivePortalId, setActiveUserId, setPortals, setUserList } from "@/src/store/rootReducer"
 import { useEffect, useState } from "react"
 import { makePost } from "@/src/utils"
 import PortalEditModal from "@/src/rootManage/portalEditModal"
+import { default_portal } from "@/src/config"
 
-// 接口：获取所有的用户及id  done
-// 接口：获取用户的门户列表  done
-// 接口：设置门户的状态     
 // 接口：设置用户的门户配置
-
 
 export default function Index() {
 
@@ -33,7 +30,13 @@ export default function Index() {
     }
 
     const deletePortal = (portal) => {
-        message.error("还在开发！")
+        makePost("/root/dropPortal", { portalId: portal.portal_id })
+            .then(res => {
+                if (res.code === 0) {
+                    getPortals(activeUserId)
+                    message.success("成功删除")
+                }
+            })
     }
 
     const editPortal = (portal) => {
@@ -53,14 +56,15 @@ export default function Index() {
         title: '门户状态',
         dataIndex: 'portal_status',
         key: 'portal_status',
+        render: t => t === 1 ? <Badge status="success" text="在用" /> : <Badge status="default" text="停用" />
     }, {
         title: '讨论时间',
         dataIndex: 'comment_time',
         key: 'comment_time',
     }, {
         title: '讨论人员',
-        dataIndex: 'comment_memebers',
-        key: 'comment_memebers',
+        dataIndex: 'comment_members',
+        key: 'comment_members',
     }, {
         title: '事件数量',
         dataIndex: 'events',
@@ -72,9 +76,11 @@ export default function Index() {
         key: 'portal_id',
         width: 300,
         render: (_, record) => <Space size="small">
-            <Button onClick={() => hideOrShowPortal(record)}>{record.portal_status === 1 ? "隐藏" : "放开"}</Button>
+            <Button onClick={() => hideOrShowPortal(record)}>{record.portal_status === 1 ? "停用" : "使用"}</Button>
             <Button onClick={() => editPortal(record)}>编辑</Button>
-            <Button onClick={() => deletePortal(record)}>删除</Button>
+            <Popconfirm title="谨慎操作" onConfirm={() => deletePortal(record)}>
+                <Button >删除</Button>
+            </Popconfirm>
         </Space>
     }]
 
@@ -83,12 +89,12 @@ export default function Index() {
     }
 
     const logout = () => {
-
+        window.location.href = "/riskview/login"
     }
 
     const getPortals = (targetId) => {
         setLoading(true)
-        makePost("/root/getPortalsByTargetId", { targetId: targetId })
+        makePost("/root/getPortalsByTargetId", { targetId })
             .then(res => {
                 if (res.code === 0) {
                     dispatch(setPortals(res.data))
@@ -110,6 +116,18 @@ export default function Index() {
             })
     }
 
+    const add = () => {
+        const newP = { ...default_portal }
+        newP.user_id = activeUserId
+        makePost("/root/addPortal", { portalConfig: newP })
+            .then(res => {
+                if (res.code === 0) {
+                    message.success("成功新建一个门户")
+                    getPortals(activeUserId)
+                }
+            })
+    }
+
     useEffect(() => {
         if (activeUserId) {
             getPortals(activeUserId)
@@ -125,10 +143,8 @@ export default function Index() {
     }, [])
 
 
-    console.log("ttt", { portals, userList });
-
     return <div className={"root-manage"}>
-        <div className={"top-manage"}>
+        <div className={"flex"} style={{ height: 80 }}>
             <div className={"h_center flex1 ml20"}>
                 <Select
                     style={{ width: 240 }}
@@ -144,14 +160,17 @@ export default function Index() {
                 <Button onClick={logout}>登出</Button>
             </div>
         </div>
-        <div>
+        <div className="over-auto" style={{ height: "calc(100% - 80px)" }}>
             <Table
                 loading={loading}
                 columns={columns}
                 dataSource={portals}
                 pagination={false}
+                footer={() => <div className="vhcenter">
+                    <Button style={{ width: 100 }} type="primary" ghost onClick={add}>新增</Button>
+                </div>}
             />
         </div>
-        <PortalEditModal />
+        <PortalEditModal onSave={() => getPortals(activeUserId)} />
     </div>
 }

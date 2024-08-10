@@ -23,6 +23,7 @@
 
                 .ant-tabs-tab {
                     color: #fff;
+                    // margin-left: 15px;
                 }
 
                 .ant-tabs-tab-active .ant-tabs-tab-btn {
@@ -43,6 +44,7 @@
     .content {
         padding: 20px;
         display: flex;
+        color: #f1f1f1;
 
         .left-content {}
 
@@ -52,6 +54,11 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+        }
+
+        .ant-result-title,
+        .ant-result-subtitle {
+            color: #f1f1f1;
         }
     }
 

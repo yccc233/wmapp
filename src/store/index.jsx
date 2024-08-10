@@ -1,5 +1,4 @@
 "use client";
-
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import viewReducer from '@/src/store/viewReducer';
 import rootReducer from '@/src/store/rootReducer';

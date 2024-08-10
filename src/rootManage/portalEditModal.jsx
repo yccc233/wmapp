@@ -1,19 +1,17 @@
-import { DatePicker, Form, Input, Modal } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { default_event, default_risk } from "@/src/config";
 import { setActivePortalId } from "@/src/store/rootReducer";
-import { useEffect, useState, useRef } from "react"
 import { CircleEvent } from "@/src/view/ctnMain";
-import UploadFile, { uploadFile, validFile } from "../components/UploadFile";
-import moment from "moment";
-import { allTimeFormat } from "@/src/config";
+import { Button, Col, ColorPicker, DatePicker, Form, Input, InputNumber, message, Modal, Popconfirm, Row, Slider, Space, Table, Tabs } from "antd";
 import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import UploadFile, { uploadFile, validFile } from "@/src/components/UploadFile";
+import { makePost } from "@/src/utils";
 
 
-
-export default function PortalEditModal() {
-    const { activePortalId, portals, activeUserId } = useSelector(state => state.rootReducer)
+export default function PortalEditModal({ onSave }) {
+    const { activePortalId, portals } = useSelector(state => state.rootReducer)
     const dispatch = useDispatch()
-
 
     const imgRef = useRef()
 
@@ -29,15 +27,29 @@ export default function PortalEditModal() {
     }
 
     const save = () => {
-        const saved = form.getFieldsValue()
-        console.log("baocun", saved);
-
+        form.validateFields()
+            .then((values) => {
+                const portalConfig = { ...portals.find(p => p.portal_id === activePortalId), ...values }
+                makePost("/root/editPortalById", { portalId: activePortalId, portalConfig: portalConfig })
+                    .then(res => {
+                        if (res.code === 0) {
+                            message.success("修改成功")
+                            typeof onSave === "function" && onSave();
+                            dispatch(setActivePortalId(null))
+                        }
+                    })
+            })
+            .catch(err => {
+                console.error(err)
+            })
     }
 
     const formChange = (changedValues, allValues) => {
-        console.log({ changedValues, allValues });
+        setCount(count + 1)
         if (changedValues.portal_img) {
-            setCount(count + 1)
+            setTimeout(() => {
+                getBase()
+            }, 50)
         }
     }
 
@@ -55,50 +67,34 @@ export default function PortalEditModal() {
 
 
     useEffect(() => {
-        const default_portal = {
-            "portal_id": -1,
-            "user_id": activeUserId,
-            "portal_title": "",
-            "portal_status": 1,
-            "portal_img": null,
-            "comment_time": null,
-            "comment_members": null,
-            "footer_btn": null,
-            "events": [],
-            "update_time": null,
-            "insert_time": null
-        }
-
         if (activePortalId) {
-            if (activePortalId === -1) {
-                setIsNew(true)
-                form.setFieldsValue(default_portal)
-            } else {
-                const _curPortal = portals?.find(p => p.portal_id === activePortalId)
-                setIsNew(false)
-                form.setFieldsValue(_curPortal || default_portal)
-            }
+            const _curPortal = portals?.find(p => p.portal_id === activePortalId)
+            setIsNew(false)
+            form.setFieldsValue(_curPortal)
             setTimeout(() => {
                 getBase()
             }, 50);
         }
-
     }, [activePortalId])
 
 
     const curPortal = form.getFieldsValue()
 
-    console.log("curPortal", curPortal);
-
+    useEffect(() => {
+        setTimeout(() => {
+            getBase()
+        }, 50);
+    }, [curPortal.portal_img])
 
 
     return <Modal
         title={isNew ? "新增门户" : curPortal.portal_title}
-        width={1400}
+        width={1600}
         closable={false}
         maskClosable={false}
         visible={activePortalId}
         centered={true}
+        destroyOnClose={true}
         okText={isNew ? "新增" : "保存"}
         onOk={save}
         onCancel={cancel}
@@ -115,20 +111,21 @@ export default function PortalEditModal() {
                         curPortal.events?.map((e, i) => <CircleEvent
                             key={`event-${i}`}
                             base={baseNum}
-                            point={e.eventPoint}
-                            radius={e.pointRadius}
-                            lineWidth={e.lineswidth}
-                            lineColor={e.linecolor}
-                            title={e.eventTitle}
-                            risklist={e.risklist}
+                            point={e.event_point}
+                            radius={e.point_radius}
+                            lineWidth={e.lines_width}
+                            lineColor={e.line_color}
+                            title={e.event_title}
+                            risklist={e.risk_list}
                         />)
                     }
                 </div>
             </div>
             <div className={"divide-line"} />
-            <div className={"edit-right"}>
+            <div className={"edit-right"} style={{ width: 900 }}>
                 <Form
                     form={form}
+                    size="small"
                     labelCol={{ span: 3 }}
                     wrapperCol={{ span: 20 }}
                     onValuesChange={formChange}
@@ -160,24 +157,12 @@ export default function PortalEditModal() {
                     <Form.Item
                         name="comment_members"
                         label="参与人"
-                        rules={[
-                            {
-                                required: true,
-                                message: '请输入参与的人员',
-                            },
-                        ]}
                     >
                         <Input style={{ width: 200 }} />
                     </Form.Item>
                     <Form.Item
                         name="comment_time"
                         label="参与时间"
-                        rules={[
-                            {
-                                required: true,
-                                message: '请输入参与的时间',
-                            },
-                        ]}
                     >
                         <ItemDataPicker />
                     </Form.Item>
@@ -187,7 +172,7 @@ export default function PortalEditModal() {
                         rules={[
                             {
                                 required: true,
-                                message: '请输入参与的时间',
+                                message: '请录入事件',
                             },
                         ]}
                     >
@@ -216,15 +201,325 @@ const ItemImgUpload = ({ value, onChange }) => {
 }
 
 const ItemDataPicker = ({ value, onChange, style }) => {
-    return <DatePicker inputReadOnly style={style} value={dayjs(value)} onChange={t => onChange(t.format("YYYY-MM-DD"))} />
+    return <DatePicker inputReadOnly style={style} value={value ? dayjs(value) : null} onChange={t => onChange(t.format("YYYY-MM-DD"))} />
 }
 
-const ItemEvents = (value, onChange,) => {
-
-    console.log("value");
 
 
-    return <div>
-        hhh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const ItemEvents = ({ value, onChange }) => {
+
+
+
+    const items = (value || []).map((e, i) => ({
+        key: i,
+        label: e.event_title,
+        value: e,
+        children: null,
+    }))
+
+    const [form] = Form.useForm();
+
+    const [activeKey, setActiveKey] = useState(null)
+
+    const tabsChange = (newActiveKey) => {
+        setActiveKey(newActiveKey)
+    }
+
+    const tabsEdit = (activeIndex, action) => {
+        if (action === 'add') {
+            const newEvent = { ...default_event }
+            const newE = value.concat([newEvent])
+            typeof onChange === "function" && onChange(newE)
+        } else {
+            let newE = JSON.parse(JSON.stringify(value))
+            newE.splice(activeIndex, 1)
+            typeof onChange === "function" && onChange(newE)
+        }
+    }
+
+    const valuesChange = (changedValues, allValues) => {
+        const targetValue = { ...value[activeKey], ...changedValues }
+        value[activeKey] = targetValue
+        typeof onChange === "function" && onChange(value)
+    }
+
+    useEffect(() => {
+        if (activeKey !== null && activeKey != undefined) {
+            if (items?.length > 0) {
+                form.setFieldsValue(items[activeKey].value)
+            }
+        }
+    }, [activeKey])
+
+    return <div className="form-item-events">
+        <Tabs
+            type="editable-card"
+            size="small"
+            onChange={tabsChange}
+            activeKey={activeKey}
+            onEdit={tabsEdit}
+            items={items}
+        />
+        {
+            activeKey === null ? <div>
+                请选择一个事件
+            </div> : <Form
+                form={form}
+                // layout="inline"
+                onValuesChange={valuesChange}
+            >
+                <Row style={{ height: 40 }}>
+                    <Col span={8}>
+                        <Form.Item
+                            name="event_title"
+                            label="事件名称"
+                        >
+                            <Input style={{ width: 100 }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={16}>
+                        <Form.Item
+                            name="event_point"
+                            label="事件坐标"
+                        >
+                            <ItemSlider />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row style={{ height: 40 }}>
+                    <Col span={8}>
+                        <Form.Item
+                            name="point_radius"
+                            label="事件半径"
+                        >
+                            <Slider style={{ width: 100 }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                        <Form.Item
+                            name="lines_width"
+                            label="事件线宽"
+                        >
+                            <Slider style={{ width: 100 }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                        <Form.Item
+                            name="line_color"
+                            label="事件颜色"
+                        >
+                            <ItemColorPicker />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Form.Item
+                    name="risk_list"
+                >
+                    <ItemRiskList />
+                </Form.Item>
+            </Form>
+        }
     </div>
 }
+
+const ItemSlider = ({ value = [0, 0], onChange }) => {
+
+    return <div className="flex" style={{ width: 300 }}>
+        <div className="flex1">
+            {/* <div className="v_center fs12">x位置</div> */}
+            <Slider style={{ width: 100 }} value={value[0]} onChange={newV => onChange([newV, value[1]])} />
+        </div>
+        <div style={{ width: 50 }} />
+        <div className="flex1">
+            {/* <div className="v_center fs12">y位置</div> */}
+            <Slider style={{ width: 100 }} value={value[1]} onChange={newV => onChange([value[0], newV])} />
+        </div>
+    </div>
+}
+
+const ItemColorPicker = ({ value, onChange }) => {
+    return <ColorPicker size="small" value={value} onChange={c => onChange(c.toHexString())} />
+}
+
+const ItemRiskList = ({ value, onChange }) => {
+
+    const [form] = Form.useForm();
+    const [editingKey, setEditingKey] = useState(null);
+
+
+    const edit = (record) => {
+        form.setFieldsValue({
+            ...record,
+        })
+        setEditingKey(record.id)
+    }
+    const del = (record) => {
+        const newV = value.filter(v => v.id != record.id)
+        typeof onChange === "function" && onChange(newV)
+    }
+    const cancel = () => {
+        setEditingKey(null);
+    }
+    const save = (record) => {
+        const val = form.getFieldsValue();
+        const newData = { ...record, ...val };
+        const index = value.findIndex((item) => newData.id === item.id);
+        if (index > -1) {
+            const newV = JSON.parse(JSON.stringify(value))
+            newV[index] = newData
+            typeof onChange === "function" && onChange(newV.sort((a, b) => a.order - b.order));
+        } else {
+            message.error("找不到这条记录了")
+        }
+        setEditingKey(null);
+    }
+
+    const add = () => {
+        let maxId = 0, maxOrder = 0;
+        value.forEach(v => {
+            if (v.id > maxId) {
+                maxId = v.id
+            }
+            if (v.order > maxOrder) {
+                maxOrder = v.order
+            }
+        })
+        const newR = { ...default_risk, id: maxId + 1, order: maxOrder + 1 }
+        const newV = value.concat([newR])
+        typeof onChange === "function" && onChange(newV);
+        form.setFieldsValue({
+            ...newR,
+        })
+    }
+
+    const columns = [{
+        title: '顺序',
+        dataIndex: 'order',
+        key: 'order',
+        editable: true,
+        inputType: "number",
+    }, {
+        title: '标题',
+        dataIndex: 'title',
+        key: 'title',
+        editable: true,
+    }, {
+        title: '责任人',
+        dataIndex: 'dutier',
+        key: 'dutier',
+        editable: true,
+    }, {
+        title: '后果',
+        dataIndex: 'consequence',
+        key: 'consequence',
+        editable: true,
+    }, {
+        title: '措施',
+        dataIndex: 'measure',
+        key: 'measure',
+        editable: true,
+    }, {
+        title: '风险等级',
+        dataIndex: 'level',
+        key: 'level',
+        editable: true,
+        inputType: "number",
+        render: t => `${t}星`
+    }, {
+        title: '操作',
+        dataIndex: 'opt',
+        key: 'opt',
+        width: 120,
+        render: (_, record) => <Space size={"small"}>
+            {record.id === editingKey ? <>
+                <Button size="small" type="link" onClick={() => save(record)}>保存</Button>
+                <Button size="small" type="link" onClick={cancel}>取消</Button>
+            </> : <>
+                <Button size="small" type="link" onClick={() => edit(record)}>编辑</Button>
+                <Popconfirm title="谨慎操作" onConfirm={() => del(record)}>
+                    <Button size="small" type="link" danger>删除</Button>
+                </Popconfirm>
+            </>}
+        </Space>
+    }].map((col) => {
+        if (!col.editable) {
+            return col;
+        }
+        return {
+            ...col,
+            onCell: (record) => ({
+                record,
+                inputType: col.inputType || 'text',
+                dataIndex: col.dataIndex,
+                title: col.title,
+                editing: record.id === editingKey
+            }),
+        };
+    });
+
+    return <Form form={form} component={false}>
+        <Table
+            style={{ width: "100%" }}
+            size="small"
+            columns={columns}
+            dataSource={value}
+            pagination={false}
+            components={{
+                body: {
+                    cell: EditableCell,
+                },
+            }}
+            footer={() => <div className="vhcenter">
+                <Button style={{ width: 100 }} type="primary" ghost onClick={add}>新增</Button>
+            </div>}
+        />
+
+    </Form>
+}
+const EditableCell = ({
+    editing,
+    dataIndex,
+    title,
+    inputType,
+    record,
+    index,
+    children,
+    ...restProps
+}) => {
+    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    return (
+        <td {...restProps}>
+            {editing ? (
+                <Form.Item
+                    name={dataIndex}
+                    style={{ margin: 0 }}
+                >
+                    {inputNode}
+                </Form.Item>
+            ) : (
+                children
+            )}
+        </td>
+    );
+};

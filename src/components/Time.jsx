@@ -4,12 +4,12 @@ import { useEffect, useState } from "react"
 
 export default function Time({ style }) {
 
-    const [time, setTime] = useState("--:--:--")
-    const [date, setDate] = useState("--/--/--")
-    const [week, setWeek] = useState("星期-")
+    const [time, setTime] = useState("")
+    const [date, setDate] = useState("")
+    const [week, setWeek] = useState("")
 
     useEffect(() => {
-        const interval = setInterval(() => {
+        function _getTime() {
             const now = moment();
             setTime(now.format(timeFormat));
             setDate(now.format(dateFormat));
@@ -34,7 +34,9 @@ export default function Time({ style }) {
                     break
             }
             setWeek(weekdayName);
-        }, 1000)
+        }
+        const interval = setInterval(_getTime, 500)
+        _getTime()
         return () => clearInterval(interval)
     }, [])
 

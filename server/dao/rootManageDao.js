@@ -1,4 +1,6 @@
+import moment from "moment";
 import DATABASE from "../common/DATABASE.js";
+import { getMoment } from "../common/utils.js";
 
 const getAllUserListExceptRoot = async () => {
     return new Promise((resolve, reject) => {
@@ -53,18 +55,78 @@ const updatePortals = async (portalId, portalConfig) => {
             portalConfig.events,
             portalConfig.update_time,
             portalId
-        ], (err, rows) => {
+        ], (err) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(rows);
+                const rowCount = db.changes;
+                resolve(rowCount);
             }
         });
     });
 };
 
+
+const insertPortal = async (portalConfig) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `insert into tbl_portal_manage (
+                        "user_id",
+                        "portal_title",
+                        "portal_status",
+                        "portal_img",
+                        "comment_time",
+                        "comment_members",
+                        "footer_btn",
+                        "events",
+                        "insert_time"
+                    ) values (
+                        ?,?,?,?,?,?,?,?,?
+                    )
+                    `;
+        db.run(sql, [
+            portalConfig.user_id,
+            portalConfig.portal_title,
+            portalConfig.portal_status,
+            portalConfig.portal_img,
+            portalConfig.comment_time,
+            portalConfig.comment_members,
+            null,
+            portalConfig.events,
+            getMoment()
+        ], (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                const rowCount = db.changes;
+                resolve(rowCount);
+            }
+        });
+    });
+};
+
+
+const dropPortal = async (portalId) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `delete from tbl_portal_manage where portal_id = ?`;
+        db.run(sql, [portalId], (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                const rowCount = db.changes;
+                resolve(rowCount);
+            }
+        });
+    });
+};
+
+
+
 export default {
     getAllUserListExceptRoot,
     getPortalsByUserId,
-    updatePortals
+    updatePortals,
+    insertPortal,
+    dropPortal
 }

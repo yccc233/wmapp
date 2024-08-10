@@ -1,8 +1,10 @@
-import Top from "@/src/view/top";
+import { setCurrentPortal, setPortals } from "@/src/store/viewReducer";
+import { makePost } from "@/src/utils";
 import Content from "@/src/view/content";
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { setCurrentPortal, setPortals } from "@/src/store/viewReducer"
+import Top from "@/src/view/top";
+import { Result } from "antd";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Index() {
 
@@ -13,118 +15,14 @@ export default function Index() {
 
     useEffect(() => {
         if (loading) {
-            //get sss test
-            const myConfigsFromServer = [{
-                "portalId": "2",
-                "portalTitle": "出口段",
-                "portalStaus": 1,
-                "portalImg": "MRMLZNGNYVRTWZZFSPKS",
-                "commentTime": "2024-07-18",
-                "commentMemebers": "a,v,d,d",
-                "events": [
-                    {
-                        "eventTitle": "钢卷小车",
-                        "eventPoint": [
-                            20,
-                            30
-                        ],
-                        "pointRadius": 10,
-                        "lineswidth": 10,
-                        "linecolor": "#ff0000",
-                        "risklist": [
-                            {
-                                "title": "XXX故障",
-                                "img": "LKDLUNBOQGZMBMDCPUEG",
-                                "level": 3,
-                                "dutier": "胖子",
-                                "consequence": "可能造成停机",
-                                "measure": "整体更换（周期）"
-                            }
-                        ]
-                    },
-                    {
-                        "eventTitle": "钢卷da车",
-                        "eventPoint": [
-                            68,
-                            35
-                        ],
-                        "pointRadius": 15,
-                        "lineswidth": 12,
-                        "linecolor": "#ff0000",
-                        "risklist": [
-                            {
-                                "title": "XXX故障",
-                                "img": "LKDLUNBOQGZMBMDCPUEG",
-                                "level": 3,
-                                "dutier": "胖子",
-                                "consequence": "可能造成停机",
-                                "measure": "整体更换（周期）"
-                            }
-                        ]
+            makePost("/view/getUserPortals")
+                .then(res => {
+                    if (res.code === 0) {
+                        dispatch(setPortals(res.data))
+                        dispatch(setCurrentPortal(res.data[0]))
+                        setLoading(false)
                     }
-                ]
-            }, {
-                "portalId": "4",
-                "portalTitle": "测试123",
-                "portalStaus": 1,
-                "portalImg": "7687699",
-                "commentTime": "2024-07-18",
-                "commentMemebers": "a,v,d,d",
-                "events": [
-                    {
-                        "eventTitle": "钢卷小车",
-                        "eventPoint": [
-                            12,
-                            16
-                        ],
-                        "pointRadius": 2.4,
-                        "lineswidth": 5,
-                        "linecolor": "#ff0000",
-                        "risklist": [
-                            {
-                                "title": "XXX故障",
-                                "img": "345345",
-                                "level": 3,
-                                "dutier": "胖子",
-                                "consequence": "可能造成停机",
-                                "measure": "整体更换（周期）"
-                            }
-                        ]
-                    }
-                ]
-            }, {
-                "portalId": "6",
-                "portalTitle": "测试adasd",
-                "portalStaus": 1,
-                "portalImg": "7687699",
-                "commentTime": "2024-07-18",
-                "commentMemebers": "a,v,d,d",
-                "events": [
-                    {
-                        "eventTitle": "钢卷小车",
-                        "eventPoint": [
-                            12,
-                            16
-                        ],
-                        "pointRadius": 2.4,
-                        "lineswidth": 5,
-                        "linecolor": "#ff0000",
-                        "risklist": [
-                            {
-                                "title": "XXX故障",
-                                "img": "345345",
-                                "level": 3,
-                                "dutier": "胖子",
-                                "consequence": "可能造成停机",
-                                "measure": "整体更换（周期）"
-                            }
-                        ]
-                    }
-                ]
-            }]
-            dispatch(setPortals(myConfigsFromServer))
-            dispatch(setCurrentPortal(myConfigsFromServer[0]))
-            setLoading(false)
+                })
         }
     }, [])
 
@@ -132,10 +30,16 @@ export default function Index() {
         <Top currentId={currentPortal?.portalId} portals={portals} />
         <div style={{ borderBottom: "1px solid #eee", margin: "0px 120px 0px 80px" }} />
         {
-            currentPortal ? <Content portal={currentPortal} /> :
-                <div className="flex1 content">
-
-                </div>
+            loading ? <div className="flex1 content vhcenter">
+                正在加载...
+            </div> :
+                portals.length === 0 ? <div className="flex1 content vhcenter">
+                    <Result
+                        status="404"
+                        title="没有门户数据"
+                        subTitle="请联系管理员添加门户配置"
+                    />
+                </div> : <Content portal={currentPortal} />
         }
     </div>
 }
