@@ -46,7 +46,48 @@
         display: flex;
         color: #f1f1f1;
 
-        .left-content {}
+        .left-content {
+            .suffix-btn {
+                font-size: 18px;
+                color: #e1e1e1;
+                padding: 10px 30px;
+                font-family: inherit;
+                font-weight: 800;
+                cursor: pointer;
+                position: relative;
+                border: none;
+                background: none;
+                text-transform: uppercase;
+                transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+                transition-duration: 400ms;
+                transition-property: color;
+            }
+
+            .suffix-btn:focus,
+            .suffix-btn:hover {
+                color: #fff;
+            }
+
+            .suffix-btn:focus:after,
+            .suffix-btn:hover:after {
+                width: 100%;
+                left: 0%;
+            }
+
+            .suffix-btn:after {
+                content: "";
+                pointer-events: none;
+                bottom: -2px;
+                left: 50%;
+                position: absolute;
+                width: 0%;
+                height: 2px;
+                background-color: #fff;
+                transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+                transition-duration: 400ms;
+                transition-property: width, left;
+            }
+        }
 
         .right-content {
             flex: 1;

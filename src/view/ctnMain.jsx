@@ -1,8 +1,8 @@
-import { Modal, Table } from "antd";
-import { useEffect, useRef, useState } from "react";
+import {Modal, Rate, Table} from "antd";
+import {useEffect, useRef, useState} from "react";
 
 
-export default function CtnMain({ portal }) {
+export default function CtnMain({portal}) {
 
     const [baseNum, setBaseNum] = useState([0, 0])
     const imgRef = useRef()
@@ -29,7 +29,7 @@ export default function CtnMain({ portal }) {
 
     return <div className="content-main">
         <div ref={imgRef} className="img-div">
-            <img src={`/riskserver/img/getImageFromServer/${portal.portal_img}`} />
+            <img src={`/riskserver/img/getImageFromServer/${portal.portal_img}`}/>
             {
                 events.map((e, i) => <CircleEvent
                     key={`event-${i}`}
@@ -50,7 +50,7 @@ export default function CtnMain({ portal }) {
 /**
  * 计算的方式：base表示以第一象限为坐标的位置，单位是像素；point是x，y对应的比例 百分比算，radius也是百分比，lineWidth以r为基数，以base最小的为基数
  */
-export const CircleEvent = ({ base, point, radius, lineWidth, lineColor, title, risklist }) => {
+export const CircleEvent = ({base, point, radius, lineWidth, lineColor, title, risklist}) => {
     const [vis, setVis] = useState(false)
 
     if (!base || !point) {
@@ -86,13 +86,13 @@ export const CircleEvent = ({ base, point, radius, lineWidth, lineColor, title, 
         title: '风险等级',
         dataIndex: 'level',
         key: 'level',
+        render: (t) => <Rate disabled value={t}/>
     }]
-
 
     return <>
         <div
             className="circle-event"
-            style={{ left, bottom, width: r * 2, height: r * 2, borderWidth: lWidth, borderColor: lineColor }}
+            style={{left, bottom, width: r * 2, height: r * 2, borderWidth: lWidth, borderColor: lineColor}}
             onClick={() => setVis(true)}
         />
         <Modal
