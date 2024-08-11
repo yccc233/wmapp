@@ -192,3 +192,8 @@
 .over-auto {
     overflow: auto;
 }
+
+.long-text-pre {
+    word-break: break-all;
+    white-space: pre-wrap;
+}

@@ -1,4 +1,3 @@
-
 export const allTimeFormat = "yyyy-MM-DD HH:mm:ss"
 export const timeFormat = "HH:mm:ss"
 export const dateFormat = "yyyy/MM/DD"
@@ -24,12 +23,14 @@ export const default_event = {
     "point_radius": 1,
     "lines_width": 1,
     "line_color": "#000000",
+    "type": "circle",
     "risk_list": []
 }
 
 export const default_risk = {
     "id": 1,
     "order": 1,
+    "group": "",
     "title": "[新风险]",
     "img": "",
     "level": 1,

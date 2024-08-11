@@ -9,7 +9,6 @@ import PortalEditModal from "@/src/rootManage/portalEditModal"
 import { default_portal } from "@/src/config"
 
 // 接口：设置用户的门户配置
-
 export default function Index() {
 
     const { portals, userList, activeUserId } = useSelector(state => state.rootReducer)

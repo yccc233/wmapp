@@ -115,6 +115,11 @@
             position: relative;
         }
 
+        .word-event {
+            position: absolute;
+            cursor: pointer;
+        }
+
         .circle-event {
             position: absolute;
             background: transparent;

@@ -3,23 +3,23 @@ import {useState} from "react"
 import {Modal, Rate, Table} from "antd";
 
 export default function SuffixPortal({portal}) {
-    const [showAllRisk, setShowAllRisk] = useState(false)
+    const [showStatusRisk, setShowStatusRisk] = useState(false)
 
     return <>
-        <button className={"suffix-btn"} onClick={() => setShowAllRisk(true)}>
+        <button className={"suffix-btn"} onClick={() => setShowStatusRisk(true)}>
             <CodeSandboxOutlined className={"mr10"}/>
-            全部风险点
+            状态风险点
         </button>
-        <ShowAllRiskModal
+        <StatusRiskModal
             data={portal.events?.flatMap(e => e.risk_list)}
-            visible={showAllRisk}
-            onCancel={() => setShowAllRisk(false)}
+            visible={showStatusRisk}
+            onCancel={() => setShowStatusRisk(false)}
         />
     </>
 }
 
 
-const ShowAllRiskModal = ({data, visible, onCancel}) => {
+const StatusRiskModal = ({data, visible, onCancel}) => {
 
     const columns = [{
         title: '标题', dataIndex: 'title', key: 'title',
@@ -46,6 +46,5 @@ const ShowAllRiskModal = ({data, visible, onCancel}) => {
             dataSource={data}
             pagination={false}
         />
-
     </Modal>
 }
