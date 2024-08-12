@@ -4,7 +4,7 @@ import SuffixPortal from "@/src/view/suffixPortal.jsx";
 export default function Content({portal}) {
 
     return <div className="flex1 content">
-        <div className="left-content" style={{width: 360}}>
+        <div className="left-content" style={{width: 350}}>
             <SuffixPortal portal={portal}/>
         </div>
         <div className="right-content">
