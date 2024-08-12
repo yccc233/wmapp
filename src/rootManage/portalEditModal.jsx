@@ -438,8 +438,10 @@ const ItemRiskList = ({value, onChange}) => {
         title: '可能失效点',
         dataIndex: 'title',
         key: 'title',
-        width: 120,
+        width: 200,
         editable: true,
+        inputType: "text",
+        render: t => <pre className={"long-text-pre"}>{t}</pre>
     }, {
         title: '造成后果/历史事故',
         dataIndex: 'consequence',
@@ -506,12 +508,12 @@ const ItemRiskList = ({value, onChange}) => {
     return <Form form={form} component={false}>
         <Table
             style={{width: 750}}
-            // size="small"
+            size="small"
             columns={columns}
             dataSource={value}
             pagination={false}
             scroll={{
-                x: 500,
+                x: 1250,
             }}
             components={{
                 body: {
