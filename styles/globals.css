@@ -100,17 +100,20 @@
 
 .vhcenter {
     display: flex;
+    flex-wrap: wrap;
     align-content: center;
     justify-content: center;
 }
 
 .v_center {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
 }
 
 .h_center {
     display: flex;
+    flex-wrap: wrap;
     align-content: center;
 }
 

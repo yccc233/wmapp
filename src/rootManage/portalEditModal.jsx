@@ -271,6 +271,7 @@ const ItemEvents = ({value, onChange}) => {
         <Tabs
             type="editable-card"
             size="small"
+            style={{width: 750}}
             onChange={tabsChange}
             activeKey={activeKey}
             onEdit={tabsEdit}

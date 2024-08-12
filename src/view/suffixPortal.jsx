@@ -1,8 +1,8 @@
-import { CodeSandboxOutlined, AlertOutlined, BugOutlined } from "@ant-design/icons"
-import { useState } from "react"
-import { Modal, Rate, Space, Table, Button, Popover } from "antd";
+import {AlertOutlined, BugOutlined, CodeSandboxOutlined} from "@ant-design/icons"
+import {useState} from "react"
+import {Button, Modal, Popover, Rate, Space, Table} from "antd";
 
-export default function SuffixPortal({ portal }) {
+export default function SuffixPortal({portal}) {
     const [showStatusRisk, setShowStatusRisk] = useState(false)
     const [showStatusSafety, setShowStatusSafety] = useState(false)
     const [showStatusQualitity, setShowStatusQualitity] = useState(false)
@@ -10,15 +10,15 @@ export default function SuffixPortal({ portal }) {
     return <>
         <Space direction="vertical" size={"large"}>
             <button className={"suffix-btn"} onClick={() => setShowStatusRisk(true)}>
-                <CodeSandboxOutlined className={"mr10"} />
+                <CodeSandboxOutlined className={"mr10"}/>
                 状态风险
             </button>
             <button className={"suffix-btn"} onClick={() => setShowStatusSafety(true)}>
-                <AlertOutlined className={"mr10"} />
+                <AlertOutlined className={"mr10"}/>
                 安全风险
             </button>
             <button className={"suffix-btn"} onClick={() => setShowStatusQualitity(true)}>
-                <BugOutlined className={"mr10"} />
+                <BugOutlined className={"mr10"}/>
                 质量风险
             </button>
         </Space>
@@ -41,22 +41,28 @@ export default function SuffixPortal({ portal }) {
 }
 
 
-const StatusRiskModal = ({ data, visible, onCancel }) => {
+const StatusRiskModal = ({data, visible, onCancel}) => {
 
     const columns = [{
         title: '分类', dataIndex: 'group', key: 'group', width: 120,
-        filters: Array.from(new Set(data.map(e => e.group).filter(e => e))).map(e => ({ text: e, value: e })),
+        filters: Array.from(new Set(data.map(e => e.group).filter(e => e))).map(e => ({text: e, value: e})),
         onFilter: (value, record) => record.group.indexOf(value) > -1,
     }, {
         title: '可能失效点', dataIndex: 'title', key: 'title',
     }, {
         title: '责任人', dataIndex: 'dutier', key: 'dutier', width: 200,
+        filters: (function () {
+            const names = Array.from(new Set(data.map(e => e.dutier).filter(e => e).join("、").split("、")));
+            return names.map(n => ({text: n, value: n}))
+        })(),
+        onFilter: (value, record) => record.dutier.indexOf(value) > -1,
     }, {
         title: '风险等级',
         dataIndex: 'level',
         key: 'level',
         width: 180,
-        render: (_, record) => <Rate disabled={true} value={record.level} />
+        sorter: (a, b) => a.level - b.level,
+        render: (_, record) => <Rate disabled={true} value={record.level}/>
     }, {
         title: '详情', dataIndex: 'id', key: 'id', width: 100, render: (_, record) => {
             // 全部风险点信息
@@ -79,7 +85,7 @@ const StatusRiskModal = ({ data, visible, onCancel }) => {
                     matches.forEach(m => {
                         target = target.replace(new RegExp(m, 'g'), `<span style="color: red;">${m}</span>`)
                     })
-                    return <pre className="long-text-pre" dangerouslySetInnerHTML={{ __html: target }} />
+                    return <pre className="long-text-pre" dangerouslySetInnerHTML={{__html: target}}/>
                 },
             }, {
                 title: '点检要求/预防措施',
@@ -90,7 +96,7 @@ const StatusRiskModal = ({ data, visible, onCancel }) => {
                 title: '风险等级',
                 dataIndex: 'level',
                 key: 'level',
-                render: (_, record) => <Rate disabled={true} value={record.level} />
+                render: (_, record) => <Rate disabled={true} value={record.level}/>
             }]
 
             return <Popover trigger={["click"]} content={<div>
@@ -117,11 +123,14 @@ const StatusRiskModal = ({ data, visible, onCancel }) => {
             columns={columns}
             dataSource={data}
             pagination={false}
+            scroll={{
+                y: window.innerHeight - 150
+            }}
         />
     </Modal>
 }
 
-const StatusSafetyModal = ({ data, visible, onCancel }) => {
+const StatusSafetyModal = ({data, visible, onCancel}) => {
     const columns = [{
         title: '标题', dataIndex: 'title', key: 'title',
     }, {
@@ -131,7 +140,7 @@ const StatusSafetyModal = ({ data, visible, onCancel }) => {
     }, {
         title: '责任人', dataIndex: 'dutier', key: 'dutier',
     }, {
-        title: '风险等级', dataIndex: 'level', key: 'level', render: t => <Rate disabled={true} value={t} />
+        title: '风险等级', dataIndex: 'level', key: 'level', render: t => <Rate disabled={true} value={t}/>
     }]
 
     return <Modal
@@ -146,12 +155,15 @@ const StatusSafetyModal = ({ data, visible, onCancel }) => {
             columns={columns}
             dataSource={data}
             pagination={false}
+            scroll={{
+                y: window.innerHeight - 150
+            }}
         />
     </Modal>
 }
 
 
-const StatusQualtityModal = ({ data, visible, onCancel }) => {
+const StatusQualtityModal = ({data, visible, onCancel}) => {
     const columns = [{
         title: '标题', dataIndex: 'title', key: 'title',
     }, {
@@ -161,7 +173,7 @@ const StatusQualtityModal = ({ data, visible, onCancel }) => {
     }, {
         title: '责任人', dataIndex: 'dutier', key: 'dutier',
     }, {
-        title: '风险等级', dataIndex: 'level', key: 'level', render: t => <Rate disabled={true} value={t} />
+        title: '风险等级', dataIndex: 'level', key: 'level', render: t => <Rate disabled={true} value={t}/>
     }]
 
     return <Modal
@@ -176,6 +188,9 @@ const StatusQualtityModal = ({ data, visible, onCancel }) => {
             columns={columns}
             dataSource={data}
             pagination={false}
+            scroll={{
+                y: window.innerHeight - 150
+            }}
         />
     </Modal>
 }
