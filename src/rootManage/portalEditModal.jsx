@@ -218,12 +218,6 @@ const ItemImgUpload = ({value, onChange}) => {
     </>
 }
 
-const ItemDataPicker = ({value, onChange, style}) => {
-    return <DatePicker inputReadOnly style={style} value={value ? dayjs(value) : null}
-                       onChange={t => onChange(t.format("YYYY-MM-DD"))}/>
-}
-
-
 const ItemEvents = ({value, onChange}) => {
 
     const items = (value || []).map((e, i) => ({
@@ -390,6 +384,13 @@ const ItemRiskList = ({value, onChange}) => {
     }
     const save = (record) => {
         const val = form.getFieldsValue();
+        // 字段特殊处理，字符串去除边白
+        Object.keys(val).forEach(k=> {
+            if (typeof val[k] ==="string") {
+                val[k] = val[k].trim()
+            }
+        })
+        
         const newData = {...record, ...val};
         const index = value.findIndex((item) => newData.id === item.id);
         if (index > -1) {
@@ -418,6 +419,7 @@ const ItemRiskList = ({value, onChange}) => {
         form.setFieldsValue({
             ...newR,
         })
+        setEditingKey(newR.id);
     }
 
     const columns = [{
