@@ -45,14 +45,17 @@ const StatusRiskModal = ({data, visible, onCancel}) => {
 
     const columns = [{
         title: '分类', dataIndex: 'group', key: 'group', width: 120,
-        filters: Array.from(new Set(data.map(e => e.group).filter(e => e))).map(e => ({text: e, value: e})),
+        filters:(function () {
+            const names = Array.from(new Set(data.map(e => e.group).filter(e => e).join("、").split("、")))
+            return names.map(n => ({text: n, value: n}))
+        })(),
         onFilter: (value, record) => record.group.indexOf(value) > -1,
     }, {
         title: '可能失效点', dataIndex: 'title', key: 'title',
     }, {
         title: '责任人', dataIndex: 'dutier', key: 'dutier', width: 200,
         filters: (function () {
-            const names = Array.from(new Set(data.map(e => e.dutier).filter(e => e).join("、").split("、")));
+            const names = Array.from(new Set(data.map(e => e.dutier).filter(e => e).join("、").split("、")))
             return names.map(n => ({text: n, value: n}))
         })(),
         onFilter: (value, record) => record.dutier.indexOf(value) > -1,
