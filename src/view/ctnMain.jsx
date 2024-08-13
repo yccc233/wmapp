@@ -92,7 +92,7 @@ export const CircleEvent = ({ type, base, point, radius, lineWidth, lineColor, t
                 key: 'consequence',
                 render: t => {
                     // 使用正则表达式匹配时间，允许月份和日期为一位数
-                    const regex = /(\d{4})\.(\d{1,2})\.(\d{1,2})/g;
+                    const regex = /(\d{4})?(\.)?(\d{2})\.(\d{2})/g;
                     // 使用正则表达式分割字符串，但保留分隔符（时间字符串）
                     const matches = Array.from(new Set(t.match(regex))) || []; // 找出所有匹配的时间字符串
                     let target = t;

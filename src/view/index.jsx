@@ -3,6 +3,7 @@ import { makePost } from "@/src/utils";
 import Content from "@/src/view/content";
 import Top from "@/src/view/top";
 import { Result } from "antd";
+import { SyncOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -31,7 +32,7 @@ export default function Index() {
         <div style={{ borderBottom: "1px solid #eee", margin: "0px 120px 0px 80px" }} />
         {
             loading ? <div className="flex1 content vhcenter">
-                正在加载...
+                <SyncOutlined className={"mr5"} spin />正在加载...
             </div> :
                 portals.length === 0 ? <div className="flex1 content vhcenter">
                     <Result

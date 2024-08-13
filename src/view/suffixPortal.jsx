@@ -46,7 +46,7 @@ const StatusRiskModal = ({data, visible, onCancel}) => {
     const columns = [{
         title: '分类', dataIndex: 'group', key: 'group', width: 120,
         filters:(function () {
-            const names = Array.from(new Set(data.map(e => e.group).filter(e => e).join("、").split("、")))
+            const names = Array.from(new Set(data.map(e => e.group).filter(e => e).join("、").split("、"))).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {sensitivity: 'base'}))
             return names.map(n => ({text: n, value: n}))
         })(),
         onFilter: (value, record) => record.group.indexOf(value) > -1,
@@ -55,7 +55,7 @@ const StatusRiskModal = ({data, visible, onCancel}) => {
     }, {
         title: '责任人', dataIndex: 'dutier', key: 'dutier', width: 200,
         filters: (function () {
-            const names = Array.from(new Set(data.map(e => e.dutier).filter(e => e).join("、").split("、")))
+            const names = Array.from(new Set(data.map(e => e.dutier).filter(e => e).join("、").split("、"))).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {sensitivity: 'base'}))
             return names.map(n => ({text: n, value: n}))
         })(),
         onFilter: (value, record) => record.dutier.indexOf(value) > -1,
@@ -81,7 +81,7 @@ const StatusRiskModal = ({data, visible, onCancel}) => {
                 key: 'consequence',
                 render: t => {
                     // 使用正则表达式匹配时间，允许月份和日期为一位数
-                    const regex = /(\d{4})\.(\d{1,2})\.(\d{1,2})/g;
+                    const regex = /(\d{4})?(\.)?(\d{2})\.(\d{2})/g;
                     // 使用正则表达式分割字符串，但保留分隔符（时间字符串）
                     const matches = Array.from(new Set(t.match(regex))) || []; // 找出所有匹配的时间字符串
                     let target = t;
