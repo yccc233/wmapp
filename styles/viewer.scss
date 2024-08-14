@@ -47,49 +47,105 @@
         color: #f1f1f1;
 
         .left-content {
-            padding-top: 50px;
-            padding-left: 30px;
+            display: flex;
+            flex-direction: column;
 
-            .suffix-btn {
-                font-size: 18px;
-                color: #e1e1e1;
-                padding: 10px 30px;
-                font-family: inherit;
-                font-weight: 800;
-                cursor: pointer;
-                position: relative;
-                border: none;
-                background: none;
-                text-transform: uppercase;
-                transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
-                transition-duration: 400ms;
-                transition-property: color;
+            .statics {
+                flex: 1;
+                margin: 50px 0 0 30px;
+                display: flex;
+                flex-direction: column;
+                color: #f1f1f1;
+
+                .item {
+                }
+
+                .item-1 {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+
+                    .item-box {
+                        flex: 1;
+                        color: #121212;
+                        background: linear-gradient(270deg, #aaaaaa, #f1f1f1);
+                        border-radius: 15px;
+                        margin: 5px 0;
+                        padding: 5px;
+                        display: flex;
+                        align-content: center;
+                        justify-content: center;
+
+                        .title {
+                            flex: 1;
+                            margin: 0 15px;
+                            font-weight: bold;
+                        }
+
+                        .number {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 2px 5px;
+                            background: #05fafa;
+                            border-radius: 15px;
+                        }
+                    }
+                }
+
+                .item-3 {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+                }
             }
 
-            .suffix-btn:focus,
-            .suffix-btn:hover {
-                color: #fff;
+            .suffix-portal {
+                margin: 0 0 50px 30px;
+
+                .suffix-btn {
+                    font-size: 18px;
+                    color: #e1e1e1;
+                    padding: 10px 30px;
+                    font-family: inherit;
+                    font-weight: 800;
+                    cursor: pointer;
+                    position: relative;
+                    border: none;
+                    background: none;
+                    text-transform: uppercase;
+                    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+                    transition-duration: 400ms;
+                    transition-property: color, transform;
+                }
+
+                .suffix-btn:focus,
+                .suffix-btn:hover {
+                    color: #fff;
+                    transform: scale(1.2);
+                }
+
+                .suffix-btn:focus:after,
+                .suffix-btn:hover:after {
+                    width: 100%;
+                    left: 0%;
+                }
+
+                .suffix-btn:after {
+                    content: "";
+                    pointer-events: none;
+                    bottom: -2px;
+                    left: 50%;
+                    position: absolute;
+                    width: 0%;
+                    height: 2px;
+                    background-color: #fff;
+                    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+                    transition-duration: 400ms;
+                    transition-property: width, left;
+                }
             }
 
-            .suffix-btn:focus:after,
-            .suffix-btn:hover:after {
-                width: 100%;
-                left: 0%;
-            }
-
-            .suffix-btn:after {
-                content: "";
-                pointer-events: none;
-                bottom: -2px;
-                left: 50%;
-                position: absolute;
-                width: 0%;
-                height: 2px;
-                background-color: #fff;
-                transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
-                transition-duration: 400ms;
-                transition-property: width, left;
-            }
         }
 
         .right-content {

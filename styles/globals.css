@@ -80,7 +80,6 @@
 }
 
 
-
 /* 基本样式 */
 
 
@@ -138,6 +137,14 @@
     margin-right: 2px;
 }
 
+.ml2 {
+    margin-left: 2px;
+}
+
+.ml3 {
+    margin-left: 3px;
+}
+
 .ml5 {
     margin-left: 5px;
 }
@@ -187,6 +194,17 @@
     margin-bottom: 20px;
 }
 
+.ml30 {
+    margin-left: 30px;
+}
+
+.mt50 {
+    margin-top: 50px;
+}
+
+.white-font {
+    color: #f1f1f1;
+}
 
 .gray {
     color: gray;

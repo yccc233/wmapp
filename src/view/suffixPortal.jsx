@@ -5,10 +5,10 @@ import {Button, Modal, Popover, Rate, Space, Table} from "antd";
 export default function SuffixPortal({portal}) {
     const [showStatusRisk, setShowStatusRisk] = useState(false)
     const [showStatusSafety, setShowStatusSafety] = useState(false)
-    const [showStatusQualitity, setShowStatusQualitity] = useState(false)
+    const [showStatusQuality, setShowStatusQuality] = useState(false)
 
     return <>
-        <Space direction="vertical" size={"large"}>
+        <Space className={"suffix-portal"} direction="vertical" size={"large"}>
             <button className={"suffix-btn"} onClick={() => setShowStatusRisk(true)}>
                 <CodeSandboxOutlined className={"mr10"}/>
                 状态风险
@@ -17,7 +17,7 @@ export default function SuffixPortal({portal}) {
                 <AlertOutlined className={"mr10"}/>
                 安全风险
             </button>
-            <button className={"suffix-btn"} onClick={() => setShowStatusQualitity(true)}>
+            <button className={"suffix-btn"} onClick={() => setShowStatusQuality(true)}>
                 <BugOutlined className={"mr10"}/>
                 质量风险
             </button>
@@ -34,8 +34,8 @@ export default function SuffixPortal({portal}) {
         />
         <StatusQualtityModal
             data={[]}
-            visible={showStatusQualitity}
-            onCancel={() => setShowStatusQualitity(false)}
+            visible={showStatusQuality}
+            onCancel={() => setShowStatusQuality(false)}
         />
     </>
 }
@@ -45,7 +45,7 @@ const StatusRiskModal = ({data, visible, onCancel}) => {
 
     const columns = [{
         title: '分类', dataIndex: 'group', key: 'group', width: 120,
-        filters:(function () {
+        filters: (function () {
             const names = Array.from(new Set(data.map(e => e.group).filter(e => e).join("、").split("、"))).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {sensitivity: 'base'}))
             return names.map(n => ({text: n, value: n}))
         })(),
