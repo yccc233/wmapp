@@ -1,22 +1,22 @@
 import {useEffect, useRef, useState} from "react";
-import {Rate, Statistic} from "antd";
+import {Statistic} from "antd";
 import CountUp from 'react-countup';
 import * as echarts from 'echarts';
+import 'echarts-wordcloud';
 import {StarFilled, StopFilled} from "@ant-design/icons"
-
 
 export default function Statics({portal = {}}) {
 
     const echart2Ref = useRef(null);
+    const echart4Ref = useRef(null);
 
-    console.log(portal)
     let eventsLength = portal.events?.length || 0
     let risksLength = 0
     let dutier = []
     let group = []
     let level = []
     let dutiersLength = 0
-    let dytierDetail = {}
+    let dutierDetail = {}
     let groupsLength = 0
     let levelDetail = {}
 
@@ -24,7 +24,7 @@ export default function Statics({portal = {}}) {
         portal.events.forEach(ev => {
             risksLength += ev.risk_list?.length || 0
             ev.risk_list?.forEach(r => {
-                dutier.push(r.dutier)
+                dutier = dutier.concat(r.dutier.split("、"))
                 group.push(r.group)
                 level.push(r.level)
             })
@@ -37,6 +37,11 @@ export default function Statics({portal = {}}) {
     level.forEach(l => {
         levelDetail[l] = levelDetail[l] ? levelDetail[l] + 1 : 1
     })
+    dutier.forEach(d => {
+        dutierDetail[d] = dutierDetail[d] ? dutierDetail[d] + 1 : 1;
+    })
+    dutierDetail.sort = Object.entries(dutierDetail).sort((a, b) => b[1] - a[1])
+
 
     const divRef = useRef()
     const [size, setSize] = useState(0)
@@ -44,6 +49,7 @@ export default function Statics({portal = {}}) {
     const getSize = () => {
         const width = divRef.current.clientWidth
         setSize(width / 2 - 10)
+        return width / 2 - 10
     }
 
     useEffect(() => {
@@ -58,11 +64,12 @@ export default function Statics({portal = {}}) {
                     }
                 }
             })
-            const chartInstance = echarts.init(echart2Ref.current);
-            const option = {
+            const chartInstance2 = echarts.init(echart2Ref.current);
+            const option2 = {
                 tooltip: {
                     trigger: 'item'
-                }, series: [{
+                },
+                series: [{
                     name: '分类统计',
                     type: 'pie',
                     radius: ['45%', '75%'],
@@ -86,17 +93,92 @@ export default function Statics({portal = {}}) {
                     data: Object.values(types)
                 }]
             }
-            chartInstance.setOption(option);
+            chartInstance2.setOption(option2);
+        }
+        if (size > 0 && echart4Ref.current) {
+            const chartInstance4 = echarts.init(echart4Ref.current);
+            const option4 = {
+                series: [{
+                    type: 'wordCloud',
+                    /*要绘制的“云”的形状。可以是为回调函数，或一个关键字。
+                    可用的形状有(circle)圆形(默认)、(cardioid)心形，(diamond)菱形，(triangle-forward)三角形向前，(triangle)三角形，(pentagon)五边形和(star)星形。*/
+                    shape: 'circle',
+                    //保持maskImage的宽高比或1:1的形状，他的选项是支持从echarts-wordcloud@2.1.0
+                    // keepAspect: false,
+                    //一个轮廓图像，其白色区域将被排除在绘制文本之外
+                    //意思就是可以通过图片，来自定义词云的形状
+                    // maskImage: maskImage,
+                    //设置显示区域的位置以及大小
+                    left: 'center',
+                    top: 'center',
+                    right: null,
+                    bottom: null,
+                    width: '90%',
+                    height: '90%',
+                    //数据中的值将映射到的文本大小范围。默认大小为最小12px，最大36px。
+                    sizeRange: [12, 36],
+                    //文本旋转范围和步进度。文本将通过rotationStep:45在[- 90,90]范围内随机旋转
+                    rotationRange: [-90, 90],
+                    rotationStep: 45,
+                    //以像素为单位的网格大小，用于标记画布的可用性
+                    //网格尺寸越大，单词之间的间距越大。
+                    gridSize: 8,
+                    //设置为true，允许文字部分在画布外绘制。
+                    //允许绘制大于画布大小的单词
+                    //从echarts-wordcloud@2.1.0开始支持此选项
+                    drawOutOfBound: false,
+                    //如果字体太大而无法显示文本，
+                    //是否收缩文本。如果将其设置为false，则文本将不渲染。如果设置为true，则文本将被缩小。
+                    //从echarts-wordcloud@2.1.0开始支持此选项
+                    shrinkToFit: false,
+                    // 执行布局动画。当有大量的单词时，关闭它会导致UI阻塞。
+                    layoutAnimation: true,
+                    //全局文本样式
+                    textStyle: {
+                        fontFamily: 'sans-serif',
+                        fontWeight: 'bold',
+                        // Color可以是一个回调函数或一个颜色字符串
+                        color: function () {
+                            // Random color
+                            return 'rgb(' + [
+                                Math.round(Math.random() * 200) + 55,
+                                Math.round(Math.random() * 200) + 55,
+                                Math.round(Math.random() * 200) + 55
+                            ].join(',') + ')'
+                        }
+                    },
+                    emphasis: {
+                        focus: 'self',
+                        textStyle: {
+                            textShadowBlur: 10,
+                            textShadowColor: '#333'
+                        }
+                    },
+                    //数据是一个数组。每个数组项必须具有名称和值属性。
+                    data: dutierDetail.sort.map(d => ({
+                        name: d[0],
+                        value: d[1],
+                    }))
+                }]
+            }
+            chartInstance4.setOption(option4);
+
+            // 监听点击事件
+            chartInstance4.on('click', function (params) {
+                // params 是点击事件的回调函数参数，包含了被点击数据项的详细信息
+                // 例如：params.name 和 params.value 分别代表被点击数据项的名称和值
+                console.log('点击了：', params.name, '，其值为：', params.value);
+                // 在这里可以添加更多的点击事件处理逻辑
+            });
         }
     }, [size, portal])
 
     useEffect(() => {
-        setTimeout(getSize, 50)
+        setTimeout(getSize, 100)
         window.addEventListener('resize', getSize)
         return () => window.removeEventListener('resize', getSize)
     }, [])
 
-    console.log("tongji", {eventsLength, risksLength, dutiersLength, groupsLength, levelDetail, level})
     return <div className={"statics"} ref={divRef}>
         <div className={"flex1 flex"} style={{justifyContent: "space-between"}}>
             <div className={"item item-1"} style={{width: size, height: size}}>
@@ -166,7 +248,7 @@ export default function Statics({portal = {}}) {
                 <div className={"h_center"} style={{justifyContent: "space-between"}}>
                     <span>
                         {Array.from({length: 5}).map((_, ind) => (
-                            <StarFilled key={`star-${5}-${ind}`} className={"mr2"}
+                            <StarFilled key={`star-${5}-${ind}`} className={"mr1"}
                                         style={{color: levelDetail[5] ? "#fadb14" : "#aaa"}}/>
                         ))}
                     </span>
@@ -182,7 +264,7 @@ export default function Statics({portal = {}}) {
                 <div className={"h_center"} style={{justifyContent: "space-between"}}>
                     <span>
                           {Array.from({length: 4}).map((_, ind) => (
-                              <StarFilled key={`star-${4}-${ind}`} className={"mr2"}
+                              <StarFilled key={`star-${4}-${ind}`} className={"mr1"}
                                           style={{color: levelDetail[4] ? "#fadb14" : "#aaa"}}/>
                           ))}
                     </span>
@@ -198,7 +280,7 @@ export default function Statics({portal = {}}) {
                 <div className={"h_center"} style={{justifyContent: "space-between"}}>
                     <span>
                            {Array.from({length: 3}).map((_, ind) => (
-                               <StarFilled key={`star-${3}-${ind}`} className={"mr2"}
+                               <StarFilled key={`star-${3}-${ind}`} className={"mr1"}
                                            style={{color: levelDetail[3] ? "#fadb14" : "#aaa"}}/>
                            ))}
                     </span>
@@ -214,7 +296,7 @@ export default function Statics({portal = {}}) {
                 <div className={"h_center"} style={{justifyContent: "space-between"}}>
                     <span>
                          {Array.from({length: 2}).map((_, ind) => (
-                             <StarFilled key={`star-${2}-${ind}`} className={"mr2"}
+                             <StarFilled key={`star-${2}-${ind}`} className={"mr1"}
                                          style={{color: levelDetail[2] ? "#fadb14" : "#aaa"}}/>
                          ))}
                     </span>
@@ -254,8 +336,19 @@ export default function Statics({portal = {}}) {
                     />
                 </div>
             </div>
-            <div className={"item"} style={{width: size, height: size}}>
-
+            <div className={"item item-4"} style={{width: size, height: size}}>
+                <div
+                    ref={echart4Ref}
+                    style={{width: size, height: size}}
+                    id={"statics-item-4"}
+                />
+                {/*{*/}
+                {/*    dutierDetail.sort.map((d, i) => (*/}
+                {/*        <div key={`dutier-${i}`}>*/}
+                {/*            {d[0]}-{d[1]}*/}
+                {/*        </div>*/}
+                {/*    ))*/}
+                {/*}*/}
             </div>
         </div>
     </div>
