@@ -214,6 +214,18 @@
     color: gray;
 }
 
+.success {
+    color: #52c41a;
+}
+
+.warning {
+    color: #faad14;
+}
+
+.error {
+    color: #ff4d4f;
+}
+
 .over-auto {
     overflow: auto;
 }

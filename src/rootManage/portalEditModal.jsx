@@ -109,7 +109,7 @@ export default function PortalEditModal({onSave}) {
         width={1600}
         closable={false}
         maskClosable={false}
-        visible={activePortalId}
+        open={activePortalId}
         centered={true}
         destroyOnClose={true}
         okText={isNew ? "新增" : "保存"}

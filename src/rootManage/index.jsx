@@ -1,17 +1,18 @@
 "use client"
-import { Button, Select, Table, Image, Space, message, Popconfirm, Badge } from "antd"
-import { UserOutlined } from '@ant-design/icons'
-import { useDispatch, useSelector } from "react-redux"
-import { setActivePortalId, setActiveUserId, setPortals, setUserList } from "@/src/store/rootReducer"
-import { useEffect, useState } from "react"
-import { makePost } from "@/src/utils"
+import {Button, Select, Table, Image, Space, message, Popconfirm, Badge} from "antd"
+import {UserOutlined} from '@ant-design/icons'
+import {useDispatch, useSelector} from "react-redux"
+import {setActivePortalId, setActiveUserId, setPortals, setUserList} from "@/src/store/rootReducer"
+import {useEffect, useState} from "react"
+import {makePost} from "@/src/utils"
 import PortalEditModal from "@/src/rootManage/portalEditModal"
-import { default_portal } from "@/src/config"
+import {default_portal} from "@/src/config"
+import RiskModalCom from "@/src/components/RiskModal.jsx";
 
 // 接口：设置用户的门户配置
 export default function Index() {
 
-    const { portals, userList, activeUserId } = useSelector(state => state.rootReducer)
+    const {portals, userList, activeUserId} = useSelector(state => state.rootReducer)
     const dispatch = useDispatch();
 
     const [loading, setLoading] = useState(false)
@@ -19,7 +20,7 @@ export default function Index() {
     const hideOrShowPortal = (portal) => {
         const newPortal = JSON.parse(JSON.stringify(portal))
         newPortal.portal_status = (newPortal.portal_status === 1 ? 0 : 1)
-        makePost("/root/editPortalById", { portalId: newPortal.portal_id, portalConfig: newPortal })
+        makePost("/root/editPortalById", {portalId: newPortal.portal_id, portalConfig: newPortal})
             .then(res => {
                 if (res.code === 0) {
                     message.success("修改成功")
@@ -29,7 +30,7 @@ export default function Index() {
     }
 
     const deletePortal = (portal) => {
-        makePost("/root/dropPortal", { portalId: portal.portal_id })
+        makePost("/root/dropPortal", {portalId: portal.portal_id})
             .then(res => {
                 if (res.code === 0) {
                     getPortals(activeUserId)
@@ -50,12 +51,14 @@ export default function Index() {
         title: '图片',
         dataIndex: 'portal_img',
         key: 'portal_img',
-        render: txt => <Image width={50} height={50} src={`/riskserver/img/getImageFromServer/${txt}`} />
+        render: txt => <Image width={50} height={50} src={`/riskserver/img/getImageFromServer/${txt}`}/>
     }, {
         title: '门户状态',
         dataIndex: 'portal_status',
         key: 'portal_status',
-        render: t => t === 1 ? <Badge status="success" text="在用" /> : <Badge status="default" text="停用" />
+        render: t => t === 1 ?
+            <Badge status="success" text={<span className={"success"}>在用</span>}/> :
+            <Badge status="default" text={<span className={"gray"}>停用</span>}/>
     }, {
         title: '讨论时间',
         dataIndex: 'comment_time',
@@ -78,7 +81,7 @@ export default function Index() {
             <Button onClick={() => hideOrShowPortal(record)}>{record.portal_status === 1 ? "停用" : "使用"}</Button>
             <Button onClick={() => editPortal(record)}>编辑</Button>
             <Popconfirm title="谨慎操作" onConfirm={() => deletePortal(record)}>
-                <Button >删除</Button>
+                <Button>删除</Button>
             </Popconfirm>
         </Space>
     }]
@@ -93,7 +96,7 @@ export default function Index() {
 
     const getPortals = (targetId) => {
         setLoading(true)
-        makePost("/root/getPortalsByTargetId", { targetId })
+        makePost("/root/getPortalsByTargetId", {targetId})
             .then(res => {
                 if (res.code === 0) {
                     dispatch(setPortals(res.data))
@@ -116,9 +119,9 @@ export default function Index() {
     }
 
     const add = () => {
-        const newP = { ...default_portal }
+        const newP = {...default_portal}
         newP.user_id = activeUserId
-        makePost("/root/addPortal", { portalConfig: newP })
+        makePost("/root/addPortal", {portalConfig: newP})
             .then(res => {
                 if (res.code === 0) {
                     message.success("成功新建一个门户")
@@ -143,33 +146,34 @@ export default function Index() {
 
 
     return <div className={"root-manage"}>
-        <div className={"flex"} style={{ height: 80 }}>
+        <div className={"flex"} style={{height: 80}}>
             <div className={"h_center flex1 ml20"}>
                 <Select
-                    style={{ width: 240 }}
+                    style={{width: 240}}
                     value={activeUserId}
                     options={userList.map(u => ({
                         value: u.user_id,
-                        label: <span><UserOutlined className="mr2 gray" /><span>{u.username}</span></span>
+                        label: <span><UserOutlined className="mr2 gray"/><span>{u.username}</span></span>
                     }))}
                     onChange={changeUser}
                 />
             </div>
-            <div className={"h_center flex1 mr20"} style={{ justifyContent: "flex-end" }}>
+            <div className={"h_center flex1 mr20"} style={{justifyContent: "flex-end"}}>
                 <Button onClick={logout}>登出</Button>
             </div>
         </div>
-        <div className="over-auto" style={{ height: "calc(100% - 80px)" }}>
+        <div className="over-auto" style={{height: "calc(100% - 80px)"}}>
             <Table
                 loading={loading}
                 columns={columns}
                 dataSource={portals}
                 pagination={false}
                 footer={() => <div className="vhcenter">
-                    <Button style={{ width: 100 }} type="primary" ghost onClick={add}>新增</Button>
+                    <Button style={{width: 100}} type="primary" ghost onClick={add}>新增</Button>
                 </div>}
             />
         </div>
-        <PortalEditModal onSave={() => getPortals(activeUserId)} />
+        <PortalEditModal onSave={() => getPortals(activeUserId)}/>
+        <RiskModalCom />
     </div>
 }
