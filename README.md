@@ -34,8 +34,14 @@
 
 ## 2.启动步骤
 
-1. npm install
-2. npm run build
-3. npm run prod
+`npm install`
+
+`npm run build`
+
+`npm run prod`
+
+## 3.启动
+
+`npm run prod`
 
 
