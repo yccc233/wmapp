@@ -17,9 +17,10 @@ export default function CtnMain({portal}) {
     }
 
     useEffect(() => {
+        getBase()
         setTimeout(() => {
             getBase()
-        }, 50);
+        }, 50)
     }, [portal])
 
     useEffect(() => {
