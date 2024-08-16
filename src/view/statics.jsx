@@ -193,7 +193,8 @@ export default function Statics({portal = {}}) {
     }, [size, portal])
 
     useEffect(() => {
-        setTimeout(getSize, 100)
+        getSize()
+        setTimeout(getSize, 50)
         if (typeof window === "object") {
             window.addEventListener('resize', getSize)
             return () => window.removeEventListener('resize', getSize)
