@@ -6,6 +6,7 @@ import { Result } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import RiskModalCom from "@/src/components/RiskModal.jsx";
 
 export default function Index() {
 
@@ -42,5 +43,6 @@ export default function Index() {
                     />
                 </div> : <Content portal={currentPortal} />
         }
+        <RiskModalCom/>
     </div>
 }

@@ -1,3 +1,4 @@
+'use client'
 import CtnMain from "@/src/view/ctnMain"
 import SuffixPortal from "@/src/view/suffixPortal.jsx";
 import Statics from "@/src/view/statics.jsx";

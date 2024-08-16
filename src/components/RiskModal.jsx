@@ -6,7 +6,7 @@ import {setPortalDetailVis} from "@/src/store/viewReducer.jsx";
 export default function RiskModalCom() {
     const dispatch = useDispatch()
     const portalDetail = useSelector((state) => state.viewReducer.portalDetail)
-    const {title, visible, risks} = portalDetail
+    const {title, visible, risks, filter} = portalDetail
 
     const columns = [{
         title: '分类', dataIndex: 'group', key: 'group', width: 120,
@@ -20,7 +20,7 @@ export default function RiskModalCom() {
     }, {
         title: '责任人', dataIndex: 'dutier', key: 'dutier', width: 200,
         filters: (function () {
-            const names = Array.from(new Set(risks.map(e => e.dutier).filter(e => e).join("、").split("、"))).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {sensitivity: 'base'}))
+            const names = Array.from(new Set(risks.map(e => e.dutier).filter(e => !!e).join("、").split("、"))).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {sensitivity: 'base'}))
             return names.map(n => ({text: n, value: n}))
         })(),
         onFilter: (value, record) => record.dutier.indexOf(value) > -1,
@@ -88,17 +88,30 @@ export default function RiskModalCom() {
         title={title}
         width={1000}
         centered
+        destroyOnClose
         footer={null}
         onCancel={onCancel}
     >
         <Table
             columns={columns}
-            rowKey={"title"}
+            rowKey={record => record["title"] + record["id"]}
             dataSource={risks}
             pagination={false}
             scroll={{
-                y: window.innerHeight - 150
+                y: typeof window === "object" ? window.innerHeight - 150 : 400
             }}
         />
     </Modal>
+}
+
+export const getRiskListFromPortal = (portal, {filterName, filterValue, isEqual = true}) => {
+    const riskList = []
+    portal?.events.forEach(e => {
+        e?.risk_list.forEach(r => {
+            if (isEqual ? r[filterName] === filterValue : r[filterName].indexOf(filterValue) > -1) {
+                riskList.push(r)
+            }
+        })
+    })
+    return riskList
 }

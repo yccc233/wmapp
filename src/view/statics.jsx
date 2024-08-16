@@ -1,14 +1,22 @@
 import {useEffect, useRef, useState} from "react";
 import {Statistic} from "antd";
 import CountUp from 'react-countup';
-import * as echarts from 'echarts';
-import 'echarts-wordcloud';
 import {StarFilled, StopFilled} from "@ant-design/icons"
+import {useDispatch} from "react-redux";
+import {setPortalDetail} from "@/src/store/viewReducer.jsx";
+import {getRiskListFromPortal} from "@/src/components/RiskModal.jsx";
 
 export default function Statics({portal = {}}) {
 
-    const echart2Ref = useRef(null);
-    const echart4Ref = useRef(null);
+    const portalRef = useRef()
+    portalRef.current = portal
+
+    const echart2Ref = useRef(null)
+    const echart4Ref = useRef(null)
+    const chartInstanceRef2 = useRef(null)
+    const chartInstanceRef4 = useRef(null)
+
+    const dispatch = useDispatch()
 
     let eventsLength = portal.events?.length || 0
     let risksLength = 0
@@ -64,7 +72,16 @@ export default function Statics({portal = {}}) {
                     }
                 }
             })
-            const chartInstance2 = echarts.init(echart2Ref.current);
+            if (!chartInstanceRef2.current) {
+                chartInstanceRef2.current = echarts.init(echart2Ref.current);
+                chartInstanceRef2.current.on('click', function (params) {
+                    const risks = getRiskListFromPortal(portalRef.current, {
+                        filterName: "group",
+                        filterValue: params.name
+                    })
+                    dispatch(setPortalDetail({title: `${params.name} 风险`, visible: true, risks: risks}))
+                })
+            }
             const option2 = {
                 tooltip: {
                     trigger: 'item'
@@ -93,10 +110,20 @@ export default function Statics({portal = {}}) {
                     data: Object.values(types)
                 }]
             }
-            chartInstance2.setOption(option2);
+            chartInstanceRef2.current.setOption(option2)
         }
         if (size > 0 && echart4Ref.current) {
-            const chartInstance4 = echarts.init(echart4Ref.current);
+            if (!chartInstanceRef4.current) {
+                chartInstanceRef4.current = echarts.init(echart4Ref.current);
+                chartInstanceRef4.current.on('click', function (params) {
+                    const risks = getRiskListFromPortal(portalRef.current, {
+                        filterName: "dutier",
+                        filterValue: params.name,
+                        isEqual: false
+                    })
+                    dispatch(setPortalDetail({title: `${params.name} 主责项`, visible: true, risks: risks}))
+                })
+            }
             const option4 = {
                 series: [{
                     type: 'wordCloud',
@@ -161,22 +188,16 @@ export default function Statics({portal = {}}) {
                     }))
                 }]
             }
-            chartInstance4.setOption(option4);
-
-            // 监听点击事件
-            chartInstance4.on('click', function (params) {
-                // params 是点击事件的回调函数参数，包含了被点击数据项的详细信息
-                // 例如：params.name 和 params.value 分别代表被点击数据项的名称和值
-                console.log('点击了：', params.name, '，其值为：', params.value);
-                // 在这里可以添加更多的点击事件处理逻辑
-            });
+            chartInstanceRef4.current.setOption(option4);
         }
     }, [size, portal])
 
     useEffect(() => {
         setTimeout(getSize, 100)
-        window.addEventListener('resize', getSize)
-        return () => window.removeEventListener('resize', getSize)
+        if (typeof window === "object") {
+            window.addEventListener('resize', getSize)
+            return () => window.removeEventListener('resize', getSize)
+        }
     }, [])
 
     return <div className={"statics"} ref={divRef}>
@@ -235,15 +256,6 @@ export default function Statics({portal = {}}) {
                     </div>
                 </div>
             </div>
-            <div className={"item item-2"} style={{width: size, height: size}}>
-                <div
-                    ref={echart2Ref}
-                    style={{width: size, height: size}}
-                    id={"statics-item-2"}
-                />
-            </div>
-        </div>
-        <div className={"flex1 flex"} style={{justifyContent: "space-between"}}>
             <div className={"item item-3"} style={{width: size, height: size}}>
                 <div className={"h_center"} style={{justifyContent: "space-between"}}>
                     <span>
@@ -336,19 +348,21 @@ export default function Statics({portal = {}}) {
                     />
                 </div>
             </div>
+        </div>
+        <div className={"flex1 flex"} style={{justifyContent: "space-between"}}>
+            <div className={"item item-2"} style={{width: size, height: size}}>
+                <div
+                    ref={echart2Ref}
+                    style={{width: size, height: size}}
+                    id={"statics-item-2"}
+                />
+            </div>
             <div className={"item item-4"} style={{width: size, height: size}}>
                 <div
                     ref={echart4Ref}
                     style={{width: size, height: size}}
                     id={"statics-item-4"}
                 />
-                {/*{*/}
-                {/*    dutierDetail.sort.map((d, i) => (*/}
-                {/*        <div key={`dutier-${i}`}>*/}
-                {/*            {d[0]}-{d[1]}*/}
-                {/*        </div>*/}
-                {/*    ))*/}
-                {/*}*/}
             </div>
         </div>
     </div>
