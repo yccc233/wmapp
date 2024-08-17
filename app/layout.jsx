@@ -4,7 +4,6 @@ import "@/styles/common.css";
 import {ReduxProvider} from "@/src/store";
 import {ConfigProvider} from 'antd';
 import zhCN from 'antd/es/locale/zh_CN'; // 引入中文语言包
-// import Script from 'next/script'
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -18,10 +17,7 @@ export default function RootLayout({children}) {
         <html lang="en">
         <head>
             {/*无法获取字体，导致编译失败！！！*/}
-            {/*<Script src="/static/js/echarts.js"></Script>*/}
-            {/*<Script src="/static/js/echarts-wordcloud.js"></Script>*/}
             <script src="/static/js/echarts.js" async></script>
-            <script src="/static/js/echarts-wordcloud.js" async></script>
         </head>
         <body className={inter.className}>
         <ConfigProvider locale={zhCN}>

@@ -6,9 +6,16 @@ import {setPortalDetailVis} from "@/src/store/viewReducer.jsx";
 export default function RiskModalCom() {
     const dispatch = useDispatch()
     const portalDetail = useSelector((state) => state.viewReducer.portalDetail)
-    const {title, visible, risks, filter} = portalDetail
+    const {title, visible, risks} = portalDetail
 
     const columns = [{
+        title: '过程/设备', dataIndex: 'event', key: 'event',
+        filters: (function () {
+            const names = Array.from(new Set(risks.map(e => e.event).filter(e => e))).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {sensitivity: 'base'}))
+            return names.map(n => ({text: n, value: n}))
+        })(),
+        onFilter: (value, record) => record.event.indexOf(value) > -1,
+    }, {
         title: '分类', dataIndex: 'group', key: 'group', width: 120,
         filters: (function () {
             const names = Array.from(new Set(risks.map(e => e.group).filter(e => e).join("、").split("、"))).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', {sensitivity: 'base'}))
@@ -35,9 +42,11 @@ export default function RiskModalCom() {
         title: '详情', dataIndex: 'id', key: 'id', width: 100, render: (_, record) => {
             // 全部风险点信息
             const _columns = [{
-                title: '可能失效点', dataIndex: 'title', key: 'title',
+                title: '过程/设备', dataIndex: 'event', key: 'event',
             }, {
                 title: '分类', dataIndex: 'group', key: 'group',
+            }, {
+                title: '可能失效点', dataIndex: 'title', key: 'title',
             }, {
                 title: '责任人', dataIndex: 'dutier', key: 'dutier',
             }, {
@@ -64,6 +73,7 @@ export default function RiskModalCom() {
                 title: '风险等级',
                 dataIndex: 'level',
                 key: 'level',
+                width: 180,
                 render: (_, record) => <Rate disabled={true} value={record.level}/>
             }]
 
@@ -83,6 +93,7 @@ export default function RiskModalCom() {
         dispatch(setPortalDetailVis({visible: false}))
     }
 
+
     return <Modal
         open={visible}
         title={title}
@@ -94,8 +105,7 @@ export default function RiskModalCom() {
     >
         <Table
             columns={columns}
-            rowKey={record => record["title"] + record["id"]}
-            dataSource={risks}
+            dataSource={distinctRiskList(risks)}
             pagination={false}
             scroll={{
                 y: typeof window === "object" ? window.innerHeight - 150 : 400
@@ -104,14 +114,29 @@ export default function RiskModalCom() {
     </Modal>
 }
 
-export const getRiskListFromPortal = (portal, {filterName, filterValue, isEqual = true}) => {
+export const getRiskListFromPortal = (portal, filterConf = {}) => {
+    const {filterName, filterValue, isEqual = true} = filterConf
     const riskList = []
     portal?.events.forEach(e => {
         e?.risk_list.forEach(r => {
-            if (isEqual ? r[filterName] === filterValue : r[filterName].indexOf(filterValue) > -1) {
-                riskList.push(r)
+            if (filterName && filterValue) {
+                if (isEqual ? r[filterName] === filterValue : r[filterName].indexOf(filterValue) > -1) {
+                    riskList.push({
+                        ...r,
+                        event: e.event_title
+                    })
+                }
+            } else {
+                riskList.push({
+                    ...r,
+                    event: e.event_title
+                })
             }
         })
     })
+    return riskList
+}
+
+export const distinctRiskList = (riskList) => {
     return riskList
 }

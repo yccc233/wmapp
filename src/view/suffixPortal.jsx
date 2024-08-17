@@ -2,6 +2,7 @@ import {AlertOutlined, BugOutlined, CodeSandboxOutlined} from "@ant-design/icons
 import {Space} from "antd";
 import {useDispatch} from "react-redux";
 import {setPortalDetail} from "@/src/store/viewReducer.jsx";
+import {getRiskListFromPortal} from "@/src/components/RiskModal.jsx";
 
 export default function SuffixPortal({portal}) {
 
@@ -9,10 +10,7 @@ export default function SuffixPortal({portal}) {
 
     const showModal = (type) => {
         if (type === "status") {
-            let risks = []
-            portal?.events?.forEach(e => {
-                risks = risks.concat(e.risk_list)
-            })
+            const risks = getRiskListFromPortal(portal)
             dispatch(setPortalDetail({title: "状态风险", visible: true, risks: risks}))
         } else if (type === "safe") {
             dispatch(setPortalDetail({title: "安全风险", visible: true, risks: []}))

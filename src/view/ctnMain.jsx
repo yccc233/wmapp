@@ -70,7 +70,14 @@ export const CircleEvent = ({type, base, point, radius, lineWidth, lineColor, ti
     const lWidth = r * lineWidth / 100
 
     const showRisk = () => {
-        dispatch(setPortalDetail({title: title, visible: true, risks: risklist}))
+        const rList = []
+        risklist.forEach(r => {
+            rList.push({
+                ...r,
+                event: title
+            })
+        })
+        dispatch(setPortalDetail({title: `${title} 风险`, visible: true, risks: rList}))
     }
 
     return <>

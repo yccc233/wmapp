@@ -1,3 +1,4 @@
+'use client'
 import {useEffect, useRef, useState} from "react";
 import {Statistic} from "antd";
 import CountUp from 'react-countup';
@@ -116,77 +117,45 @@ export default function Statics({portal = {}}) {
             if (!chartInstanceRef4.current) {
                 chartInstanceRef4.current = echarts.init(echart4Ref.current);
                 chartInstanceRef4.current.on('click', function (params) {
-                    const risks = getRiskListFromPortal(portalRef.current, {
-                        filterName: "dutier",
-                        filterValue: params.name,
-                        isEqual: false
-                    })
-                    dispatch(setPortalDetail({title: `${params.name} 主责项`, visible: true, risks: risks}))
+                    let risks = getRiskListFromPortal(portalRef.current)
+                    risks = risks.filter(r => r.event.indexOf(params.name) > -1)
+                    dispatch(setPortalDetail({title: `${params.name} 风险`, visible: true, risks: risks}))
                 })
             }
+
+            const eventsTitle = []
+            portal?.events.forEach(e => {
+                const e_r = {title: e.event_title, risksLength: e.risk_list?.length}
+                eventsTitle.push(e_r)
+            })
+            eventsTitle.sort((a, b) => b.risksLength - a.risksLength)
+
             const option4 = {
-                series: [{
-                    type: 'wordCloud',
-                    /*要绘制的“云”的形状。可以是为回调函数，或一个关键字。
-                    可用的形状有(circle)圆形(默认)、(cardioid)心形，(diamond)菱形，(triangle-forward)三角形向前，(triangle)三角形，(pentagon)五边形和(star)星形。*/
-                    shape: 'circle',
-                    //保持maskImage的宽高比或1:1的形状，他的选项是支持从echarts-wordcloud@2.1.0
-                    // keepAspect: false,
-                    //一个轮廓图像，其白色区域将被排除在绘制文本之外
-                    //意思就是可以通过图片，来自定义词云的形状
-                    // maskImage: maskImage,
-                    //设置显示区域的位置以及大小
-                    left: 'center',
-                    top: 'center',
-                    right: null,
-                    bottom: null,
-                    width: '90%',
-                    height: '90%',
-                    //数据中的值将映射到的文本大小范围。默认大小为最小12px，最大36px。
-                    sizeRange: [12, 36],
-                    //文本旋转范围和步进度。文本将通过rotationStep:45在[- 90,90]范围内随机旋转
-                    rotationRange: [-90, 90],
-                    rotationStep: 45,
-                    //以像素为单位的网格大小，用于标记画布的可用性
-                    //网格尺寸越大，单词之间的间距越大。
-                    gridSize: 8,
-                    //设置为true，允许文字部分在画布外绘制。
-                    //允许绘制大于画布大小的单词
-                    //从echarts-wordcloud@2.1.0开始支持此选项
-                    drawOutOfBound: false,
-                    //如果字体太大而无法显示文本，
-                    //是否收缩文本。如果将其设置为false，则文本将不渲染。如果设置为true，则文本将被缩小。
-                    //从echarts-wordcloud@2.1.0开始支持此选项
-                    shrinkToFit: false,
-                    // 执行布局动画。当有大量的单词时，关闭它会导致UI阻塞。
-                    layoutAnimation: true,
-                    //全局文本样式
-                    textStyle: {
-                        fontFamily: 'sans-serif',
-                        fontWeight: 'bold',
-                        // Color可以是一个回调函数或一个颜色字符串
-                        color: function () {
-                            // Random color
-                            return 'rgb(' + [
-                                Math.round(Math.random() * 200) + 55,
-                                Math.round(Math.random() * 200) + 55,
-                                Math.round(Math.random() * 200) + 55
-                            ].join(',') + ')'
+                polar: {
+                    radius: [20, '75%']
+                },
+                radiusAxis: {
+                    max: eventsTitle[0]?.risksLength || 1,
+                    splitNumber: ((eventsTitle[0]?.risksLength || 2) / 2).toFixed(),
+                    splitLine: {
+                        lineStyle: {
+                            color: "#333",
                         }
-                    },
-                    emphasis: {
-                        focus: 'self',
-                        textStyle: {
-                            textShadowBlur: 10,
-                            textShadowColor: '#333'
-                        }
-                    },
-                    //数据是一个数组。每个数组项必须具有名称和值属性。
-                    data: dutierDetail.sort.map(d => ({
-                        name: d[0],
-                        value: d[1],
-                    }))
-                }]
+                    }
+                },
+                angleAxis: {
+                    show: false,
+                    type: 'category',
+                    data: eventsTitle.map(e => e.title),
+                    startAngle: 90
+                },
+                tooltip: {},
+                series: {
+                    type: 'bar',
+                    data: eventsTitle.map(e => e.risksLength),
+                    coordinateSystem: 'polar',
+                },
+                animation: true
             }
             chartInstanceRef4.current.setOption(option4);
         }
