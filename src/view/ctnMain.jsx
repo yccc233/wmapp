@@ -6,6 +6,7 @@ import {setPortalDetail} from "@/src/store/viewReducer.jsx";
 export default function CtnMain({portal}) {
 
     const [baseNum, setBaseNum] = useState([0, 0])
+    const [imageOk, setImageOk] = useState(false)
     const imgRef = useRef()
 
     const events = portal.events || []
@@ -16,12 +17,16 @@ export default function CtnMain({portal}) {
         setBaseNum([width, height])
     }
 
+    const imageLoaded = () => {
+        setImageOk(true)
+    }
+
     useEffect(() => {
         getBase()
         setTimeout(() => {
             getBase()
         }, 50)
-    }, [portal])
+    }, [portal, imageOk])
 
     useEffect(() => {
         if (typeof window === "object") {
@@ -33,8 +38,8 @@ export default function CtnMain({portal}) {
 
     return <div className="content-main">
         <div ref={imgRef} className="img-div">
-            <img src={`/riskserver/img/getImageFromServer/${portal.portal_img}`}/>
-            {events.map((e, i) => <CircleEvent
+            <img onLoad={imageLoaded} src={`/riskserver/img/getImageFromServer/${portal.portal_img}`}/>
+            {imageOk && events.map((e, i) => <CircleEvent
                 key={`event-${i}`}
                 base={baseNum}
                 type={e.type}

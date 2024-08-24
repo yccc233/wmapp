@@ -1,6 +1,6 @@
 'use client'
 import {useEffect, useRef, useState} from "react";
-import {Statistic} from "antd";
+import {message, Statistic} from "antd";
 import CountUp from 'react-countup';
 import {StarFilled, StopFilled} from "@ant-design/icons"
 import {useDispatch} from "react-redux";
@@ -62,6 +62,10 @@ export default function Statics({portal = {}}) {
     }
 
     useEffect(() => {
+        if (typeof window.echarts !== "object") {
+            message.error({content: "echarts加载不成功，请刷新页面！", key: "no-echarts-message"})
+            return
+        }
         if (size > 0 && echart2Ref.current) {
             const types = {}
             group.forEach(g => {
