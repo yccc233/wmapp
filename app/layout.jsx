@@ -17,14 +17,14 @@ export default function RootLayout({children}) {
     return (
         <html lang="en">
         <head>
-            <Script src="/static/js/echarts.js"></Script>
+            <Script src="/static/js/echarts.js" strategy={"beforeInteractive"}></Script>
         </head>
         <body className={inter.className}>
-            <ConfigProvider locale={zhCN}>
-                <ReduxProvider>
-                    {children}
-                </ReduxProvider>
-            </ConfigProvider>
+        <ConfigProvider locale={zhCN}>
+            <ReduxProvider>
+                {children}
+            </ReduxProvider>
+        </ConfigProvider>
         </body>
         </html>
     );
