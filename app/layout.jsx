@@ -1,4 +1,5 @@
 import {Inter} from "next/font/google";
+import Script from 'next/script'
 import "@/styles/globals.css";
 import "@/styles/common.css";
 import {ReduxProvider} from "@/src/store";
@@ -16,15 +17,14 @@ export default function RootLayout({children}) {
     return (
         <html lang="en">
         <head>
-            {/*无法获取字体，导致编译失败！！！*/}
-            <script src="/static/js/echarts.js" async></script>
+            <Script src="/static/js/echarts.js"></Script>
         </head>
         <body className={inter.className}>
-        <ConfigProvider locale={zhCN}>
-            <ReduxProvider>
-                {children}
-            </ReduxProvider>
-        </ConfigProvider>
+            <ConfigProvider locale={zhCN}>
+                <ReduxProvider>
+                    {children}
+                </ReduxProvider>
+            </ConfigProvider>
         </body>
         </html>
     );
