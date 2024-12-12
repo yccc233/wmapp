@@ -30,7 +30,7 @@ export default function Top({ currentId, portals }) {
         }
     }, [portals])
 
-    return <div style={{ height: 80 }} className="flex view-top">
+    return <div style={{ height: 72 }} className="flex view-top">
         <Logo />
         <div className="flex1 flex">
             <Tabs size="large" items={tabs} onChange={changePortal} />
