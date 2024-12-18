@@ -25,7 +25,6 @@ app.use(cors());
 // 配置请求路由
 app.set('port', nextConfig.serverPort);
 
-
 app.use(`/${serverName}/um`, umController);
 app.use(`/${serverName}/img`, imgController);
 app.use(`/${serverName}/root`, rootController);
@@ -34,7 +33,7 @@ app.use(`/${serverName}/view`, viewController);
 app.listen(app.get('port'), () => {
     console.log(`start the server at: http://127.0.0.1:${app.get('port')}/`);
     console.log(`start the database...`);
-    DATABASE.initDatabase("./server/database/riskview.db");
+    DATABASE.initDatabase("./server/database/wmapp.db");
 });
 
 

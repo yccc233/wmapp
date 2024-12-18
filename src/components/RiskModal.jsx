@@ -1,7 +1,7 @@
 'use client'
 import {Button, Modal, Popover, Rate, Table} from "antd";
 import {useDispatch, useSelector} from "react-redux";
-import {setPortalDetailVis} from "@/src/store/viewReducer.jsx";
+import {setPortalDetailVis} from "@/src/store/riskview/viewReducer.jsx";
 
 export default function RiskModalCom() {
     const dispatch = useDispatch()

@@ -4,7 +4,7 @@ import {message, Statistic} from "antd";
 import CountUp from 'react-countup';
 import {StarFilled, StopFilled} from "@ant-design/icons"
 import {useDispatch} from "react-redux";
-import {setPortalDetail} from "@/src/store/viewReducer.jsx";
+import {setPortalDetail} from "@/src/store/riskview/viewReducer.jsx";
 import {getRiskListFromPortal} from "@/src/components/RiskModal.jsx";
 
 export default function Statics({portal = {}}) {

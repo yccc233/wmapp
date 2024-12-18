@@ -1,5 +1,5 @@
 import moment from "moment"
-import { timeFormat, dateFormat } from "@/src/config"
+import { timeFormat, dateFormat } from "@/src/riskview/config.jsx"
 import { useEffect, useState } from "react"
 
 export default function Time({ style }) {

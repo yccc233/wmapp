@@ -5,7 +5,7 @@ const sqlite = sqlite3.verbose();
 let db = null;
 
 // 初始化数据库连接
-function initDatabase(path = "./database/riskview.db") {
+function initDatabase(path = "./database/wmapp.db") {
     if (!db) {
         db = new sqlite.Database(path, (err) => {
             if (err) {

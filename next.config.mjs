@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    appName: "riskview",
-    serverName: "riskserver",
+    appName: "wmapp",
+    serverName: "wmappserver",
     // 服务的端口
     serverPort: 2999,
     // antd不参与编译，版本不兼容的bug
@@ -12,8 +12,8 @@ const nextConfig = {
     async rewrites() {
         return [
             {
-                source: '/riskserver/:path*',
-                destination: 'http://127.0.0.1:2999/riskserver/:path*',
+                source: '/wmappserver/:path*',
+                destination: 'http://127.0.0.1:2999/wmappserver/:path*',
             },
         ]
     },

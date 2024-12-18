@@ -1,7 +1,7 @@
 'use client'
 import {useEffect, useRef, useState} from "react";
 import {useDispatch} from "react-redux";
-import {setPortalDetail} from "@/src/store/viewReducer.jsx";
+import {setPortalDetail} from "@/src/store/riskview/viewReducer.jsx";
 
 export default function CtnMain({portal}) {
 
@@ -38,7 +38,7 @@ export default function CtnMain({portal}) {
 
     return <div className="content-main">
         <div ref={imgRef} className="img-div">
-            <img onLoad={imageLoaded} src={`/riskserver/img/getImageFromServer/${portal.portal_img}`}/>
+            <img onLoad={imageLoaded} src={`/wmappserver/img/getImageFromServer/${portal.portal_img}`}/>
             {imageOk && events.map((e, i) => <CircleEvent
                 key={`event-${i}`}
                 base={baseNum}

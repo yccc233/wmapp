@@ -1,11 +1,11 @@
 'use client'
-import Logo from "@/src/components/Logo";
-import Time from "@/src/components/Time";
-import UserAvatar from "@/src/components/UserAvatar";
+import Logo from "@/src/components/Logo.jsx";
+import Time from "@/src/components/Time.jsx";
+import UserAvatar from "@/src/components/UserAvatar.jsx";
 import { Tabs } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setCurrentPortal } from "@/src/store/viewReducer";
+import { setCurrentPortal } from "@/src/store/riskview/viewReducer.jsx";
 
 
 export default function Top({ currentId, portals }) {

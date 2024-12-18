@@ -1,7 +1,7 @@
-import { setCurrentPortal, setPortals } from "@/src/store/viewReducer";
-import { makePost } from "@/src/utils";
-import Content from "@/src/view/content";
-import Top from "@/src/view/top";
+import { setCurrentPortal, setPortals } from "@/src/store/riskview/viewReducer.jsx";
+import { makePost } from "@/src/utils.jsx";
+import Content from "@/src/riskview/view/content.jsx";
+import Top from "@/src/riskview/view/top.jsx";
 import { Result } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";

@@ -16,10 +16,10 @@ export default function Index() {
                 if (data.userId) {
                     setCookieKey('username', values.username);
                     setCookieKey('userid', data.userId);
-                    if (values.username==="root") {
-                        window.location.href = "/riskview/rootManage";
-                    }else {
-                        window.location.href = "/riskview";
+                    if (values.username === "root") {
+                        window.location.href = "/wmapp/rootManage";
+                    } else {
+                        window.location.href = "/wmapp";
                     }
                 } else {
                     setErrMsg("用户名或密码错误！");

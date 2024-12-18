@@ -1,7 +1,7 @@
 'use client'
-import CtnMain from "@/src/view/ctnMain"
-import SuffixPortal from "@/src/view/suffixPortal.jsx";
-import Statics from "@/src/view/statics.jsx";
+import CtnMain from "@/src/riskview/view/ctnMain.jsx"
+import SuffixPortal from "@/src/riskview/view/suffixPortal.jsx";
+import Statics from "@/src/riskview/view/statics.jsx";
 
 export default function Content({portal}) {
 

@@ -24,7 +24,7 @@ export default function UserAvatar({ style }) {
     }, []);
 
     const logout = () => {
-        window.location.href = "/riskview/login"
+        window.location.href = "/wmapp/login"
     }
 
     return <div className="user-avatar" style={style}>

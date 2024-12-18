@@ -2,11 +2,11 @@
 import {Button, Select, Table, Image, Space, message, Popconfirm, Badge} from "antd"
 import {UserOutlined} from '@ant-design/icons'
 import {useDispatch, useSelector} from "react-redux"
-import {setActivePortalId, setActiveUserId, setPortals, setUserList} from "@/src/store/rootReducer"
+import {setActivePortalId, setActiveUserId, setPortals, setUserList} from "@/src/store/riskview/rootReducer.jsx"
 import {useEffect, useState} from "react"
-import {makePost} from "@/src/utils"
-import PortalEditModal from "@/src/rootManage/portalEditModal"
-import {default_portal} from "@/src/config"
+import {makePost} from "@/src/utils.jsx"
+import PortalEditModal from "@/src/riskview/rootManage/portalEditModal.jsx"
+import {default_portal} from "@/src/riskview/config.jsx"
 import RiskModalCom from "@/src/components/RiskModal.jsx";
 
 // 接口：设置用户的门户配置
@@ -51,7 +51,7 @@ export default function Index() {
         title: '图片',
         dataIndex: 'portal_img',
         key: 'portal_img',
-        render: txt => <Image width={50} height={50} src={`/riskserver/img/getImageFromServer/${txt}`}/>
+        render: txt => <Image width={50} height={50} src={`/wmappserver/img/getImageFromServer/${txt}`}/>
     }, {
         title: '门户状态',
         dataIndex: 'portal_status',
@@ -91,7 +91,7 @@ export default function Index() {
     }
 
     const logout = () => {
-        window.location.href = "/riskview/login"
+        window.location.href = "/wmapp/login"
     }
 
     const getPortals = (targetId) => {

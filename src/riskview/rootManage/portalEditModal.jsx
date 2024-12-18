@@ -1,6 +1,6 @@
-import {default_event, default_risk} from "@/src/config";
-import {setActivePortalId} from "@/src/store/rootReducer";
-import {CircleEvent} from "@/src/view/ctnMain";
+import {default_event, default_risk} from "@/src/riskview/config.jsx";
+import {setActivePortalId} from "@/src/store/riskview/rootReducer.jsx";
+import {CircleEvent} from "@/src/riskview/view/ctnMain.jsx";
 import {
     Button,
     Col,
@@ -22,8 +22,8 @@ import {
 import dayjs from "dayjs";
 import {useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import UploadFile, {uploadFile, validFile} from "@/src/components/UploadFile";
-import {makePost} from "@/src/utils";
+import UploadFile, {uploadFile, validFile} from "@/src/components/UploadFile.jsx";
+import {makePost} from "@/src/utils.jsx";
 
 
 export default function PortalEditModal({onSave}) {
@@ -121,7 +121,7 @@ export default function PortalEditModal({onSave}) {
                 <div ref={imgRef} className="img-div">
                     {
                         curPortal.portal_img ?
-                            <img src={`/riskserver/img/getImageFromServer/${curPortal.portal_img}`}/> :
+                            <img src={`/wmappserver/img/getImageFromServer/${curPortal.portal_img}`}/> :
                             <div>请右侧上传图片</div>
                     }
                     {
