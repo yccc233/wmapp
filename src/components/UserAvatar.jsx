@@ -1,11 +1,12 @@
 "use client"
-import { Avatar, Dropdown } from "antd";
-import { CaretDownOutlined } from "@ant-design/icons"
-import { getCookie } from "@/src/utils";
-import { useEffect, useState } from "react"
+import {Avatar, Dropdown} from "antd";
+import {CaretDownOutlined} from "@ant-design/icons"
+import {getCookie} from "@/src/utils";
+import {useEffect, useState} from "react"
+import {customAvatarCount} from "@/src/config.jsx";
 
 
-export default function UserAvatar({ style }) {
+export default function UserAvatar({style}) {
 
     const [mySelf, setMySelf] = useState({
         username: null,
@@ -15,7 +16,7 @@ export default function UserAvatar({ style }) {
     useEffect(() => {
         const userid = getCookie("userid")
         const username = getCookie("username")
-        const avatar = `/img/avatar/avatar-${userid % 7 + 1}.png`
+        const avatar = `/img/avatar/avatar-${userid % customAvatarCount + 1}.png`
 
         setMySelf({
             username: username,
@@ -24,12 +25,12 @@ export default function UserAvatar({ style }) {
     }, []);
 
     const logout = () => {
-        window.location.href = "/wmapp/login"
+        window.location.href = "/wmapp/login";
     }
 
     return <div className="user-avatar" style={style}>
         <div>
-            <Avatar src={mySelf.avatar} size={46} />
+            <Avatar src={mySelf.avatar} size={46}/>
         </div>
         <div>
             <Dropdown
@@ -47,9 +48,9 @@ export default function UserAvatar({ style }) {
             >
                 <span className="fs12">
                     {mySelf.username}
-                    <CaretDownOutlined />
+                    <CaretDownOutlined/>
                 </span>
             </Dropdown>
         </div>
-    </div >
+    </div>
 }

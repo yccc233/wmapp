@@ -18,6 +18,7 @@
 .logo {
     display: flex;
     color: #f1f1f1;
+    cursor: pointer;
 }
 
 .logo .app-name {
@@ -79,6 +80,14 @@
     /* 如果还有其他字体格式，如.woff或.woff2，您也可以在这里添加它们以提高兼容性 */
 }
 
+@font-face {
+    font-family: 'alimama';
+    /* 您可以为字体选择任何名称 */
+    src: url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
+    font-display: swap;
+    /* 如果还有其他字体格式，如.woff或.woff2，您也可以在这里添加它们以提高兼容性 */
+}
+
 
 /* 基本样式 */
 
@@ -131,6 +140,10 @@
 
 .fs12 {
     font-size: 12px;
+}
+
+.fwb {
+    font-weight: bold;
 }
 
 .mr1 {
@@ -228,6 +241,10 @@
 
 .over-auto {
     overflow: auto;
+}
+
+.pointer {
+    cursor: pointer;
 }
 
 .long-text-pre {

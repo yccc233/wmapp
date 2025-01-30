@@ -32,8 +32,26 @@ const getUserList = async () => {
     return users;
 };
 
+const getUserById = async (userId) => {
+    const users = await userManageDao.getUsersById(userId);
+    const user = users[0] || null;
+    return user;
+};
+
+const getUserApp = async (role = "USER") => {
+    let apps = await userManageDao.getAppList();
+    apps = apps?.map(app => ({
+        name: app.name,
+        url: role === "ROOT" ? app.root_url : app.user_url,
+        description: app.description,
+    })) || [];
+    return apps;
+};
+
 
 export default {
     verifyUser,
-    getUserList
+    getUserList,
+    getUserById,
+    getUserApp
 }

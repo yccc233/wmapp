@@ -1,0 +1,135 @@
+.app-store {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    padding: 5% 20%;
+    background: #06103f;
+    color: #eeeeee;
+    position: relative;
+    --length: 400px;
+
+    //&::before {
+    //    content: "";
+    //    width: var(--length);
+    //    height: var(--length);
+    //    position: absolute;
+    //    bottom: -100px;
+    //    left: -100px;
+    //    background: #1a2e93;
+    //    border-radius: 50%;
+    //}
+    //
+    //&::after {
+    //    content: "";
+    //    width: calc(var(--length) + 10px);
+    //    height: calc(var(--length) + 10px);
+    //    position: absolute;
+    //    bottom: -105px;
+    //    left: -105px;
+    //    border: 2px dashed #3f68ff;
+    //    border-radius: 50%;
+    //}
+
+    .role-display {
+        height: 30%;
+        display: flex;
+        align-items: center;
+
+        .title-name {
+            padding: 0 10px;
+            margin-left: 20px;
+
+            .app-plat {
+                font-family: alimama, serif;
+                font-size: 56px;
+                font-weight: bold;
+            }
+
+            .welcome {
+                font-size: 36px;
+                color: #aaaaaa;
+                margin-left: 100px;
+                font-style: italic;
+            }
+        }
+    }
+
+    .app-list {
+        height: 70%;
+        display: flex;
+        flex-wrap: wrap;
+
+        .app-item {
+            width: 300px;
+            height: 160px;
+            padding: 10px;
+            margin: 20px;
+            background: linear-gradient(0, #071145, #0A1A6D);
+            border-radius: 10px;
+            box-shadow: 0 0 2px 5px #080d2a;
+            position: relative;
+            display: flex;
+            border: 1px solid transparent;
+            transition: all .1s ease-in-out;
+
+            &:hover {
+                border-color: #1890ff;
+                transform: scale(1.1);
+            }
+
+            .avatar {
+                margin-top: 10px;
+                width: 100px;
+                display: flex;
+                justify-content: center;
+                position: relative;
+
+            }
+
+            .info {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                .title {
+                    --bg1: #1890ff;
+                    --bg2: #fff;
+
+                    color: #fff;
+                    position: absolute;
+                    right: 0;
+                    top: -10px;
+                    background: linear-gradient(45deg, var(--bg1), var(--bg2));
+                    text-align: right;
+                    padding: 4px 20px;
+                    border-radius: 0 10px;
+                    font-size: 22px;
+                    font-weight: bold;
+                    letter-spacing: 2px;
+                    font-family: 'alimama', serif;
+                }
+
+                .desc {
+                    margin-top: 24px;
+                    font-size: 15px;
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 3;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                .go-btn {
+                    position: relative;
+
+                    .tag {
+                        margin: 0;
+                        position: absolute;
+                        right: -25px;
+                        top: -8px;
+                    }
+                }
+            }
+        }
+    }
+}

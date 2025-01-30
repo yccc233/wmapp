@@ -1,7 +1,11 @@
 "use client"
-import Homepage from "@/src/homepage.jsx";
-import "@/styles/homepage.scss";
+import {useEffect} from "react"
 
 export default function Page() {
-    return <Homepage/>;
+    useEffect(() => {
+        if (typeof window === "object" && window.location) {
+            window.location.href = '/wmapp/appstore';
+        }
+    }, []);
+    return null;
 }

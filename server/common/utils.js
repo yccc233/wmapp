@@ -16,4 +16,8 @@ export const getRandomId = (length) => {
 
 export const getMoment = () => {
     return moment().format("yyyy-MM-DD HH:mm:ss");
-}
+};
+
+export const getUserIdName = (req) => {
+    return {userId: req.cookies.userid, userName: req.cookies.username}
+};

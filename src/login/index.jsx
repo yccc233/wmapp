@@ -16,11 +16,7 @@ export default function Index() {
                 if (data.userId) {
                     setCookieKey('username', values.username);
                     setCookieKey('userid', data.userId);
-                    if (values.username === "root") {
-                        window.location.href = "/wmapp/rootManage";
-                    } else {
-                        window.location.href = "/wmapp";
-                    }
+                    window.location.href = "/wmapp/appstore";
                 } else {
                     setErrMsg("用户名或密码错误！");
                 }
