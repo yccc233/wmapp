@@ -6,7 +6,7 @@ export function middleware(request) {
     } else if (request.cookies.has('userid')) {
         return NextResponse.next();
     } else {
-        return NextResponse.redirect(new URL('/wmapp/login', request.url))
+        return NextResponse.redirect(new URL('/wmapp/login', request.url));
     }
 }
 
