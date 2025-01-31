@@ -1,12 +1,15 @@
+import moment from "moment";
+
 const LOGGER = (req, res, ret) => {
     // 获取当前时间
-    const currentTime = new Date().toISOString();
+    const currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
     // 获取请求的接口（路径）
     const apiEndpoint = req.originalUrl;
     // 获取请求的参数（查询参数或请求体参数）
     const bodyParams = req.body;
+    const logMessage = `[${currentTime}] - ${apiEndpoint} - Query(${JSON.stringify(bodyParams)}) - Result(${JSON.stringify(ret)})`;
     // 打印日志
-    console.log(`[${currentTime}] - ${apiEndpoint} - Query(${JSON.stringify(bodyParams)}) - Result(${JSON.stringify(ret)})`);
+    console.log(logMessage);
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export

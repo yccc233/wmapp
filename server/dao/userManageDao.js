@@ -56,10 +56,25 @@ const getAppList = async () => {
     });
 };
 
+const getSystemConfigs = async (key) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `select key, value from tbl_system_config where key = '${key}'`;
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
 
 export default {
     getUsersByUserName,
     getAllUserListExceptRoot,
     getUsersById,
-    getAppList
+    getAppList,
+    getSystemConfigs
 }

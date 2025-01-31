@@ -29,6 +29,7 @@ router.post("/getUserInfo", async function (req, res) {
 })
 
 router.post("/getUserAppList", async function (req, res) {
+    // 配置的默认角色
     let role = "USER";
     const {userId} = getUserIdName(req);
     const user = await umService.getUserById(userId);
@@ -37,6 +38,14 @@ router.post("/getUserAppList", async function (req, res) {
     }
     const appList = await umService.getUserApp(role);
     RESPONSE.SUCCESS(req, res, appList);
+})
+
+router.post("/getSystemConfigByKey", async function (req, res) {
+    const {key} = req.body;
+    const configObj = await umService.getSystemConfig(key);
+    RESPONSE.SUCCESS(req, res, {
+        [configObj.key]: configObj.value
+    });
 })
 
 

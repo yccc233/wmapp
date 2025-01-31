@@ -48,10 +48,16 @@ const getUserApp = async (role = "USER") => {
     return apps;
 };
 
+const getSystemConfig = async (key) => {
+    let confs = await userManageDao.getSystemConfigs(key);
+    return confs[0] || null;
+};
+
 
 export default {
     verifyUser,
     getUserList,
     getUserById,
-    getUserApp
+    getUserApp,
+    getSystemConfig
 }
