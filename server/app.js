@@ -6,8 +6,8 @@ import nextConfig from "../next.config.mjs";
 import DATABASE from "./common/DATABASE.js";
 import umController from "./controller/umController.js";
 import imgController from "./controller/imgController.js";
-import rootController from "./controller/rootController.js";
-import viewController from "./controller/viewController.js";
+import riskRootController from "./controller/riskRootController.js";
+import riskViewController from "./controller/riskViewController.js";
 
 const app = express();
 const serverName = nextConfig.serverName;
@@ -31,8 +31,8 @@ app.set('port', nextConfig.serverPort);
 
 app.use(`/${serverName}/um`, umController);
 app.use(`/${serverName}/img`, imgController);
-app.use(`/${serverName}/root`, rootController);
-app.use(`/${serverName}/view`, viewController);
+app.use(`/${serverName}/root`, riskRootController);
+app.use(`/${serverName}/view`, riskViewController);
 app.use(`/`, (req, res) => res.send("OK!"));
 
 app.listen(app.get('port'), () => {
