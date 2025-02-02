@@ -206,4 +206,16 @@
     flex-direction: column;
     background: #121212;
     color: #f1f1f1;
+
+    .top-container {
+        display: flex;
+
+        .active {
+            color: #50fafa;
+        }
+    }
+
+    .content-container {
+
+    }
 }
