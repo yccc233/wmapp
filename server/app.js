@@ -8,6 +8,7 @@ import umController from "./controller/umController.js";
 import imgController from "./controller/imgController.js";
 import riskRootController from "./controller/riskRootController.js";
 import riskViewController from "./controller/riskViewController.js";
+import topViewController from "./controller/topViewController.js";
 
 const app = express();
 const serverName = nextConfig.serverName;
@@ -33,14 +34,12 @@ app.use(`/${serverName}/um`, umController);
 app.use(`/${serverName}/img`, imgController);
 app.use(`/${serverName}/root`, riskRootController);
 app.use(`/${serverName}/view`, riskViewController);
+app.use(`/${serverName}/topview`, topViewController);
 app.use(`/`, (req, res) => res.send("OK!"));
 
 app.listen(app.get('port'), () => {
-    console.log(`start the server at: http://127.0.0.1:${app.get('port')}/`);
+    console.log(`start the server at: http://127.0.0.1:${app.get('port')}/wmappserver/**/`);
     console.log(`start the database...`);
     DATABASE.initDatabase("./server/database/wmapp.db");
 });
-
-
-
 

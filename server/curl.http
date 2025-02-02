@@ -1,0 +1,18 @@
+POST http://127.0.0.1:2999/wmappserver/topview/getAllGroups
+Content-Type: application/json
+
+{}
+
+###
+
+
+POST http://127.0.0.1:2999/wmappserver/topview/getClassAvgScoreInMonth
+Content-Type: application/json
+
+{
+  "classId": "2001",
+  "month": "202501"
+}
+
+###
+
