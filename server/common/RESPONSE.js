@@ -32,4 +32,9 @@ export default {
         res.end(JSON.stringify(result));
         LOGGER(req, res, result);
     },
+    CODE: {
+        MISSPARAMS: {
+            title: "缺少必要参数"
+        }
+    }
 }

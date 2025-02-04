@@ -21,3 +21,11 @@ export const getMoment = () => {
 export const getUserIdName = (req) => {
     return {userId: req.cookies.userid, userName: req.cookies.username}
 };
+
+
+export const formatNumber = (num, digits = 1) => {
+    if (Number.isInteger(num)) {
+        return num;
+    }
+    return Number(num.toFixed(digits));
+}

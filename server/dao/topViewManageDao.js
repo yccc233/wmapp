@@ -14,11 +14,43 @@ const getAllGroups = async () => {
     });
 };
 
-const getPersonsFromClassId = async (classId, month) => {
+const getClassListByGroupId = async (groupId) => {
     return new Promise((resolve, reject) => {
         const db = DATABASE.getDatabase();
-        const sql = `select * from tbl_topview_persons where related_class_id = ? and (off_time is null ${month? `or off_time >= '${month}'`:""})`;
-        db.all(sql, [classId], (err, rows) => {
+        const sql = `select * from tbl_topview_classes_def where visible = 1 and related_group_id = ?`;
+        db.all(sql, [groupId], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
+const getAllClassList = async () => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `select * from tbl_topview_classes_def where visible = 1`;
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
+const getPersonsFromClassIdList = async (classIdList, month) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `
+                  select * from tbl_topview_persons 
+                  where related_class_id in (${classIdList.join(",")}) 
+                  and (off_time is null ${month ? `or off_time >= '${month}'
+        ` : ""})`;
+        db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
             } else {
@@ -58,7 +90,9 @@ const getDedScoresByPersonIds = async (personIdList, month) => {
 
 export default {
     getAllGroups,
-    getPersonsFromClassId,
+    getAllClassList,
+    getClassListByGroupId,
+    getPersonsFromClassIdList,
     getDedScoresByPersonIds,
     getLabels
 }

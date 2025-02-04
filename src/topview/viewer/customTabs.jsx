@@ -5,18 +5,15 @@ import {CaretDownOutlined, CheckOutlined} from "@ant-design/icons";
 
 
 export default function CustomTabs({groupId, setGroupId}) {
-
-    console.log("groupId", groupId);
-
     const [tabList, setTabList] = useState([]);
 
     const getIsActiveClass = (topId) => {
-        if (topId === "-1") {
-            return groupId === "-1" ? "active" : "";
+        if (topId === -1) {
+            return groupId === -1 ? "active pointer" : "pointer";
         } else {
             const parentTab = tabList.find(t => t.group_id === topId);
-            return parentTab.group_id === Number(groupId) || (parentTab.children && parentTab.children.find(t => t.group_id === Number(groupId)))
-                ? "active" : "";
+            return parentTab.group_id === groupId || (parentTab.children && parentTab.children.find(t => t.group_id === groupId))
+                ? "active pointer" : "pointer";
         }
     };
 
@@ -34,7 +31,7 @@ export default function CustomTabs({groupId, setGroupId}) {
 
     return <div className={"flex1 h_center"} style={{marginLeft: 50}}>
         <Space className="h_center" size={"large"}>
-            <div className={getIsActiveClass("-1")} onClick={() => setGroupId("-1")}>
+            <div className={getIsActiveClass(-1)} onClick={() => setGroupId(-1)}>
                 全部
             </div>
             {
@@ -49,7 +46,8 @@ export default function CustomTabs({groupId, setGroupId}) {
                                     label: <>
                                         {child.group_name}
                                         {
-                                            Number(groupId) === child.group_id ? <CheckOutlined className={"ml5"}/> : null
+                                            groupId === child.group_id ?
+                                                <CheckOutlined className={"ml5"}/> : null
                                         }
                                     </>
                                 }))

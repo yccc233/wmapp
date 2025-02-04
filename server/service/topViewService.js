@@ -1,4 +1,5 @@
 import topViewManageDao from "../dao/topViewManageDao.js";
+import {formatNumber} from "../common/utils.js";
 
 
 const getAllCollectedGroups = async () => {
@@ -25,11 +26,64 @@ const getAllCollectedGroups = async () => {
     return allGroups;
 };
 
+
+const getLabelNames = async () => {
+    const labels = await topViewManageDao.getLabels();
+    return labels.sort((a, b) => a.display_order - b.display_order).map(label => ({
+        label_name: label.label_name,
+        label_name_en: label.label_name_en,
+        label_id: label.label_id,
+    }));
+};
+
+/**
+ * @param groupId   如果groupId为-1表示全部的分数
+ * @param month
+ */
+const getGroupAvgScore = async (groupId, month) => {
+    const labels = await topViewManageDao.getLabels();
+    let classList;
+    if (groupId === -1) {
+        classList = await topViewManageDao.getAllClassList();
+    } else {
+        classList = await topViewManageDao.getClassListByGroupId(groupId);
+    }
+    if (classList.length > 0) {
+        const persons = await topViewManageDao.getPersonsFromClassIdList(classList.map(cl => cl.class_id), month);
+        const dedScores = await topViewManageDao.getDedScoresByPersonIds(persons.map(p => p.person_id), month);
+
+        persons.forEach(person => {
+            const personDedScores = dedScores.filter((d) => d.person_id === person.person_id);
+            let totalScore = 0;
+            person.items = {};
+            labels.forEach((label) => {
+                const personInLabelDedScore = personDedScores.find(d => d.label_id === label.label_id);
+                const score = 100 - (personInLabelDedScore ? personInLabelDedScore.ded_score : 0);
+                const remark = personInLabelDedScore?.remark || "";
+                person['items'][label.label_name_en] = {score, remark};
+                totalScore += score;
+            });
+            person.total_score = totalScore;
+            person.avg_score = formatNumber(totalScore / labels.length);
+            person.class_id = person.related_class_id;
+            person.class_name = classList.find(cl => cl.class_id === person.class_id)?.class_name;
+            delete person.related_class_id;
+            delete person.insert_time;
+        });
+        return persons;
+    } else {
+        return [];
+    }
+};
+
+/**
+ * 烂尾了。。。
+ */
 const getClassAvgScoreInMonth = async (classId, month) => {
     const labels = await topViewManageDao.getLabels();
     const labelCount = labels.length;
     if (classId) {
-        const persons = await topViewManageDao.getPersonsFromClassId(classId, month);
+        const persons = await topViewManageDao.getPersonsFromClassIdList([classId], month);
         const dedScores = await topViewManageDao.getDedScoresByPersonIds(persons.map(p => p.person_id), month);
 
     } else {
@@ -37,8 +91,27 @@ const getClassAvgScoreInMonth = async (classId, month) => {
     }
 };
 
+/**
+ * @param groupId       如果groupId为-1表示全部的分数
+ */
+const getClassesByGroupId = async (groupId) => {
+    let classList;
+    if (groupId === -1) {
+        classList = await topViewManageDao.getAllClassList();
+    } else {
+        classList = await topViewManageDao.getClassListByGroupId(groupId);
+    }
+    return classList.map(cl => ({
+        class_id: cl.class_id,
+        class_name: cl.class_name
+    }));
+};
+
 
 export default {
     getAllCollectedGroups,
+    getGroupAvgScore,
     getClassAvgScoreInMonth,
+    getLabelNames,
+    getClassesByGroupId
 }

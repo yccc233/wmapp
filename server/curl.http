@@ -1,3 +1,4 @@
+
 POST http://127.0.0.1:2999/wmappserver/topview/getAllGroups
 Content-Type: application/json
 
@@ -6,13 +7,36 @@ Content-Type: application/json
 ###
 
 
-POST http://127.0.0.1:2999/wmappserver/topview/getClassAvgScoreInMonth
+
+
+POST http://127.0.0.1:2999/wmappserver/topview/getLabelNames
 Content-Type: application/json
 
 {
-  "classId": "2001",
-  "month": "202501"
 }
 
 ###
 
+
+
+POST http://127.0.0.1:2999/wmappserver/topview/getGroupAvgScore
+Content-Type: application/json
+
+{
+  "groupId": -1,
+  "month": "2025-02"
+}
+
+###
+
+
+
+
+POST http://127.0.0.1:2999/wmappserver/topview/getClassesByGroupId
+Content-Type: application/json
+
+{
+  "groupId": 1001
+}
+
+###
