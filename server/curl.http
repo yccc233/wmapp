@@ -23,8 +23,8 @@ POST http://127.0.0.1:2999/wmappserver/topview/getGroupAvgScore
 Content-Type: application/json
 
 {
-  "groupId": -1,
-  "month": "2025-02"
+  "groupId": 1001,
+  "month": "2025-01"
 }
 
 ###

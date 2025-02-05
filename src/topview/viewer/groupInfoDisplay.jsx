@@ -1,12 +1,13 @@
-import {DatePicker, Space, Table} from "antd";
+import {DatePicker, Select, Space, Table, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import {makePost} from "@/src/utils.jsx";
-import {InfoCircleFilled} from "@ant-design/icons";
+import {ArrowDownOutlined, ArrowUpOutlined, PicLeftOutlined} from "@ant-design/icons";
 
 export default function GroupInfoDisplay({groupId}) {
     const [filterCondition, setFilterCondition] = useState({
         month: "2025-01" || dayjs().format("YYYY-MM"),
+        class: -1
     });
     const [classList, setClassList] = useState([]);
     const [memberData, setMemberData] = useState([]);
@@ -20,7 +21,7 @@ export default function GroupInfoDisplay({groupId}) {
             dataIndex: 'range',
             key: 'range',
             fixed: 'left',
-            width: 60
+            width: 60,
         }, {
             title: '班组',
             dataIndex: 'class_name',
@@ -49,6 +50,22 @@ export default function GroupInfoDisplay({groupId}) {
             sorter: (a, b) => a.total_score - b.total_score,
             showSorterTooltip: false,
             width: 100,
+        }, {
+            title: '排名变动',
+            dataIndex: 'range_float',
+            key: 'range_float',
+            fixed: 'left',
+            width: 100,
+            showSorterTooltip: false,
+
+            sorter: (a, b) => a.range_float - b.range_float,
+            render: text => {
+                return <span title={"较上个月排名变动"}>
+                    {text > 0 ? <ArrowUpOutlined className={"fwb mr5 success"}/> :
+                        <ArrowDownOutlined className={"fwb mr5 error"}/>}
+                    {Math.abs(text)}
+                </span>;
+            }
         },
             ...cols.map((col, ind) => ({
                 title: col.label_name,
@@ -60,21 +77,65 @@ export default function GroupInfoDisplay({groupId}) {
                 render: (_, record) => {
                     return <>
                         <span>{record['items'][col.label_name_en]['score']}</span>
-                        {record['items'][col.label_name_en]['remark'] ? <InfoCircleFilled/> : null}
+                        {record['items'][col.label_name_en]['remark'] ?
+                            <Tooltip title={record['items'][col.label_name_en]['remark']}>
+                                <PicLeftOutlined style={{cursor: 'help', marginLeft: 10}}/>
+                            </Tooltip> : null}
                     </>
                 }
             }))
         ];
     };
 
+    const getScore = (_groupId, _month) => {
+        Promise.all([
+            makePost("/topview/getGroupAvgScore", {groupId: _groupId, month: _month}),
+            makePost("/topview/getGroupAvgScore", {
+                groupId: _groupId,
+                month: dayjs(_month).subtract(1, "month").format("YYYY-MM")
+            })
+        ])
+            .then(([res1, res2]) => {
+                if (res1.data && res2.data) {
+                    res1.data.forEach(item => {
+                        const lastMonthData = res2.data.find(d => d.person_id === item.person_id);
+                        if (lastMonthData) {
+                            item.range_float = lastMonthData.range - item.range;
+                        } else {
+                            item.range_float = "-";
+                        }
+                    });
+                    setTableData(res1.data);
+                    setMemberData(res1.data);
+                }
+            });
+    };
+
+    const monthChange = (_, dateString) => {
+        setFilterCondition({
+            ...filterCondition,
+            month: dateString
+        });
+        getScore(groupId, dateString);
+    };
+
+    const classChange = (valueId) => {
+        setFilterCondition({
+            ...filterCondition,
+            class: valueId
+        });
+        if (valueId === -1) {
+            setTableData([...memberData]);
+        } else {
+            setTableData(memberData.filter(m => m.class_id === valueId));
+        }
+    };
+
     useEffect(() => {
         makePost("/topview/getLabelNames").then(res1 => {
             if (res1.data) {
                 setColumns(genBaseColumns(res1.data));
-                makePost("/topview/getGroupAvgScore", {groupId: groupId, month: filterCondition.month}).then(res2 => {
-                    setMemberData(res2.data);
-                    setTableData(res2.data);
-                });
+                getScore(groupId, filterCondition.month);
             }
         });
         makePost("/topview/getClassesByGroupId", {groupId: groupId}).then(res => {
@@ -105,34 +166,29 @@ export default function GroupInfoDisplay({groupId}) {
                     <DatePicker picker="month" disabledDate={current => current && current > dayjs().endOf('month')}
                                 allowClear={false}
                                 value={dayjs(filterCondition.month)}
-                                onChange={(_, dateString) => setFilterCondition({
-                                    ...filterCondition,
-                                    month: dateString
-                                })}/>
+                                onChange={monthChange}/>
                 </div>
-                {/*<div className={"conditions"}>*/}
-                {/*    <span className={"cond-title"}>班：</span>*/}
-                {/*    <Select style={{width: 100}} value={filterCondition.class}*/}
-                {/*            onChange={v => setFilterCondition({...filterCondition, class: v})}>*/}
-                {/*        <Select.Option value={-1}>全部</Select.Option>*/}
-                {/*        {classList.map((item, ind) => (*/}
-                {/*            <Select.Option key={`class-list-${ind}`}*/}
-                {/*                           value={item.class_id}>{item.class_name}</Select.Option>*/}
-                {/*        ))}*/}
-                {/*    </Select>*/}
-                {/*</div>*/}
+                <div className={"conditions"}>
+                    <span className={"cond-title"}>班：</span>
+                    <Select style={{width: 100}} value={filterCondition.class}
+                            onChange={classChange}>
+                        <Select.Option value={-1}>全部</Select.Option>
+                        {classList.map((item, ind) => (
+                            <Select.Option key={`class-list-${ind}`}
+                                           value={item.class_id}>{item.class_name}</Select.Option>
+                        ))}
+                    </Select>
+                </div>
             </Space>
             <Table
                 size={"small"}
                 rowKey="person_id"
                 columns={finalColumns}
                 dataSource={tableData}
-                pagination={{
-                    pageSize: 100,
-                }}
+                pagination={false}
                 scroll={{
                     x: 1000 || columns.reduce((l, n) => n.width ? l + n.width : l, 0),
-                    y: window.innerHeight - 280
+                    y: window.innerHeight - 220
                 }}
             />
         </div>

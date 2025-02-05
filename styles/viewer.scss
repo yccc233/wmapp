@@ -252,7 +252,7 @@
 
         .members-info {
             flex: 1;
-            padding: 10px;
+            padding: 20px;
             overflow: hidden;
 
             .conditions {
@@ -308,11 +308,19 @@
                         .ant-table-cell {
                             background: #03155e;
                         }
+
+                        .ant-table-cell-fix-left {
+                            background: #0b30c4;
+                        }
                     }
 
                     tr:nth-child(odd) {
                         .ant-table-cell {
                             background: #031049;
+                        }
+
+                        .ant-table-cell-fix-left {
+                            background: #0e288f;
                         }
                     }
 
@@ -330,7 +338,7 @@
         }
 
         .other-info {
-            width: 600px;
+            width: 800px;
             padding: 10px;
         }
     }

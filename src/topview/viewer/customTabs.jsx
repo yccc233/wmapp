@@ -18,7 +18,7 @@ export default function CustomTabs({groupId, setGroupId}) {
     };
 
     const clickMenu = ({key}) => {
-        setGroupId(key);
+        setGroupId(Number(key));
     };
 
     useEffect(() => {
