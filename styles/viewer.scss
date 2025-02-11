@@ -205,7 +205,7 @@
     display: flex;
     flex-direction: column;
     color: #f1f1f1;
-    background: linear-gradient(180deg, #000054cc, #000023cc);
+    background: linear-gradient(180deg, #011553cc, #011553);
     position: relative;
 
     &::before {
@@ -252,7 +252,7 @@
 
         .members-info {
             flex: 1;
-            padding: 20px;
+            padding: 50px;
             overflow: hidden;
 
             .conditions {
@@ -272,6 +272,25 @@
                 }
             }
 
+            .introduce {
+                margin: 20px 0;
+                padding: 5px 20px;
+                color: #50fafa;
+                position: relative;
+                background: linear-gradient(90deg, #185556, #18555611);
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 4px;
+                    height: 100%;
+                    background: #34faef;
+                    box-shadow: 0 0 5px 5px #195753;
+                    border-radius: 2px;
+                }
+            }
 
             .ant-table {
                 background: transparent;
@@ -306,7 +325,7 @@
 
                     tr:nth-child(even) {
                         .ant-table-cell {
-                            background: #03155e;
+                            background: #02195c;
                         }
 
                         .ant-table-cell-fix-left {
@@ -316,7 +335,7 @@
 
                     tr:nth-child(odd) {
                         .ant-table-cell {
-                            background: #031049;
+                            background: #022272;
                         }
 
                         .ant-table-cell-fix-left {
@@ -339,7 +358,18 @@
 
         .other-info {
             width: 800px;
-            padding: 10px;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+
+
+            .board {
+                flex: 1;
+                background: #09277b;
+                margin: 10px;
+                border-radius: 10px;
+                padding: 20px;
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ import {DatePicker, Select, Space, Table, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import {makePost} from "@/src/utils.jsx";
-import {ArrowDownOutlined, ArrowUpOutlined, PicLeftOutlined} from "@ant-design/icons";
+import {ArrowDownOutlined, ArrowUpOutlined, MinusOutlined, PicLeftOutlined} from "@ant-design/icons";
 
 export default function GroupInfoDisplay({groupId}) {
     const [filterCondition, setFilterCondition] = useState({
@@ -62,9 +62,10 @@ export default function GroupInfoDisplay({groupId}) {
             render: text => {
                 return <span title={"较上个月排名变动"}>
                     {text > 0 ? <ArrowUpOutlined className={"fwb mr5 success"}/> :
-                        <ArrowDownOutlined className={"fwb mr5 error"}/>}
+                        text < 0 ? <ArrowDownOutlined className={"fwb mr5 error"}/> :
+                            <ArrowDownOutlined className={"fwb mr5"} style={{color: "transparent"}}/>}
                     {Math.abs(text)}
-                </span>;
+                        </span>;
             }
         },
             ...cols.map((col, ind) => ({
@@ -147,14 +148,14 @@ export default function GroupInfoDisplay({groupId}) {
 
 
     const finalColumns = columns.map(col => {
-        if (col.key === 'class_name') {
-            col.filters = classList.map(cl => ({
-                text: cl.class_name,
-                value: cl.class_name,
-            }));
-            col.onFilter = (value, record) => record.class_name.indexOf(value) === 0
-
-        }
+        // if (col.key === 'class_name') {
+        //     col.filters = classList.map(cl => ({
+        //         text: cl.class_name,
+        //         value: cl.class_name,
+        //     }));
+        //     col.onFilter = (value, record) => record.class_name.indexOf(value) === 0
+        //
+        // }
         return col;
     });
 
@@ -180,6 +181,9 @@ export default function GroupInfoDisplay({groupId}) {
                     </Select>
                 </div>
             </Space>
+            <div className={"introduce"}>
+                下表统计了班组内成员所拥有的分数，表格支持筛选、过滤、排序等操作，扣除的分数在后面会有备注说明，可以修改统计时间和班组来进一步查看班组的成员情况。
+            </div>
             <Table
                 size={"small"}
                 rowKey="person_id"
@@ -188,12 +192,21 @@ export default function GroupInfoDisplay({groupId}) {
                 pagination={false}
                 scroll={{
                     x: 1000 || columns.reduce((l, n) => n.width ? l + n.width : l, 0),
-                    y: window.innerHeight - 220
+                    y: window.innerHeight - 380
                 }}
             />
         </div>
         <div className={"other-info"}>
-
+            <div className={"board"}>
+                统计班组排名（班组的平均分）
+                排名 班组 人员数量 平均分
+            </div>
+            <div className={"board"}>
+                班组排名的折线图，近半年的数据
+            </div>
+            <div className={"board"}>
+                扣分大类，使用词云展示？
+            </div>
         </div>
     </div>;
 }
