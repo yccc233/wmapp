@@ -28,6 +28,20 @@ const getClassListByGroupId = async (groupId) => {
     });
 };
 
+const getClassByClassId = async (classId) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `select * from tbl_topview_classes_def where visible = 1 and class_id = ?`;
+        db.all(sql, [classId], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows[0]);
+            }
+        });
+    });
+};
+
 const getAllClassList = async () => {
     return new Promise((resolve, reject) => {
         const db = DATABASE.getDatabase();
@@ -92,6 +106,7 @@ export default {
     getAllGroups,
     getAllClassList,
     getClassListByGroupId,
+    getClassByClassId,
     getPersonsFromClassIdList,
     getDedScoresByPersonIds,
     getLabels

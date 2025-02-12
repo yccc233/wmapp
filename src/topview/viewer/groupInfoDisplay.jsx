@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import {makePost} from "@/src/utils.jsx";
 import {ArrowDownOutlined, ArrowUpOutlined, MinusOutlined, PicLeftOutlined} from "@ant-design/icons";
+import {DisplayCard1, DisplayCard2, DisplayCard3} from "@/src/topview/viewer/displayCard.jsx";
 
 export default function GroupInfoDisplay({groupId}) {
     const [filterCondition, setFilterCondition] = useState({
@@ -197,16 +198,9 @@ export default function GroupInfoDisplay({groupId}) {
             />
         </div>
         <div className={"other-info"}>
-            <div className={"board"}>
-                统计班组排名（班组的平均分）
-                排名 班组 人员数量 平均分
-            </div>
-            <div className={"board"}>
-                班组排名的折线图，近半年的数据
-            </div>
-            <div className={"board"}>
-                扣分大类，使用词云展示？
-            </div>
+            <DisplayCard1 month={filterCondition.month}/>
+            <DisplayCard2 month={filterCondition.month}/>
+            <DisplayCard3 month={filterCondition.month}/>
         </div>
     </div>;
 }

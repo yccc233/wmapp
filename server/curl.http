@@ -40,3 +40,48 @@ Content-Type: application/json
 }
 
 ###
+
+
+POST http://127.0.0.1:2999/wmappserver/topview/getClassAvgScoreInMonth
+Content-Type: application/json
+
+{
+  "classIdList": [
+    2001,
+    2002,
+    2003
+  ],
+  "month": "2025-01"
+}
+
+###
+
+
+POST http://127.0.0.1:2999/wmappserver/topview/getChartData1
+Content-Type: application/json
+
+{
+  "classIdList": [
+    2001,
+    2002,
+    2003
+  ],
+  "month": "2025-01"
+}
+
+###
+
+
+POST http://127.0.0.1:2999/wmappserver/topview/getChartData1
+Content-Type: application/json
+
+{
+  "classIdList": [
+    2001,
+    2002,
+    2003
+  ],
+  "month": "2025-01"
+}
+
+###

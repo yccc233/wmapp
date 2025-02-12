@@ -39,15 +39,46 @@ router.post("/getGroupAvgScore", async function (req, res) {
     RESPONSE.SUCCESS(req, res, data);
 })
 
-/**
- * classId如果不传的话，默认是全部class
- */
+
 router.post("/getClassAvgScoreInMonth", async function (req, res) {
-    const {classId, month} = req.body;
+    const {classIdList, month} = req.body;
     if (!month) {
-        RESPONSE.ERROR(req, res, "缺少月份信息");
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
     }
-    const data = await topViewService.getClassAvgScoreInMonth(classId, month);
+    if (!Array.isArray(classIdList)) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    const data = await topViewService.getClassAvgScoreInMonth(classIdList, month);
+    RESPONSE.SUCCESS(req, res, data);
+})
+
+router.post("/getChartData1", async function (req, res) {
+    const {classIdList, month} = req.body;
+    if (!month) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    if (!Array.isArray(classIdList)) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    const data = await topViewService.chartsForClass(classIdList, month);
+    RESPONSE.SUCCESS(req, res, data);
+})
+
+router.post("/getChartData2", async function (req, res) {
+    const {classIdList, month} = req.body;
+    if (!month) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    if (!Array.isArray(classIdList)) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    const data = await topViewService.chartsForClass(classIdList, month);
     RESPONSE.SUCCESS(req, res, data);
 })
 
