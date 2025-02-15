@@ -56,11 +56,7 @@ router.post("/getClassAvgScoreInMonth", async function (req, res) {
 
 router.post("/getChartData1", async function (req, res) {
     const {classIdList, month} = req.body;
-    if (!month) {
-        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
-        return;
-    }
-    if (!Array.isArray(classIdList)) {
+    if (!month || !Array.isArray(classIdList)) {
         RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
         return;
     }
@@ -69,16 +65,22 @@ router.post("/getChartData1", async function (req, res) {
 })
 
 router.post("/getChartData2", async function (req, res) {
-    const {classIdList, month} = req.body;
+    const {classIdList, startMonth, length = 12} = req.body;
+    if (!startMonth || !Array.isArray(classIdList)) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    const data = await topViewService.chartsForHistory(classIdList, startMonth, length);
+    RESPONSE.SUCCESS(req, res, data);
+})
+
+router.post("/getChartData3", async function (req, res) {
+    const {groupId, month} = req.body;
     if (!month) {
         RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
         return;
     }
-    if (!Array.isArray(classIdList)) {
-        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
-        return;
-    }
-    const data = await topViewService.chartsForClass(classIdList, month);
+    const data = await topViewService.chatForDedScore(groupId, month);
     RESPONSE.SUCCESS(req, res, data);
 })
 

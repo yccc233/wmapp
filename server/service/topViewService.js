@@ -1,6 +1,6 @@
 import topViewManageDao from "../dao/topViewManageDao.js";
 import {formatNumber} from "../common/utils.js";
-
+import dayjs from "dayjs";
 
 const getAllCollectedGroups = async () => {
     let allGroups = await topViewManageDao.getAllGroups();
@@ -28,7 +28,7 @@ const getAllCollectedGroups = async () => {
 
 
 const getLabelNames = async () => {
-    const labels = await topViewManageDao.getLabels();
+    const labels = await topViewManageDao.getLabelInfoByLabelIdList();
     return labels.sort((a, b) => a.display_order - b.display_order).map(label => ({
         label_name: label.label_name,
         label_name_en: label.label_name_en,
@@ -41,7 +41,7 @@ const getLabelNames = async () => {
  * @param month
  */
 const getGroupAvgScore = async (groupId, month) => {
-    const labels = await topViewManageDao.getLabels();
+    const labels = await topViewManageDao.getLabelInfoByLabelIdList();
     let classList;
     if (groupId === -1) {
         classList = await topViewManageDao.getAllClassList();
@@ -76,8 +76,8 @@ const getGroupAvgScore = async (groupId, month) => {
     }
 };
 
-const getClassAvgScore = async (classId, month) => {
-    const labels = await topViewManageDao.getLabels();
+const getClassPersonsAvgScore = async (classId, month) => {
+    const labels = await topViewManageDao.getLabelInfoByLabelIdList();
     const classInfo = await topViewManageDao.getClassByClassId(classId);
     const persons = await topViewManageDao.getPersonsFromClassIdList([classId], month);
     const dedScores = await topViewManageDao.getDedScoresByPersonIds(persons.map(p => p.person_id), month);
@@ -106,7 +106,7 @@ const getClassAvgScore = async (classId, month) => {
 const getClassAvgScoreInMonth = async (classIdList, month) => {
     const classMap = {};
     for (const classId of classIdList) {
-        classMap[classId] = await getClassAvgScore(classId, month);
+        classMap[classId] = await getClassPersonsAvgScore(classId, month);
     }
     return classMap;
 };
@@ -125,6 +125,20 @@ const getClassesByGroupId = async (groupId) => {
         class_id: cl.class_id,
         class_name: cl.class_name
     }));
+};
+
+const getGroupInfoByGroupId = async (groupId) => {
+    // 暂时不做扩展
+    const groupInfo = await topViewManageDao.getGroupInfoByGroupId(groupId);
+    return groupInfo;
+};
+
+const getClassInfoByClassId = async (classId) => {
+    const classInfo = await topViewManageDao.getClassByClassId(classId);
+    const r_group_id = classInfo.related_group_id;
+    const groupInfo = await getGroupInfoByGroupId(r_group_id);
+    classInfo.related_group = groupInfo;
+    return classInfo;
 };
 
 const chartsForClass = async (classIdList, month) => {
@@ -147,24 +161,82 @@ const chartsForClass = async (classIdList, month) => {
     return classData;
 };
 
-const chartsForHistory = async (classIdList, month) => {
+const chartsForHistory = async (classIdList, startMonth, length) => {
     const classData = [];
 
-    const classMap = await getClassAvgScoreInMonth(classIdList, month);
+    for (const classId of classIdList) {
+        const classInfo = await getClassInfoByClassId(classId);
+        classData.push({
+            class_id: classInfo.class_id,
+            class_name: classInfo.class_name,
+            data: []
+        });
+    }
+    const monthList = Array.from({length}).map((_, ind) => dayjs().subtract(ind, "months").format('YYYY-MM'));
 
+    for (const month of monthList) {
+        const classMap = await getClassAvgScoreInMonth(classIdList, month);
 
-
-
+        for (const classInfo of classData) {
+            const persons = classMap[classInfo.class_id];
+            if (persons?.length > 0) {
+                classInfo.data.push({
+                    month: month,
+                    avg_score: formatNumber(persons.reduce((acc, curr) => acc + curr.avg_score, 0) / persons.length, 2)
+                });
+            } else {
+                classInfo.data.push({
+                    month: month,
+                    avg_score: 0
+                });
+            }
+        }
+    }
     return classData;
+};
+
+
+const chatForDedScore = async (groupId, month) => {
+    let classList;
+    if (groupId === -1) {
+        classList = await topViewManageDao.getAllClassList();
+    } else {
+        classList = await topViewManageDao.getClassListByGroupId(groupId);
+    }
+    const personsList = await topViewManageDao.getPersonsFromClassIdList(classList.map(c => c.class_id));
+    const personIdList = personsList.map(p => p.person_id);
+    const dedScore = await topViewManageDao.getDedScoresByPersonIds(personIdList, month);
+    const dedScoreMap = {};
+    for (const dedInfo of dedScore) {
+        if (dedScoreMap[dedInfo.label_id]) {
+            dedScoreMap[dedInfo.label_id] += dedInfo.ded_score;
+        } else {
+            dedScoreMap[dedInfo.label_id] = dedInfo.ded_score;
+        }
+    }
+    const dedList = [];
+    const labelInfos = await topViewManageDao.getLabelInfoByLabelIdList(Object.keys(dedScoreMap));
+    for (const dedScoreLabelId of Object.keys(dedScoreMap)) {
+        const label = labelInfos.find(l => l.label_id === Number(dedScoreLabelId));
+        if (label) {
+            label.dedScore = dedScoreMap[dedScoreLabelId];
+            dedList.push(label);
+        }
+    }
+    dedList.sort((a, b) => b.dedScore - a.dedScore);
+    return dedList;
 };
 
 
 export default {
     getAllCollectedGroups,
     getGroupAvgScore,
+    getGroupInfoByGroupId,
+    getClassInfoByClassId,
     getClassAvgScoreInMonth,
     getLabelNames,
     getClassesByGroupId,
     chartsForClass,
-    chartsForHistory
+    chartsForHistory,
+    chatForDedScore
 }
