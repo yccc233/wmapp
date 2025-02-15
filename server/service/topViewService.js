@@ -157,7 +157,7 @@ const chartsForClass = async (classIdList, month) => {
         classInfo.max_score = classPersons.reduce((score, person) => score > person.avg_score ? score : person.avg_score, 0);
         classData.push(classInfo);
     }
-
+    classData.sort((a, b) => b.avg_score - a.avg_score);
     return classData;
 };
 
@@ -172,17 +172,20 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
             data: []
         });
     }
-    const monthList = Array.from({length}).map((_, ind) => dayjs().subtract(ind, "months").format('YYYY-MM'));
-
+    const monthList = Array.from({length}).map((_, ind) => dayjs().subtract(ind, "months").format('YYYY-MM')).reverse();
+    let minScore = 100, maxScore = 0;
     for (const month of monthList) {
         const classMap = await getClassAvgScoreInMonth(classIdList, month);
 
         for (const classInfo of classData) {
             const persons = classMap[classInfo.class_id];
             if (persons?.length > 0) {
+                const avg_score = formatNumber(persons.reduce((acc, curr) => acc + curr.avg_score, 0) / persons.length, 2);
+                minScore = minScore > avg_score ? avg_score : minScore;
+                maxScore = maxScore < avg_score ? avg_score : maxScore;
                 classInfo.data.push({
                     month: month,
-                    avg_score: formatNumber(persons.reduce((acc, curr) => acc + curr.avg_score, 0) / persons.length, 2)
+                    avg_score: avg_score
                 });
             } else {
                 classInfo.data.push({
@@ -192,7 +195,12 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
             }
         }
     }
-    return classData;
+    return {
+        items: classData,
+        months: monthList,
+        minScore,
+        maxScore
+    };
 };
 
 

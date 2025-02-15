@@ -261,7 +261,7 @@
                 margin-bottom: 25px;
 
                 .cond-title {
-                    color: #005cff;
+                    color: #ffffff;
                 }
 
                 .ant-picker, .ant-select-selector {
@@ -369,6 +369,46 @@
                 margin: 10px;
                 border-radius: 10px;
                 padding: 20px;
+                display: flex;
+                flex-direction: column;
+
+                .title {
+                    font-weight: bold;
+                    font-size: 18px;
+                    padding: 0 8px;
+                    border-left: 5px solid #34faef;
+                    margin-bottom: 10px;
+                    border-radius: 3px;
+                }
+
+                .display-1 {
+                    flex: 1;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+
+                    .line-top {
+                        border-bottom: 2px solid #34faef;
+                        border-top: 2px solid #34faef;
+                    }
+
+                    .line {
+                        flex: 1;
+                        display: flex;
+                        align-items: center;
+
+                        .line-item {
+                            flex: 1;
+                        }
+                    }
+                }
+
+                .display-2 {  flex: 1;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+
+                }
             }
         }
     }

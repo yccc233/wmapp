@@ -198,9 +198,9 @@ export default function GroupInfoDisplay({groupId}) {
             />
         </div>
         <div className={"other-info"}>
-            <DisplayCard1 month={filterCondition.month}/>
-            <DisplayCard2 month={filterCondition.month}/>
-            <DisplayCard3 month={filterCondition.month}/>
+            <DisplayCard1 groupId={groupId} classList={classList} month={filterCondition.month}/>
+            <DisplayCard2 groupId={groupId} classList={classList} month={filterCondition.month}/>
+            <DisplayCard3 groupId={groupId} classList={classList} month={filterCondition.month}/>
         </div>
     </div>;
 }
