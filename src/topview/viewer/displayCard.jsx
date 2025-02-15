@@ -55,21 +55,17 @@ export const DisplayCard1 = ({classList, month}) => {
 
 
 export const DisplayCard2 = ({classList, month}) => {
-
-
-    const [displayData, setDisplayData] = useState([]);
     const domRef = useRef(null);
-    const echartRef = useRef(null);
+    const echartsRef = useRef(null);
 
     useEffect(() => {
         if (classList.length > 0) {
             makePost("/topview/getChartData2", {classIdList: classList.map(c => c.class_id), startMonth: month})
                 .then(res => {
                     if (res.code === 0) {
-                        if (!echartRef.current) {
-                            echartRef.current = echarts.init(domRef.current);
+                        if (!echartsRef.current) {
+                            echartsRef.current = echarts.init(domRef.current);
                         }
-
                         // 配置 ECharts 选项
                         const option = {
                             grid: {
@@ -127,13 +123,10 @@ export const DisplayCard2 = ({classList, month}) => {
                                 data: eachClass.data.map(d => d.avg_score)
                             }))
                         };
-                        console.log("ooo", option)
                         // 使用刚指定的配置项和数据显示图表。
-                        echartRef.current.setOption(option);
+                        echartsRef.current.setOption(option);
                     }
                 });
-        } else {
-            setDisplayData([]);
         }
     }, [classList, month]);
 
@@ -146,10 +139,66 @@ export const DisplayCard2 = ({classList, month}) => {
 };
 
 
-export const DisplayCard3 = ({month}) => {
+export const DisplayCard3 = ({groupId, month}) => {
+
+    const domRef = useRef(null);
+    const echartsRef = useRef(null);
+
+    useEffect(() => {
+        if (groupId) {
+            makePost("/topview/getChartData3", {groupId: groupId, month: month})
+                .then(res => {
+                    if (res.code === 0) {
+                        const values = res.data.map(d => ({
+                            name: d.label_name,
+                            value: d.dedScore
+                        }));
+                        if (!echartsRef.current) {
+                            echartsRef.current = echarts.init(domRef.current);
+                        }
+                        // 生成随机颜色的函数
+                        function getRandomColor() {
+                            const letters = '0123456789ABCDEF';
+                            let color = '#';
+                            for (let i = 0; i < 6; i++) {
+                                color += letters[Math.floor(Math.random() * 16)];
+                            }
+                            return color;
+                        }
+                        const option = {
+                            series: [
+                                {
+                                    type: 'wordCloud',
+                                    // 词云图的大小范围
+                                    sizeRange: [12, 60],
+                                    // 词云图的旋转角度范围，这里不旋转
+                                    rotationRange: [0, 0],
+                                    // 词云图的形状，设置为方形
+                                    shape: 'square',
+                                    // 文字样式，颜色随机
+                                    textStyle: {
+                                        normal: {
+                                            color: function () {
+                                                return getRandomColor();
+                                            }
+                                        }
+                                    },
+                                    // 数据
+                                    data: values
+                                }
+                            ]
+                        }
+                        echartsRef.current.setOption(option);
+                    }
+                });
+        }
+    }, [groupId, month]);
 
     return <div className={"board"}>
-        扣分大类，使用词云展示？
+        <div className={"title"}>排名趋势</div>
+        <div className={"display-3"}>
+            <div ref={domRef} style={{width: '100%', height: '100%'}}/>
+        </div>
     </div>;
 };
 

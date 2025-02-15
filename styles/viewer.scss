@@ -403,11 +403,18 @@
                     }
                 }
 
-                .display-2 {  flex: 1;
+                .display-2 {
+                    flex: 1;
                     overflow: hidden;
                     display: flex;
                     flex-direction: column;
+                }
 
+                .display-3 {
+                    flex: 1;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
                 }
             }
         }

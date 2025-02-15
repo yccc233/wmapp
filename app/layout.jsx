@@ -7,7 +7,7 @@ import {ConfigProvider} from 'antd';
 import zhCN from 'antd/locale/zh_CN'; // 引入中文语言包
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
-import  'moment/dist/locale/zh-cn.js';
+import 'moment/dist/locale/zh-cn.js';
 
 dayjs.locale('zh-cn');
 
@@ -23,6 +23,7 @@ export default function RootLayout({children}) {
         <html lang="zh">
         <head>
             <Script src="/static/js/echarts.js" strategy={"beforeInteractive"}></Script>
+            <Script src="/static/js/echarts-wordcloud.js" strategy={"beforeInteractive"}></Script>
         </head>
         <body className={inter.className}>
         <ConfigProvider locale={zhCN}>
