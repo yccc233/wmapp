@@ -3,10 +3,7 @@ import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import {makePost} from "@/src/utils.jsx";
 import {
-    ArrowDownOutlined,
-    ArrowUpOutlined,
     FallOutlined,
-    MinusOutlined,
     PicLeftOutlined,
     RiseOutlined
 } from "@ant-design/icons";

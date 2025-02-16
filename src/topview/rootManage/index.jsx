@@ -1,3 +1,4 @@
+
 export default function Index() {
 
     return <div className={"topview-manage"}>
@@ -7,9 +8,11 @@ export default function Index() {
         <div className={"manage"}>
             管理
 
-            选定小组  选定月份  管理成员  退出登录
+            选定小组 选定月份 管理成员 退出登录
 
-            成员表格  扣分 加分 备注
+            成员表格 扣分 加分 备注
+
+
         </div>
     </div>;
 }

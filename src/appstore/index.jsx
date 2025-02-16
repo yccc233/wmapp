@@ -67,8 +67,13 @@ export default function Index() {
                 appList.map((item, ind) => (
                     <div key={`app-${ind}`} className={"app-item"}>
                         <div className={"avatar"}>
-                            <Avatar size={72} src={`/img/icon/icon-${ind + 1}.svg`} className={"mt10"}/>
-
+                            <Avatar size={72} src={`/img/icon/icon-${ind + 1}.svg`}/>
+                            {
+                                userInfo.role === "ROOT" ?
+                                    <div className={"v_center"}>
+                                        <Tag color={"gold"} className={"tag"}>管理</Tag>
+                                    </div> : null
+                            }
                         </div>
                         <div className={"info"}>
                             <div className={"title"} style={bgMap[ind % bgMap.length]}>{item.name}</div>
@@ -76,12 +81,10 @@ export default function Index() {
                                 <span className={"desc"}>{item.description}</span>
                             </div>
                             <Space>
-                                <Button ghost type={"primary"} className={"go-btn"}
-                                        onClick={() => window.location.href = item.url}>
-                                    {
-                                        userInfo.role === "ROOT" ?
-                                            <Tag color={"gold"} className={"tag"}>管理</Tag> : null
-                                    }
+                                <Button
+                                    ghost type={"primary"} className={"go-btn"}
+                                    onClick={() => window.location.href = item.url}
+                                >
                                     进入应用
                                 </Button>
                             </Space>

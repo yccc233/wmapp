@@ -88,6 +88,20 @@
     /* 如果还有其他字体格式，如.woff或.woff2，您也可以在这里添加它们以提高兼容性 */
 }
 
+@font-face {
+    font-family: 'iconfont-v1';
+    src: url('/img/iconfont/iconfont.woff2?t=1739705089362') format('woff2'),
+    url('/img/iconfont/iconfont.woff?t=1739705089362') format('woff'),
+    url('/img/iconfont/iconfont.ttf?t=1739705089362') format('truetype');
+}
+
+.iconfont-css {
+    font-family: "iconfont-v1" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
 /* 基本样式 */
 

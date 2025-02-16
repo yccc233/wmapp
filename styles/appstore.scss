@@ -79,11 +79,16 @@
 
             .avatar {
                 margin-top: 10px;
-                width: 100px;
+                padding: 0 10px;
                 display: flex;
+                flex-direction: column;
+                align-content: center;
                 justify-content: center;
                 position: relative;
 
+                .tag {
+                    margin: 15px 0 0 0;
+                }
             }
 
             .info {
@@ -97,7 +102,7 @@
 
                     color: #fff;
                     position: absolute;
-                    right: 0;
+                    right: -10px;
                     top: -10px;
                     background: linear-gradient(45deg, var(--bg1), var(--bg2));
                     text-align: right;
@@ -121,13 +126,6 @@
 
                 .go-btn {
                     position: relative;
-
-                    .tag {
-                        margin: 0;
-                        position: absolute;
-                        right: -25px;
-                        top: -8px;
-                    }
                 }
             }
         }
