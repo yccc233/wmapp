@@ -3,7 +3,7 @@ import {makePost} from "@/src/utils.jsx";
 import {setUserInfo} from "@/src/store/user/userReducer.jsx";
 import {useDispatch} from "react-redux";
 import Viewer from "./viewer";
-import Manage from "./manage";
+import Manage from "./rootManage";
 
 export default function Index() {
     const dispatch = useDispatch();

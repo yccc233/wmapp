@@ -26,7 +26,6 @@ export default function Index() {
 
 
     useEffect(() => {
-
         makePost("/um/getUserInfo").then(res => {
             if (res.data) {
                 dispatch(setUserInfo(res.data));
