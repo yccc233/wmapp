@@ -1,9 +1,19 @@
 import {useRef, useEffect, useState} from 'react'
-import {makePost} from "@/src/utils.jsx";
+import {getRandomColor, makePost} from "@/src/utils.jsx";
+import {Empty} from "antd";
+import {TeamOutlined} from "@ant-design/icons";
 
 export const DisplayCard1 = ({classList, month}) => {
 
     const [displayData, setDisplayData] = useState([]);
+
+    const getSort = (rankInd) => {
+        if (rankInd < 4) {
+            return <img width={36} src={`/img/topview/sort-${rankInd}.png`} alt={"排名"}/>
+        } else {
+            return rankInd;
+        }
+    };
 
     useEffect(() => {
         if (classList.length > 0) {
@@ -26,7 +36,7 @@ export const DisplayCard1 = ({classList, month}) => {
         <div className={"title"}>班组排名</div>
         <div className={"display-1"}>
             <div className={"line line-top"}>
-                <div className={"line-item"}>排名</div>
+                <div className={"line-item"} style={{width: 72, flex: "unset"}}>排名</div>
                 <div className={"line-item"}>班组</div>
                 <div className={"line-item"}>人员数</div>
                 <div className={"line-item"}>平均分</div>
@@ -38,9 +48,9 @@ export const DisplayCard1 = ({classList, month}) => {
                     return <div key={`display-1-${ind}`} className={"line"}>
                         {
                             item.class_name ? <>
-                                <div className={"line-item"}>{ind + 1}</div>
+                                <div className={"line-item"} style={{width: 72, flex: "unset"}}>{getSort(ind + 1)}</div>
                                 <div className={"line-item"}>{item.class_name}</div>
-                                <div className={"line-item"}>{item.persons_count}</div>
+                                <div className={"line-item"}><TeamOutlined className={"mr2"}/>{item.persons_count}</div>
                                 <div className={"line-item"}>{item.avg_score}</div>
                                 <div className={"line-item"}>{item.max_score}</div>
                                 <div className={"line-item"}>{item.min_score}</div>
@@ -144,6 +154,8 @@ export const DisplayCard3 = ({groupId, month}) => {
     const domRef = useRef(null);
     const echartsRef = useRef(null);
 
+    const [empty, setEmpty] = useState(false);
+
     useEffect(() => {
         if (groupId) {
             makePost("/topview/getChartData3", {groupId: groupId, month: month})
@@ -156,47 +168,57 @@ export const DisplayCard3 = ({groupId, month}) => {
                         if (!echartsRef.current) {
                             echartsRef.current = echarts.init(domRef.current);
                         }
-                        // 生成随机颜色的函数
-                        function getRandomColor() {
-                            const letters = '0123456789ABCDEF';
-                            let color = '#';
-                            for (let i = 0; i < 6; i++) {
-                                color += letters[Math.floor(Math.random() * 16)];
-                            }
-                            return color;
-                        }
                         const option = {
+                            tooltip: {
+                                show: true,
+                                formatter: function (params) {
+                                    return `共扣除 ${params.value} 分`;
+                                }
+                            },
+                            grid: {
+                                left: '5%',
+                                right: '5%',
+                                top: '5%',
+                                bottom: '5%'
+                            },
                             series: [
                                 {
                                     type: 'wordCloud',
-                                    // 词云图的大小范围
-                                    sizeRange: [12, 60],
-                                    // 词云图的旋转角度范围，这里不旋转
-                                    rotationRange: [0, 0],
-                                    // 词云图的形状，设置为方形
+                                    sizeRange: [14, 48],
+                                    rotationRange: [0, 90],
                                     shape: 'square',
-                                    // 文字样式，颜色随机
+                                    layoutAnimation: true,
                                     textStyle: {
-                                        normal: {
-                                            color: function () {
-                                                return getRandomColor();
-                                            }
+                                        color: getRandomColor
+                                    },
+                                    emphasis: {
+                                        focus: "self",
+                                        textStyle: {
+                                            textShadow: "0 0 3px 5px #eeeeee"
                                         }
                                     },
-                                    // 数据
                                     data: values
                                 }
                             ]
                         }
                         echartsRef.current.setOption(option);
+                        setEmpty(values.length === 0);
                     }
                 });
         }
     }, [groupId, month]);
 
     return <div className={"board"}>
-        <div className={"title"}>排名趋势</div>
+        <div className={"title"}>扣分大类</div>
         <div className={"display-3"}>
+            {
+                empty ? <div className="full vhcenter" style={{position: "absolute"}}>
+                    <Empty
+                        image="/img/topview/empty.svg"
+                        description={<span className={"white"}>暂无数据</span>}
+                    />
+                </div> : null
+            }
             <div ref={domRef} style={{width: '100%', height: '100%'}}/>
         </div>
     </div>;

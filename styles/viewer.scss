@@ -205,7 +205,7 @@
     display: flex;
     flex-direction: column;
     color: #f1f1f1;
-    background: linear-gradient(180deg, #011553cc, #011553);
+    background: linear-gradient(180deg, #011553cc, #001426);
     position: relative;
 
     &::before {
@@ -228,7 +228,7 @@
         width: 100%;
         height: 100%;
         z-index: -1;
-        background: radial-gradient(circle at center, transparent 0%, #000054 68%);;
+        background: radial-gradient(circle at center, transparent 0%, #001426 68%);;
     }
 
     .top-container {
@@ -297,13 +297,13 @@
 
                 .ant-table-thead, .ant-table-header {
                     margin-bottom: 5px;
-                    box-shadow: 0 0 3px 3px #3769e4;
+                    box-shadow: 0 0 3px 3px #4d94d5;
                     transform: translateY(0px); // 是为了box-shadow可以正常显示
                     border-radius: 0;
 
                     .ant-table-cell {
                         color: #fff;
-                        background: #022eb8 !important;
+                        background: #0058a5 !important;
                         border: none;
                         border-radius: 0;
 
@@ -325,21 +325,22 @@
 
                     tr:nth-child(even) {
                         .ant-table-cell {
-                            background: #02195c;
+                            background: #001537;
                         }
 
                         .ant-table-cell-fix-left {
-                            background: #0b30c4;
+                            background: #071e44;
                         }
+
                     }
 
                     tr:nth-child(odd) {
                         .ant-table-cell {
-                            background: #022272;
+                            background: #0b2a51;
                         }
 
                         .ant-table-cell-fix-left {
-                            background: #0e288f;
+                            background: #0d325f;
                         }
                     }
 
@@ -365,12 +366,14 @@
 
             .board {
                 flex: 1;
-                background: #09277b;
+                background: linear-gradient(135deg, #0d3360, #071d43);
                 margin: 10px;
                 border-radius: 10px;
                 padding: 20px;
                 display: flex;
                 flex-direction: column;
+                border-top: 6px solid #0058a5;
+                box-shadow: 0 1px 2px 1px #1e3d68;
 
                 .title {
                     font-weight: bold;
@@ -415,6 +418,7 @@
                     overflow: hidden;
                     display: flex;
                     flex-direction: column;
+                    position: relative;
                 }
             }
         }
@@ -430,5 +434,5 @@
 }
 
 :where(.css-dev-only-do-not-override-1pg9a38).ant-table-wrapper .ant-table-ping-left .ant-table-cell-fix-left-first::after, :where(.css-dev-only-do-not-override-1pg9a38).ant-table-wrapper .ant-table-ping-left .ant-table-cell-fix-left-last::after {
-    box-shadow: inset 10px 0 8px -8px #929292;
+    box-shadow: inset 10px 0 8px -8px #0058a5;
 }

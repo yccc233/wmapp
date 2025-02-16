@@ -172,7 +172,7 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
             data: []
         });
     }
-    const monthList = Array.from({length}).map((_, ind) => dayjs().subtract(ind, "months").format('YYYY-MM')).reverse();
+    const monthList = Array.from({length}).map((_, ind) => dayjs(startMonth).subtract(ind, "months").format('YYYY-MM')).reverse();
     let minScore = 100, maxScore = 0;
     for (const month of monthList) {
         const classMap = await getClassAvgScoreInMonth(classIdList, month);

@@ -227,6 +227,10 @@
     color: gray;
 }
 
+.white {
+    color: white;
+}
+
 .success {
     color: #52c41a;
 }

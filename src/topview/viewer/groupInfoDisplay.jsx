@@ -2,12 +2,19 @@ import {DatePicker, Select, Space, Table, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import {makePost} from "@/src/utils.jsx";
-import {ArrowDownOutlined, ArrowUpOutlined, MinusOutlined, PicLeftOutlined} from "@ant-design/icons";
+import {
+    ArrowDownOutlined,
+    ArrowUpOutlined,
+    FallOutlined,
+    MinusOutlined,
+    PicLeftOutlined,
+    RiseOutlined
+} from "@ant-design/icons";
 import {DisplayCard1, DisplayCard2, DisplayCard3} from "@/src/topview/viewer/displayCard.jsx";
 
 export default function GroupInfoDisplay({groupId}) {
     const [filterCondition, setFilterCondition] = useState({
-        month: "2025-01" || dayjs().format("YYYY-MM"),
+        month: dayjs().format("YYYY-MM"),
         class: -1
     });
     const [classList, setClassList] = useState([]);
@@ -58,13 +65,12 @@ export default function GroupInfoDisplay({groupId}) {
             fixed: 'left',
             width: 100,
             showSorterTooltip: false,
-
             sorter: (a, b) => a.range_float - b.range_float,
             render: text => {
                 return <span title={"较上个月排名变动"}>
-                    {text > 0 ? <ArrowUpOutlined className={"fwb mr5 success"}/> :
-                        text < 0 ? <ArrowDownOutlined className={"fwb mr5 error"}/> :
-                            <ArrowDownOutlined className={"fwb mr5"} style={{color: "transparent"}}/>}
+                    {text > 0 ? <RiseOutlined className={"fwb mr5 success"}/> :
+                        text < 0 ? <FallOutlined className={"fwb mr5 error"}/> :
+                            <FallOutlined className={"fwb mr5"} style={{color: "transparent"}}/>}
                     {Math.abs(text)}
                         </span>;
             }
