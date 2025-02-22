@@ -10,10 +10,7 @@ export default function Index() {
     const [groupList, setGroupList] = useState([]);
     const [classList, setClassList] = useState([]);
 
-    // 2002 写死测试的
-
-    const [activeClassId, setActiveClassId] = useState(2002);
-
+    const [activeClassId, setActiveClassId] = useState(2001);
 
     const groupChange = (groupIds) => {
         const groupId = groupIds[groupIds.length - 1];
