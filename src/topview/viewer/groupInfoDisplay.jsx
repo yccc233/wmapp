@@ -168,10 +168,13 @@ export default function GroupInfoDisplay({groupId}) {
             <Space size={"large"}>
                 <div className={"conditions"}>
                     <span className={"cond-title"}>统计时间：</span>
-                    <DatePicker picker="month" disabledDate={current => current && current > dayjs().endOf('month')}
-                                allowClear={false}
-                                value={dayjs(filterCondition.month)}
-                                onChange={monthChange}/>
+                    <DatePicker
+                        picker="month"
+                        disabledDate={current => current && current > dayjs().endOf('month')}
+                        allowClear={false}
+                        value={dayjs(filterCondition.month)}
+                        onChange={monthChange}
+                    />
                 </div>
                 <div className={"conditions"}>
                     <span className={"cond-title"}>班：</span>
