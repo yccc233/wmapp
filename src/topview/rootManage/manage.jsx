@@ -108,7 +108,6 @@ export default function Manage({classId}) {
                             zIndex={1024}
                             arrow={false}
                             placement={"bottomLeft"}
-                            destroyTooltipOnHide
                             onOpenChange={open => open && setTimeout(() => document.getElementById(`id-input-remark-${unique}`)?.focus(), 100)}
                             content={<Input.TextArea
                                 id={`id-input-remark-${unique}`}
