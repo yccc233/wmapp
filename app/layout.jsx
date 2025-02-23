@@ -8,7 +8,7 @@ import zhCN from 'antd/locale/zh_CN'; // 引入中文语言包
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import 'moment/dist/locale/zh-cn.js';
-import "@/public/static/css/antd.min.css";
+// import "@/public/static/css/antd.min.css";
 
 dayjs.locale('zh-cn');
 

@@ -1,17 +1,14 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import dayjs from "dayjs";
-import {Button, DatePicker, Input, InputNumber, Popover, Space, Table, Tooltip} from "antd";
+import {Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tooltip} from "antd";
 import {
     AlignCenterOutlined,
-    DoubleLeftOutlined, DoubleRightOutlined,
-    FallOutlined, LeftOutlined,
-    PicLeftOutlined,
-    ReloadOutlined, RightOutlined,
-    RiseOutlined,
+    ReloadOutlined,
     UserSwitchOutlined
 } from "@ant-design/icons";
 import ManagePerson from "@/src/topview/rootManage/managePerson.jsx";
 import {makePost} from "@/src/utils.jsx";
+import {formatNumber, getRandomId} from "@/server/common/utils.js";
 
 
 export default function Manage({classId}) {
@@ -23,12 +20,45 @@ export default function Manage({classId}) {
     const [columns, setColumns] = useState([]);
     const [tableData, setTableData] = useState([]);
 
+    const postIngProcessFlagRef = useRef(false);
+
     const monthChange = (_, vStr) => {
         setMonth(vStr);
     };
 
-    const itemScoreChange = () => {
+    const itemRemarkChange = async (record, labelName, remark) => {
+        if (postIngProcessFlagRef.current) {
+            message.info("请稍后再试");
+        } else {
+            postIngProcessFlagRef.current = true;
+            //     POST
+            record["items"][labelName]["remark"] = remark;
+            setTableData(prev => [...prev]);
+            postIngProcessFlagRef.current = false;
+        }
+    };
 
+    const calcAvgAndTotal = (record) => {
+        const scores = Object.values(record.items).map(item => item.score);
+        record.total_score = scores.reduce((score, current) => score + current, 0);
+        record.avg_score = formatNumber(record.total_score / Object.values(record.items).length);
+    };
+
+    const itemScoreChange = async (record, labelName, scoreFloat) => {
+        if (postIngProcessFlagRef.current) {
+            message.info("请稍后再试");
+        } else {
+            postIngProcessFlagRef.current = true;
+            //     POST
+            let transScore = record["items"][labelName]["score"];
+            transScore = transScore + scoreFloat;
+            if (0 <= transScore && transScore <= 100) {
+                record["items"][labelName]["score"] = transScore;
+                calcAvgAndTotal(record);
+                setTableData(prev => [...prev]);
+            }
+            postIngProcessFlagRef.current = false;
+        }
     };
 
     const genBaseColumns = (cols) => {
@@ -61,25 +91,36 @@ export default function Manage({classId}) {
                 title: col.label_name,
                 dataIndex: col.label_name_en,
                 key: col.label_name_en,
-                width: 200,
+                width: 300,
                 sorter: (a, b) => a['items'][col.label_name_en]['score'] - b['items'][col.label_name_en]['score'],
                 showSorterTooltip: false,
                 render: (_, record) => {
-                    return <Space>
-                        <span>-5</span>
-                        <span>-1</span>
+                    const unique = getRandomId(20);
+                    return <Space className={"score-func-space"}>
+                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, -5)}>-5</span>
+                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, -1)}>-1</span>
                         <InputNumber size={"small"} value={record['items'][col.label_name_en]['score']}/>
-                        <span>+1</span>
-                        <span>+5</span>
+                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, 1)}>+1</span>
+                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, 5)}>+5</span>
 
                         <Popover
-                            trigger={["click"]}
+                            trigger="click"
                             zIndex={1024}
                             arrow={false}
-                            placement={"bottom"}
-                            content={<Input.TextArea defultValue={record['items'][col.label_name_en]['remark']}/>}
+                            placement={"bottomLeft"}
+                            destroyTooltipOnHide
+                            onOpenChange={open => open && setTimeout(() => document.getElementById(`id-input-remark-${unique}`)?.focus(), 100)}
+                            content={<Input.TextArea
+                                id={`id-input-remark-${unique}`}
+                                style={{width: 250}}
+                                placeholder={"# 请输入备注"}
+                                defultValue={record['items'][col.label_name_en]['remark']}
+                                onBlur={e => itemRemarkChange(record, col.label_name_en, e.target.value)}
+                            />}
                         >
-                            <AlignCenterOutlined/>
+                            <Badge dot={!!record['items'][col.label_name_en]['remark']}>
+                                <AlignCenterOutlined className={"pointer"}/>
+                            </Badge>
                         </Popover>
                     </Space>
                 }
@@ -87,20 +128,28 @@ export default function Manage({classId}) {
         ];
     };
 
+    const getPersonsAndScores = (callback) => {
+        setLoading(true);
+        makePost("/topview/getClassAvgScoreInMonth", {classIdList: [classId], month: month})
+            .then(res => {
+                if (res.data) {
+                    setTableData(res.data[classId]);
+                    setLoading(false);
+                    typeof callback === "function" && callback();
+                }
+            });
+    };
+
+    const refresh = () => {
+        getPersonsAndScores(() => {
+            message.success("刷新成功！");
+        });
+    };
+
     useEffect(() => {
         setTimeout(() => {
-            console.log(classId)
-            setLoading(true);
-
-            makePost("/topview/getClassAvgScoreInMonth", {classIdList: [classId], month: month})
-                .then(res => {
-                    if (res.data) {
-                        setTableData(res.data[classId]);
-                        setLoading(false);
-                    }
-                });
-
-        }, 500)
+            getPersonsAndScores();
+        }, 100)
 
     }, [classId, month]);
 
@@ -125,8 +174,6 @@ export default function Manage({classId}) {
     });
 
     return <div className={"manage-class"}>
-        {/*选定小组 选定月份 管理成员 退出登录*/}
-        {/*成员表格 扣分 加分 备注*/}
         <div className={"func-s"}>
             <Space size={"large"}>
                 <DatePicker
@@ -136,7 +183,7 @@ export default function Manage({classId}) {
                     value={dayjs(month)}
                     onChange={monthChange}
                 />
-                <Button size={"large"} type={"link"} icon={<ReloadOutlined className={"mr5"}/>}>
+                <Button size={"large"} type={"link"} icon={<ReloadOutlined className={"mr5"}/>} onClick={refresh}>
                     刷新
                 </Button>
             </Space>
@@ -153,7 +200,7 @@ export default function Manage({classId}) {
                 </Button>
             </div>
         </div>
-        <div className={"mt20"}>
+        <div className={"manage-table mt20"}>
             <Table
                 loading={loading}
                 rowKey="person_id"

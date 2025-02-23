@@ -62,3 +62,10 @@ export const IconFont = ({font, className, style}) => (
           className={className ? `iconfont-css ${className}` : "iconfont-css"}
     />
 );
+
+export const formatNumber = (num, digits = 1) => {
+    if (Number.isInteger(num)) {
+        return num;
+    }
+    return Number(num.toFixed(digits));
+}

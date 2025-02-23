@@ -39,7 +39,6 @@ router.post("/getGroupAvgScore", async function (req, res) {
     RESPONSE.SUCCESS(req, res, data);
 })
 
-
 router.post("/getClassAvgScoreInMonth", async function (req, res) {
     const {classIdList, month} = req.body;
     if (!month) {
@@ -53,6 +52,9 @@ router.post("/getClassAvgScoreInMonth", async function (req, res) {
     const data = await topViewService.getClassAvgScoreInMonth(classIdList, month);
     RESPONSE.SUCCESS(req, res, data);
 })
+
+
+
 
 router.post("/getChartData1", async function (req, res) {
     const {classIdList, month} = req.body;

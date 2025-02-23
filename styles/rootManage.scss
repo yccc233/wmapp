@@ -91,9 +91,27 @@
                 justify-content: space-between;
             }
 
-            .ant-table {
-                .ant-table-cell-fix-left {
-                    background: #f6f6f6;
+            .manage-table {
+                .ant-table {
+                    .ant-table-cell-fix-left {
+                        background: #f6f6f6;
+                    }
+                }
+
+                .score-func-space {
+
+
+                    .ded-score-btn {
+                        padding: 2px 5px;
+                        background: #a0d1ff;
+                        color: #fff;
+                        border-radius: 100px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        font-size: 12px;
+                    }
                 }
             }
         }
