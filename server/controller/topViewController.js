@@ -86,4 +86,13 @@ router.post("/getChartData3", async function (req, res) {
     RESPONSE.SUCCESS(req, res, data);
 })
 
+
+/**
+ * 需要n个接口
+ *
+ * 1.getGroupAvgScoreInMonth
+ * 2.getClassAvgScoreInMonth接口改造，返回结果不专业
+ * 3.接口数据更新
+ */
+
 export default router;

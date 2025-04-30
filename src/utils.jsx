@@ -56,12 +56,6 @@ export const getRandomColor = () => {
     return color;
 };
 
-// iconfont图标库：http://localhost:3000/img/iconfont/demo_index.html
-export const IconFont = ({font, className, style}) => (
-    <span style={style} dangerouslySetInnerHTML={{__html: font}}
-          className={className ? `iconfont-css ${className}` : "iconfont-css"}
-    />
-);
 
 export const formatNumber = (num, digits = 1) => {
     if (Number.isInteger(num)) {

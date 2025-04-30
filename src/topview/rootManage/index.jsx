@@ -1,8 +1,9 @@
 "use client"
-import {Button, Cascader, Empty, Select, Space} from "antd";
+import {Button, Cascader, Select, Space} from "antd";
 import {useEffect, useState} from "react";
 import {makePost} from "@/src/utils.jsx";
 import Manage from "@/src/topview/rootManage/manage.jsx";
+import {PEmpty} from "@/src/components/commonUtils.jsx";
 
 export default function Index() {
 
@@ -10,10 +11,12 @@ export default function Index() {
     const [groupList, setGroupList] = useState([]);
     const [classList, setClassList] = useState([]);
 
-    const [activeClassId, setActiveClassId] = useState(2001);
+    const [activeGroupId, setActiveGroupId] = useState(null);
+    const [activeClassId, setActiveClassId] = useState(null);
 
     const groupChange = (groupIds) => {
         const groupId = groupIds[groupIds.length - 1];
+        setActiveGroupId(groupId);
         if (groupId) {
             makePost("/topview/getClassesByGroupId", {groupId}).then(res => {
                 if (res.data) {
@@ -67,11 +70,8 @@ export default function Index() {
         <div className={"manage"}>
             {
                 activeClassId ?
-                    <Manage classId={activeClassId}/> :
-                    <Empty
-                        image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        description={"请先选择上方的班组选项"}
-                    />
+                    <Manage groupId={activeGroupId} classId={activeClassId}/> :
+                    <PEmpty description={"请先选择上方的班组选项"}/>
             }
         </div>
     </div>;

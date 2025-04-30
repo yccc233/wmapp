@@ -8,7 +8,7 @@ import zhCN from 'antd/locale/zh_CN'; // 引入中文语言包
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import 'moment/dist/locale/zh-cn.js';
-// import "@/public/static/css/antd.min.css";
+import {AntdRegistry} from '@ant-design/nextjs-registry';
 
 dayjs.locale('zh-cn');
 
@@ -27,11 +27,13 @@ export default function RootLayout({children}) {
             <Script src="/static/js/echarts-wordcloud.js" strategy={"beforeInteractive"}></Script>
         </head>
         <body className={inter.className}>
-        <ConfigProvider locale={zhCN}>
-            <ReduxProvider>
-                {children}
-            </ReduxProvider>
-        </ConfigProvider>
+        <AntdRegistry>
+            <ConfigProvider locale={zhCN}>
+                <ReduxProvider>
+                    {children}
+                </ReduxProvider>
+            </ConfigProvider>
+        </AntdRegistry>
         </body>
         </html>
     );

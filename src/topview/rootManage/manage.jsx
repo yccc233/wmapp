@@ -1,17 +1,13 @@
 import {useEffect, useRef, useState} from "react";
 import dayjs from "dayjs";
-import {Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tooltip} from "antd";
-import {
-    AlignCenterOutlined,
-    ReloadOutlined,
-    UserSwitchOutlined
-} from "@ant-design/icons";
+import {Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table} from "antd";
+import {AlignCenterOutlined, ReloadOutlined, UserSwitchOutlined} from "@ant-design/icons";
 import ManagePerson from "@/src/topview/rootManage/managePerson.jsx";
 import {makePost} from "@/src/utils.jsx";
 import {formatNumber, getRandomId} from "@/server/common/utils.js";
+import 'dayjs/locale/zh-cn';
 
-
-export default function Manage({classId}) {
+export default function Manage({groupId, classId}) {
 
     const [loading, setLoading] = useState(true);
     const [month, setMonth] = useState(dayjs().format('YYYY-MM'));
@@ -97,16 +93,19 @@ export default function Manage({classId}) {
                 render: (_, record) => {
                     const unique = getRandomId(20);
                     return <Space className={"score-func-space"}>
-                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, -5)}>-5</span>
-                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, -1)}>-1</span>
+                        <span className={"ded-score-btn"}
+                              onClick={() => itemScoreChange(record, col.label_name_en, -5)}>-5</span>
+                        <span className={"ded-score-btn"}
+                              onClick={() => itemScoreChange(record, col.label_name_en, -1)}>-1</span>
                         <InputNumber size={"small"} value={record['items'][col.label_name_en]['score']}/>
-                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, 1)}>+1</span>
-                        <span className={"ded-score-btn"} onClick={() => itemScoreChange(record, col.label_name_en, 5)}>+5</span>
+                        <span className={"ded-score-btn"}
+                              onClick={() => itemScoreChange(record, col.label_name_en, 1)}>+1</span>
+                        <span className={"ded-score-btn"}
+                              onClick={() => itemScoreChange(record, col.label_name_en, 5)}>+5</span>
 
                         <Popover
                             trigger="click"
                             zIndex={1024}
-                            arrow={false}
                             placement={"bottomLeft"}
                             onOpenChange={open => open && setTimeout(() => document.getElementById(`id-input-remark-${unique}`)?.focus(), 100)}
                             content={<Input.TextArea
@@ -127,6 +126,13 @@ export default function Manage({classId}) {
         ];
     };
 
+
+    const refresh = () => {
+        getPersonsAndScores(() => {
+            message.success("刷新成功！");
+        });
+    };
+
     const getPersonsAndScores = (callback) => {
         setLoading(true);
         makePost("/topview/getClassAvgScoreInMonth", {classIdList: [classId], month: month})
@@ -139,18 +145,9 @@ export default function Manage({classId}) {
             });
     };
 
-    const refresh = () => {
-        getPersonsAndScores(() => {
-            message.success("刷新成功！");
-        });
-    };
-
     useEffect(() => {
-        setTimeout(() => {
-            getPersonsAndScores();
-        }, 100)
-
-    }, [classId, month]);
+        getPersonsAndScores();
+    }, [groupId, classId, month]);
 
     useEffect(() => {
         makePost("/topview/getLabelNames").then(res => {
@@ -182,6 +179,7 @@ export default function Manage({classId}) {
                     value={dayjs(month)}
                     onChange={monthChange}
                 />
+
                 <Button size={"large"} type={"link"} icon={<ReloadOutlined className={"mr5"}/>} onClick={refresh}>
                     刷新
                 </Button>
