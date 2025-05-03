@@ -2,16 +2,32 @@ import topViewManageDao from "../dao/topViewManageDao.js";
 import {formatNumber} from "../common/utils.js";
 import dayjs from "dayjs";
 
-const getAllCollectedGroups = async () => {
+const getAllMyCollectedGroups = async (userId) => {
     let allGroups = await topViewManageDao.getAllGroups();
+    const groupManagerMapList = await topViewManageDao.getGroupsManagerMap(userId);
+    let groupManagerMap = null;
+    if (groupManagerMapList?.length > 0) {
+        groupManagerMap = groupManagerMapList[0].group_ids;
+    }
+    // 过滤掉不是我的，null时保持全部
+
+    if (groupManagerMap) {
+        groupManagerMap = JSON.parse(groupManagerMap);
+        allGroups = allGroups.filter(group => groupManagerMap.includes(group.group_id));
+    }
     // 拼接成树形结构
     allGroups.forEach((group) => {
         if (group.child_group_ids) {
             group.child_group_ids = JSON.parse(group.child_group_ids);
+            if (groupManagerMap) {
+                group.child_group_ids = group.child_group_ids.filter(groupId => groupManagerMap.includes(groupId));
+            }
             group.child_group_ids.forEach((childId, index) => {
                 const findGroup = allGroups.find(g => g.group_id === childId);
-                findGroup.isLeaf = true;
-                group.child_group_ids[index] = findGroup;
+                if (findGroup) {
+                    findGroup.isLeaf = true;
+                    group.child_group_ids[index] = findGroup;
+                }
             });
         }
     });
@@ -237,7 +253,7 @@ const chatForDedScore = async (groupId, month) => {
 
 
 export default {
-    getAllCollectedGroups,
+    getAllMyCollectedGroups,
     getGroupAvgScore,
     getGroupInfoByGroupId,
     getClassInfoByClassId,

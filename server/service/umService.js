@@ -38,8 +38,12 @@ const getUserById = async (userId) => {
     return user;
 };
 
-const getUserApp = async (role = "USER") => {
+const getUserAppList = async (user, role = "USER") => {
     let apps = await userManageDao.getAppList();
+    const scopes = user.scopes ? JSON.parse(user.scopes) : null;
+    if (scopes) {
+        apps = apps.filter(app => scopes.includes(app.app_id));
+    }
     apps = apps?.map(app => ({
         name: app.name,
         url: role === "ROOT" ? app.root_url : app.user_url,
@@ -58,6 +62,6 @@ export default {
     verifyUser,
     getUserList,
     getUserById,
-    getUserApp,
+    getUserAppList,
     getSystemConfig
 }

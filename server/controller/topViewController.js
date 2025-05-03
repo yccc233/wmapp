@@ -1,11 +1,13 @@
 import express from "express";
 import RESPONSE from "../common/RESPONSE.js";
 import topViewService from "../service/topViewService.js";
+import {getUserIdName} from "../common/utils.js";
 
 const router = express.Router();
 
-router.post("/getAllGroups", async function (req, res) {
-    const groups = await topViewService.getAllCollectedGroups();
+router.post("/getAllMyGroups", async function (req, res) {
+    const {userId} = getUserIdName(req);
+    const groups = await topViewService.getAllMyCollectedGroups(userId);
     RESPONSE.SUCCESS(req, res, groups);
 })
 
@@ -52,8 +54,6 @@ router.post("/getClassAvgScoreInMonth", async function (req, res) {
     const data = await topViewService.getClassAvgScoreInMonth(classIdList, month);
     RESPONSE.SUCCESS(req, res, data);
 })
-
-
 
 
 router.post("/getChartData1", async function (req, res) {

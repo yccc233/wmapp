@@ -30,13 +30,13 @@ router.post("/getUserInfo", async function (req, res) {
 
 router.post("/getUserAppList", async function (req, res) {
     // 配置的默认角色
-    let role = "USER";
+    let role = "USER", appList = [];
     const {userId} = getUserIdName(req);
     const user = await umService.getUserById(userId);
     if (user) {
         role = user.role;
     }
-    const appList = await umService.getUserApp(role);
+    appList = await umService.getUserAppList(user, role);
     RESPONSE.SUCCESS(req, res, appList);
 })
 

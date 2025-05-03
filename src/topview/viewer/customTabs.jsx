@@ -22,7 +22,7 @@ export default function CustomTabs({groupId, setGroupId}) {
     };
 
     useEffect(() => {
-        makePost("/topview/getAllGroups").then(res => {
+        makePost("/topview/getAllMyGroups").then(res => {
             if (res.data) {
                 setTabList(res.data);
             }

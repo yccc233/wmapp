@@ -38,7 +38,7 @@ export default function Index() {
     };
 
     useEffect(() => {
-        makePost("/topview/getAllGroups").then(res => {
+        makePost("/topview/getAllMyGroups").then(res => {
             if (res.data) {
                 if (res.data) {
                     res.data = res.data.map(group => ({

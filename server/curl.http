@@ -1,12 +1,11 @@
 
-POST http://127.0.0.1:2999/wmappserver/topview/getAllGroups
+POST http://127.0.0.1:2999/wmappserver/topview/getAllMyGroups
 Content-Type: application/json
+Cookie: username=root1; userid=201
 
 {}
 
 ###
-
-
 
 
 POST http://127.0.0.1:2999/wmappserver/topview/getLabelNames
@@ -95,5 +94,12 @@ Content-Type: application/json
   "groupId": 1003,
   "month": "2025-01"
 }
+
+###
+
+POST http://127.0.0.1:2999/wmappserver/um/getUserAppList
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
 
 ###
