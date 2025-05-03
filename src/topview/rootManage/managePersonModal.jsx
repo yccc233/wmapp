@@ -4,7 +4,7 @@ import {Button, DatePicker, Modal, Space} from "antd";
 import {UserSwitchOutlined} from "@ant-design/icons";
 
 
-export default function ManagePerson({visible, classId, close}) {
+export default function ManagePersonModal({visible, classId, close}) {
 
 
     useEffect(() => {

@@ -90,8 +90,8 @@ const getPersonsFromClassIdList = async (classIdList, month) => {
         const sql = `
                   select * from tbl_topview_persons 
                   where related_class_id in (${classIdList.join(",")}) 
-                  and (off_time is null ${month ? `or off_time >= '${month}'
-        ` : ""})`;
+                  `;
+        // and (off_time is null ${month ? `or off_time >= '${month}'` : ""})
         db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);

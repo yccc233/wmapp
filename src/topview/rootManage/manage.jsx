@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from "react";
 import dayjs from "dayjs";
 import {Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table} from "antd";
-import {AlignCenterOutlined, ReloadOutlined, UserSwitchOutlined} from "@ant-design/icons";
-import ManagePerson from "@/src/topview/rootManage/managePerson.jsx";
+import {AlignCenterOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined} from "@ant-design/icons";
+import ManagePersonModal from "@/src/topview/rootManage/managePersonModal.jsx";
 import {makePost} from "@/src/utils.jsx";
 import {formatNumber, getRandomId} from "@/server/common/utils.js";
 import 'dayjs/locale/zh-cn';
@@ -15,6 +15,8 @@ export default function Manage({groupId, classId}) {
 
     const [columns, setColumns] = useState([]);
     const [tableData, setTableData] = useState([]);
+
+    const [kws, setKws] = useState("");
 
     const postIngProcessFlagRef = useRef(false);
 
@@ -169,6 +171,12 @@ export default function Manage({groupId, classId}) {
         return col;
     });
 
+    let showedTableData = tableData;
+
+    if (kws && showedTableData) {
+        showedTableData = showedTableData.filter(td => td.person_name.indexOf(kws) > -1);
+    }
+
     return <div className={"manage-class"}>
         <div className={"func-s"}>
             <Space size={"large"}>
@@ -179,13 +187,21 @@ export default function Manage({groupId, classId}) {
                     value={dayjs(month)}
                     onChange={monthChange}
                 />
-
+                <Input
+                    size={"large"}
+                    prefix={<SearchOutlined/>}
+                    style={{width: 200}}
+                    allowClear
+                    placeholder={"输入人名进行检索"}
+                    onPressEnter={e => setKws(e.target.value)}
+                    onChange={e=> !e.target.value && setKws("")}
+                />
                 <Button size={"large"} type={"link"} icon={<ReloadOutlined className={"mr5"}/>} onClick={refresh}>
                     刷新
                 </Button>
             </Space>
             <div>
-                <ManagePerson
+                <ManagePersonModal
                     visible={managePersonFlag}
                     classId={classId}
                     close={() => setManagePersonFlag(false)}
@@ -202,7 +218,7 @@ export default function Manage({groupId, classId}) {
                 loading={loading}
                 rowKey="person_id"
                 columns={finalColumns}
-                dataSource={tableData}
+                dataSource={showedTableData}
                 pagination={false}
                 bordered={true}
                 scroll={{

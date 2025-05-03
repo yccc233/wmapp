@@ -10,7 +10,6 @@ const getAllMyCollectedGroups = async (userId) => {
         groupManagerMap = groupManagerMapList[0].group_ids;
     }
     // 过滤掉不是我的，null时保持全部
-
     if (groupManagerMap) {
         groupManagerMap = JSON.parse(groupManagerMap);
         allGroups = allGroups.filter(group => groupManagerMap.includes(group.group_id));
