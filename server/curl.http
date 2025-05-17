@@ -103,3 +103,58 @@ Cookie: username=root1; userid=201
 
 
 ###
+
+###
+
+POST http://127.0.0.1:2999/wmappserver/topview/getPersonsInClass
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+{
+  "classId": 2002,
+  "sortBy": "Name"
+}
+
+###
+
+###
+
+POST http://127.0.0.1:2999/wmappserver/topview/addPersonInClass
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+{
+  "classId": 2004,
+  "personName": "NameAA",
+  "flagInfo": "1234"
+}
+
+###
+
+###
+
+POST http://127.0.0.1:2999/wmappserver/topview/deletePersonInClass
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+{
+  "personId": "10104",
+  "personName": "张德胜",
+  "flagInfo": null
+}
+
+###
+
+###
+
+POST http://127.0.0.1:2999/wmappserver/topview/updatePersonInClass
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+{
+  "personId": "10111",
+  "personName": "张圣翰",
+  "flagInfo": "组长"
+}
+
+###

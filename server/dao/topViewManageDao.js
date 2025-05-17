@@ -1,4 +1,5 @@
 import DATABASE from "../common/DATABASE.js";
+import {getMoment} from "..//common/utils.js";
 
 const getAllGroups = async () => {
     return new Promise((resolve, reject) => {
@@ -130,6 +131,63 @@ const getDedScoresByPersonIds = async (personIdList, month) => {
     });
 };
 
+const addPersonInClass = async (classId, personName, flagInfo) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `insert into tbl_topview_persons (
+                        "related_class_id",
+                        "person_name",
+                        "flag_info",
+                        "insert_time"
+                    ) values (
+                        ?,?,?,?
+                    )
+                    `;
+        db.run(sql, [
+            classId,
+            personName,
+            flagInfo,
+            getMoment()
+        ], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes);
+            }
+        });
+    });
+};
+
+const deletePersonInClass = async (personId) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `delete from tbl_topview_persons where person_id = ?`;
+        db.run(sql, [personId], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes);
+            }
+        });
+    });
+};
+
+const updatePersonInClass = async (personId, personName, flagInfo) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getDatabase();
+        const sql = `update tbl_topview_persons 
+                        set person_name = ? , flag_info = ?
+                        where person_id = ?`;
+        db.run(sql, [personName, flagInfo, personId], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes);
+            }
+        });
+    });
+};
+
 export default {
     getAllGroups,
     getGroupsManagerMap,
@@ -139,5 +197,8 @@ export default {
     getClassByClassId,
     getPersonsFromClassIdList,
     getDedScoresByPersonIds,
-    getLabelInfoByLabelIdList
+    getLabelInfoByLabelIdList,
+    addPersonInClass,
+    deletePersonInClass,
+    updatePersonInClass
 }

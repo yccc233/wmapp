@@ -37,6 +37,9 @@ export default {
     CODE: {
         MISSPARAMS: {
             title: "缺少必要参数"
+        },
+        NULLTYPE: {
+            title: "参数不应该为空"
         }
     }
 }

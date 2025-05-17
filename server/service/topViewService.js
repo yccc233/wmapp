@@ -251,6 +251,25 @@ const chatForDedScore = async (groupId, month) => {
 };
 
 
+const getPersonsInClass = async (classId) => {
+    return await topViewManageDao.getPersonsFromClassIdList([classId]);
+};
+
+const addPersonInClass = async (classId, personName, flagInfo) => {
+    const counts = await topViewManageDao.addPersonInClass(classId, personName, flagInfo);
+    return counts > 0 ? "success" : "fail";
+};
+
+const deletePersonInClass = async (personId) => {
+    const counts = await topViewManageDao.deletePersonInClass(personId);
+    return counts > 0 ? "success" : "fail";
+}
+
+const updatePersonInClass = async (personId, personName, flagInfo) => {
+    const counts = await topViewManageDao.updatePersonInClass(personId, personName, flagInfo);
+    return counts > 0 ? "success" : "fail";
+}
+
 export default {
     getAllMyCollectedGroups,
     getGroupAvgScore,
@@ -261,5 +280,9 @@ export default {
     getClassesByGroupId,
     chartsForClass,
     chartsForHistory,
-    chatForDedScore
+    chatForDedScore,
+    getPersonsInClass,
+    addPersonInClass,
+    deletePersonInClass,
+    updatePersonInClass
 }

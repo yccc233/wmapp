@@ -58,7 +58,7 @@ export default function Index() {
     return <div className={"topview-manage"}>
         <div className={"top"}>
             <Space className={"flex1"}>
-                <Cascader style={{width: 300}} options={groupList} onChange={groupChange} placeholder="请选择组"/>
+                <Cascader allowClear={false} style={{width: 300}} options={groupList} onChange={groupChange} allow placeholder="请选择组"/>
                 <Select style={{width: 300}} options={classList} onChange={classChange} placeholder="请选择班组"/>
             </Space>
             <div>

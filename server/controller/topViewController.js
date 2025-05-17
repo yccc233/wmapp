@@ -93,6 +93,58 @@ router.post("/getChartData3", async function (req, res) {
  * 1.getGroupAvgScoreInMonth
  * 2.getClassAvgScoreInMonth接口改造，返回结果不专业
  * 3.接口数据更新
+ * 4.管理人员，增删改查四个接口
  */
+
+
+/**
+ * @param sortBy default | Name
+ */
+router.post("/getPersonsInClass", async function (req, res) {
+    const {classId, sortBy} = req.body;
+    if (!classId) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    let data = await topViewService.getPersonsInClass(classId);
+    if (sortBy === "Name") {
+        data.sort((a, b) => a.person_name.localeCompare(b.person_name));
+    }
+    RESPONSE.SUCCESS(req, res, data);
+})
+
+router.post("/addPersonInClass", async function (req, res) {
+    const {classId, personName, flagInfo} = req.body;
+    if (!classId || !personName) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    const data = await topViewService.addPersonInClass(classId, personName, flagInfo);
+    RESPONSE.SUCCESS(req, res, data);
+})
+
+router.post("/deletePersonInClass", async function (req, res) {
+    const {personId} = req.body;
+    if (!personId) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    const data = await topViewService.deletePersonInClass(personId);
+    RESPONSE.SUCCESS(req, res, data);
+})
+
+router.post("/updatePersonInClass", async function (req, res) {
+    const {personId, personName, flagInfo} = req.body;
+    if (!personId) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    if (!personName) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.NULLTYPE.title);
+        return;
+    }
+    const data = await topViewService.updatePersonInClass(personId, personName, flagInfo);
+    RESPONSE.SUCCESS(req, res, data);
+})
 
 export default router;

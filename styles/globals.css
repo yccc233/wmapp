@@ -246,15 +246,15 @@
 }
 
 .success {
-    color: #52c41a;
+    color: #52c41a !important;
 }
 
 .warning {
-    color: #faad14;
+    color: #faad14 !important;
 }
 
 .error {
-    color: #ff4d4f;
+    color: #ff4d4f !important;
 }
 
 .over-auto {
