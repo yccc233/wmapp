@@ -110,6 +110,7 @@ router.post("/getPersonsInClass", async function (req, res) {
     if (sortBy === "Name") {
         data.sort((a, b) => a.person_name.localeCompare(b.person_name));
     }
+    data.forEach((d, i) => d.index = i + 1);
     RESPONSE.SUCCESS(req, res, data);
 })
 

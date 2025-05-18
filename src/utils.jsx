@@ -1,12 +1,10 @@
 export const makePost = (url, params) => {
     // 将数据对象转换为JSON字符串
     const jsonData = JSON.stringify({userId: Number(getCookie("userid")), ...params});
-
     // 设置请求头，包括内容类型为JSON
     const headers = {
         'Content-Type': 'application/json',
     };
-
     // 使用fetch API发送POST请求
     return fetch(`/wmappserver${url}`, {
         method: 'POST',

@@ -1,5 +1,5 @@
 import DATABASE from "../common/DATABASE.js";
-import {getMoment} from "..//common/utils.js";
+import {getMoment} from "../common/utils.js";
 
 const getAllGroups = async () => {
     return new Promise((resolve, reject) => {
@@ -176,9 +176,9 @@ const updatePersonInClass = async (personId, personName, flagInfo) => {
     return new Promise((resolve, reject) => {
         const db = DATABASE.getDatabase();
         const sql = `update tbl_topview_persons 
-                        set person_name = ? , flag_info = ?
+                        set person_name = ? , flag_info = ?, update_time = ?
                         where person_id = ?`;
-        db.run(sql, [personName, flagInfo, personId], function (err) {
+        db.run(sql, [personName, flagInfo, getMoment(), personId], function (err) {
             if (err) {
                 reject(err);
             } else {
