@@ -40,6 +40,7 @@ app.use(`/`, (req, res) => res.send("OK!"));
 app.listen(app.get('port'), () => {
     console.log(`start the server at: http://127.0.0.1:${app.get('port')}/wmappserver/**/`);
     console.log(`start the database...`);
-    DATABASE.initDatabase("./server/database/wmapp.db");
+    // 尝试连接数据库，如果异常会报错
+    DATABASE.initWMAPPDatabase("./server/database/wmapp.db");
 });
 

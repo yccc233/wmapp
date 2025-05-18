@@ -17,7 +17,8 @@ export default function ManagePersonModal({visible, classId, close}) {
     }, {
         key: "person_name",
         dataIndex: "person_name",
-        title: "姓名"
+        title: "姓名",
+        sorter: (a, b) => a.person_name.localeCompare(b.person_name)
     }, {
         key: "flag_info",
         dataIndex: "flag_info",
@@ -67,6 +68,7 @@ export default function ManagePersonModal({visible, classId, close}) {
         footer={null}
         title={"成员管理"}
         destroyOnClose
+        centered
         wrapClassName={"topview-manage-m-person-modal"}
     >
         <div className={"topview-manage-m-person"}>
@@ -75,7 +77,7 @@ export default function ManagePersonModal({visible, classId, close}) {
                 scroll={{y: 600}}
                 columns={tableColumns}
                 dataSource={tableData}
-                pagination={{showSizeChanger: true, pageSizeOptions: [20, 50, 100], defaultPageSize: 20}}
+                pagination={{showSizeChanger: true, pageSizeOptions: [50, 100, 200], defaultPageSize: 50}}
             />
         </div>
     </Modal>;

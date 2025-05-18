@@ -42,16 +42,18 @@ export default function Manage({groupId, classId}) {
         record.avg_score = formatNumber(record.total_score / Object.values(record.items).length);
     };
 
-    const itemScoreChange = async (record, labelName, scoreFloat) => {
+    const itemScoreChange = async (record, label, scoreDelta) => {
         if (postIngProcessFlagRef.current) {
             message.info("请稍后再试");
         } else {
             postIngProcessFlagRef.current = true;
             //     POST
-            let transScore = record["items"][labelName]["score"];
-            transScore = transScore + scoreFloat;
+            console.log("change score", month, record, label, scoreDelta);
+
+            let transScore = record["items"][label.label_name_en]["score"];
+            transScore = transScore + scoreDelta;
             if (0 <= transScore && transScore <= 100) {
-                record["items"][labelName]["score"] = transScore;
+                record["items"][label.label_name_en]["score"] = transScore;
                 calcAvgAndTotal(record);
                 setTableData(prev => [...prev]);
             }
@@ -96,14 +98,14 @@ export default function Manage({groupId, classId}) {
                     const unique = getRandomId(20);
                     return <Space className={"score-func-space"}>
                         <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col.label_name_en, -5)}>-5</span>
+                              onClick={() => itemScoreChange(record, col, -5)}>-5</span>
                         <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col.label_name_en, -1)}>-1</span>
+                              onClick={() => itemScoreChange(record, col, -1)}>-1</span>
                         <InputNumber size={"small"} value={record['items'][col.label_name_en]['score']}/>
                         <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col.label_name_en, 1)}>+1</span>
+                              onClick={() => itemScoreChange(record, col, 1)}>+1</span>
                         <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col.label_name_en, 5)}>+5</span>
+                              onClick={() => itemScoreChange(record, col, 5)}>+5</span>
 
                         <Popover
                             trigger="click"
@@ -194,7 +196,7 @@ export default function Manage({groupId, classId}) {
                     allowClear
                     placeholder={"输入人名进行检索"}
                     onPressEnter={e => setKws(e.target.value)}
-                    onChange={e=> !e.target.value && setKws("")}
+                    onChange={e => !e.target.value && setKws("")}
                 />
                 <Button size={"large"} type={"link"} icon={<ReloadOutlined className={"mr5"}/>} onClick={refresh}>
                     刷新

@@ -3,7 +3,7 @@ import {getMoment} from "../common/utils.js";
 
 const getAllGroups = async () => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_topview_groups_def where visible = 1`;
         db.all(sql, [], (err, rows) => {
             if (err) {
@@ -17,7 +17,7 @@ const getAllGroups = async () => {
 
 const getGroupsManagerMap = async (userId) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_topview_group_manager_map where user_id = ?`;
         db.all(sql, [userId], (err, rows) => {
             if (err) {
@@ -31,7 +31,7 @@ const getGroupsManagerMap = async (userId) => {
 
 const getGroupInfoByGroupId = async (groupId) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select group_id, group_name, child_group_ids, display_order from tbl_topview_groups_def where visible = 1 and group_id = ?`;
         db.all(sql, [groupId], (err, rows) => {
             if (err) {
@@ -45,7 +45,7 @@ const getGroupInfoByGroupId = async (groupId) => {
 
 const getClassListByGroupId = async (groupId) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_topview_classes_def where visible = 1 and related_group_id = ?`;
         db.all(sql, [groupId], (err, rows) => {
             if (err) {
@@ -59,7 +59,7 @@ const getClassListByGroupId = async (groupId) => {
 
 const getClassByClassId = async (classId) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select related_group_id, class_id, class_name from tbl_topview_classes_def where visible = 1 and class_id = ?`;
         db.all(sql, [classId], (err, rows) => {
             if (err) {
@@ -73,7 +73,7 @@ const getClassByClassId = async (classId) => {
 
 const getAllClassList = async () => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_topview_classes_def where visible = 1`;
         db.all(sql, [], (err, rows) => {
             if (err) {
@@ -87,7 +87,7 @@ const getAllClassList = async () => {
 
 const getPersonsFromClassIdList = async (classIdList, month) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `
                   select * from tbl_topview_persons 
                   where related_class_id in (${classIdList.join(",")}) 
@@ -105,7 +105,7 @@ const getPersonsFromClassIdList = async (classIdList, month) => {
 
 const getLabelInfoByLabelIdList = async (labelIdList) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select label_id, label_name, label_name_en,display_order from tbl_topview_labels_def where in_use = 1 ${labelIdList ? `and label_id in (${labelIdList.join(",")})`  : ""}`;
         db.all(sql, [], (err, rows) => {
             if (err) {
@@ -119,7 +119,7 @@ const getLabelInfoByLabelIdList = async (labelIdList) => {
 
 const getDedScoresByPersonIds = async (personIdList, month) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_topview_scores_deduct where deduct_month = ? and person_id in (${personIdList.join(", ")})`;
         db.all(sql, [month], (err, rows) => {
             if (err) {
@@ -131,9 +131,51 @@ const getDedScoresByPersonIds = async (personIdList, month) => {
     });
 };
 
+const getDeltaRecord = async (month, personId, labelId) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getWMAPPDatabase();
+        const sql = `select * from tbl_topview_scores_deduct where deduct_month = ? and person_id = ? and label_id = ?`;
+        db.all(sql, [month, personId, labelId], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows[0] || null);
+            }
+        });
+    });
+};
+
+const updateDeltaScore = async (month, personId, labelId, deltaScore) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getWMAPPDatabase();
+        const sql = `update tbl_topview_scores_deduct set ded_score = ? where deduct_month = ? and person_id = ? and label_id = ?`;
+        db.all(sql, [deltaScore, month, personId, labelId], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
+const insertDeltaScore = async (month, personId, labelId, deltaScore) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getWMAPPDatabase();
+        const sql = `insert into `;
+        db.all(sql, [deltaScore, month, personId, labelId], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
 const addPersonInClass = async (classId, personName, flagInfo) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `insert into tbl_topview_persons (
                         "related_class_id",
                         "person_name",
@@ -160,7 +202,7 @@ const addPersonInClass = async (classId, personName, flagInfo) => {
 
 const deletePersonInClass = async (personId) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `delete from tbl_topview_persons where person_id = ?`;
         db.run(sql, [personId], function (err) {
             if (err) {
@@ -174,7 +216,7 @@ const deletePersonInClass = async (personId) => {
 
 const updatePersonInClass = async (personId, personName, flagInfo) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `update tbl_topview_persons 
                         set person_name = ? , flag_info = ?, update_time = ?
                         where person_id = ?`;
@@ -197,6 +239,8 @@ export default {
     getClassByClassId,
     getPersonsFromClassIdList,
     getDedScoresByPersonIds,
+    getDeltaRecord,
+    updateDeltaScore,
     getLabelInfoByLabelIdList,
     addPersonInClass,
     deletePersonInClass,

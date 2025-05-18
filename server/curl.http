@@ -95,12 +95,26 @@ Content-Type: application/json
   "month": "2025-01"
 }
 
+
 ###
 
 POST http://127.0.0.1:2999/wmappserver/um/getUserAppList
 Content-Type: application/json
 Cookie: username=root1; userid=201
 
+
+###
+
+POST http://127.0.0.1:2999/wmappserver/topview/updateScoreInPersonMonth
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+{
+  "month": "2025-05",
+  "personId": 10002,
+  "labelId": 3002,
+  "scoreDelta": 1
+}
 
 ###
 

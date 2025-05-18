@@ -251,6 +251,19 @@ const chatForDedScore = async (groupId, month) => {
 };
 
 
+const updateScoreInPersonMonth = async (month, personId, labelId, scoreDelta = 0) => {
+    const existRecord = await topViewManageDao.getDeltaRecord(month, personId, labelId);
+    // 存在一条记录
+    if (existRecord) {
+        existRecord["ded_score"] += scoreDelta;
+        await topViewManageDao.updateDeltaScore(month, personId, labelId, existRecord["ded_score"]);
+    } else {
+        topViewManageDao.insertDeltaScore(month, personId, labelId, existRecord["ded_score"]);
+    }
+    return "success";
+};
+
+
 const getPersonsInClass = async (classId) => {
     return await topViewManageDao.getPersonsFromClassIdList([classId]);
 };
@@ -280,6 +293,7 @@ export default {
     getClassesByGroupId,
     chartsForClass,
     chartsForHistory,
+    updateScoreInPersonMonth,
     chatForDedScore,
     getPersonsInClass,
     addPersonInClass,

@@ -2,7 +2,7 @@ import DATABASE from "../common/DATABASE.js";
 
 const getUsersByUserName = async (userName) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_user_manage where username='${userName}'`;
         db.all(sql, [], (err, rows) => {
             if (err) {
@@ -16,7 +16,7 @@ const getUsersByUserName = async (userName) => {
 
 const getAllUserListExceptRoot = async () => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_user_manage where username != 'root'`;
         db.all(sql, [], (err, rows) => {
             if (err) {
@@ -30,7 +30,7 @@ const getAllUserListExceptRoot = async () => {
 
 const getUsersById = async (userId) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_user_manage where user_id = ${userId}`;
         db.all(sql, [], (err, rows) => {
             if (err) {
@@ -44,7 +44,7 @@ const getUsersById = async (userId) => {
 
 const getAppList = async () => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select * from tbl_apps`;
         db.all(sql, [], (err, rows) => {
             if (err) {
@@ -58,7 +58,7 @@ const getAppList = async () => {
 
 const getSystemConfigs = async (key) => {
     return new Promise((resolve, reject) => {
-        const db = DATABASE.getDatabase();
+        const db = DATABASE.getWMAPPDatabase();
         const sql = `select key, value from tbl_system_config where key = '${key}'`;
         db.all(sql, [], (err, rows) => {
             if (err) {

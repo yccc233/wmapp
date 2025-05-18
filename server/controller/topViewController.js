@@ -93,8 +93,25 @@ router.post("/getChartData3", async function (req, res) {
  * 1.getGroupAvgScoreInMonth
  * 2.getClassAvgScoreInMonth接口改造，返回结果不专业
  * 3.接口数据更新
- * 4.管理人员，增删改查四个接口
+ * 4.修改备注
+ * 5.管理人员，增删改查四个接口
  */
+
+
+router.post("/updateScoreInPersonMonth", async function (req, res) {
+    const {month, personId, labelId, scoreDelta} = req.body;
+    if (!month || !personId || !labelId) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    try {
+        const data = await topViewService.updateScoreInPersonMonth(month, personId, labelId, scoreDelta);
+        RESPONSE.SUCCESS(req, res, data);
+    } catch (e) {
+        RESPONSE.ERROR(req, res, e);
+    }
+})
+
 
 
 /**

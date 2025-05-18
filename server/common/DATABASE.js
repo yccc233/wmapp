@@ -5,7 +5,7 @@ const sqlite = sqlite3.verbose();
 let db = null;
 
 // 初始化数据库连接
-function initDatabase(path = "./database/wmapp.db") {
+function initWMAPPDatabase(path = "./database/wmapp.db") {
     if (!db) {
         db = new sqlite.Database(path, (err) => {
             if (err) {
@@ -19,11 +19,11 @@ function initDatabase(path = "./database/wmapp.db") {
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-    getDatabase: () => {
+    getWMAPPDatabase: () => {
         if (!db) {
-            initDatabase();
+            initWMAPPDatabase();
         }
         return db;
     },
-    initDatabase
+    initWMAPPDatabase
 };
