@@ -3,7 +3,8 @@
     height: 100%;
     overflow: hidden;
     padding: 5% 20%;
-    background: #06103f;
+    //background: #06103f;
+    background: url('/img/appstore/background.png') no-repeat center center / cover;
     color: #eeeeee;
     position: relative;
     --length: 400px;
@@ -66,14 +67,14 @@
             margin: 20px;
             background: linear-gradient(0, #071145, #0A1A6D);
             border-radius: 10px;
-            box-shadow: 0 0 2px 5px #080d2a;
             position: relative;
             display: flex;
             border: 1px solid transparent;
-            transition: all .1s ease-in-out;
+            transition: all .1s ease;
 
             &:hover {
                 border-color: #1890ff;
+                box-shadow: 0 0 2px 5px #192465;
                 transform: scale(1.1);
             }
 

@@ -148,12 +148,12 @@ const getDeltaRecord = async (month, personId, labelId) => {
 const updateDeltaScore = async (month, personId, labelId, deltaScore) => {
     return new Promise((resolve, reject) => {
         const db = DATABASE.getWMAPPDatabase();
-        const sql = `update tbl_topview_scores_deduct set ded_score = ? where deduct_month = ? and person_id = ? and label_id = ?`;
-        db.all(sql, [deltaScore, month, personId, labelId], (err, rows) => {
+        const sql = `update tbl_topview_scores_deduct set ded_score = ?, update_time = ? where deduct_month = ? and person_id = ? and label_id = ?`;
+        db.run(sql, [deltaScore, getMoment(), month, personId, labelId], function (err) {
             if (err) {
                 reject(err);
             } else {
-                resolve(rows);
+                resolve(this.changes);
             }
         });
     });
@@ -162,12 +162,55 @@ const updateDeltaScore = async (month, personId, labelId, deltaScore) => {
 const insertDeltaScore = async (month, personId, labelId, deltaScore) => {
     return new Promise((resolve, reject) => {
         const db = DATABASE.getWMAPPDatabase();
-        const sql = `insert into `;
-        db.all(sql, [deltaScore, month, personId, labelId], (err, rows) => {
+        const sql = `insert into tbl_topview_scores_deduct (
+                        "deduct_month",
+                        "person_id",
+                        "label_id",
+                        "ded_score"
+                    ) values (
+                        ?,?,?,?
+                    )`;
+        db.run(sql, [month, personId, labelId, deltaScore], function (err) {
             if (err) {
                 reject(err);
             } else {
-                resolve(rows);
+                resolve(this.changes);
+            }
+        });
+    });
+};
+
+const updateDeltaScoreRemark = async (month, personId, labelId, remark) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getWMAPPDatabase();
+        const sql = `update tbl_topview_scores_deduct set remark = ?, update_time = ? where deduct_month = ? and person_id = ? and label_id = ?`;
+        db.run(sql, [remark, getMoment(), month, personId, labelId], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes);
+            }
+        });
+    });
+};
+
+const insertDeltaScoreRemark = async (month, personId, labelId, remark) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getWMAPPDatabase();
+        const sql = `insert into tbl_topview_scores_deduct (
+                        "deduct_month",
+                        "person_id",
+                        "label_id",
+                        "ded_score",
+                        "remark"
+                    ) values (
+                        ?,?,?,?,?
+                    )`;
+        db.run(sql, [month, personId, labelId, 0, remark], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes);
             }
         });
     });
@@ -183,8 +226,7 @@ const addPersonInClass = async (classId, personName, flagInfo) => {
                         "insert_time"
                     ) values (
                         ?,?,?,?
-                    )
-                    `;
+                    )`;
         db.run(sql, [
             classId,
             personName,
@@ -230,6 +272,7 @@ const updatePersonInClass = async (personId, personName, flagInfo) => {
     });
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getAllGroups,
     getGroupsManagerMap,
@@ -240,8 +283,11 @@ export default {
     getPersonsFromClassIdList,
     getDedScoresByPersonIds,
     getDeltaRecord,
-    updateDeltaScore,
     getLabelInfoByLabelIdList,
+    updateDeltaScore,
+    insertDeltaScore,
+    updateDeltaScoreRemark,
+    insertDeltaScoreRemark,
     addPersonInClass,
     deletePersonInClass,
     updatePersonInClass

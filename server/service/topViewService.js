@@ -114,6 +114,8 @@ const getClassPersonsAvgScore = async (classId, month) => {
         delete person.related_class_id;
         delete person.insert_time;
     });
+    // 排序
+    persons.sort((a, b) => a.person_name.localeCompare(b.person_name));
     return persons;
 };
 
@@ -159,7 +161,6 @@ const getClassInfoByClassId = async (classId) => {
 const chartsForClass = async (classIdList, month) => {
     const classMap = await getClassAvgScoreInMonth(classIdList, month);
     const classData = [];
-
     for (const classId of classIdList) {
         const classInfo = await topViewManageDao.getClassByClassId(classId);
         const classPersons = classMap[classId];
@@ -218,7 +219,6 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
     };
 };
 
-
 const chatForDedScore = async (groupId, month) => {
     let classList;
     if (groupId === -1) {
@@ -250,19 +250,42 @@ const chatForDedScore = async (groupId, month) => {
     return dedList;
 };
 
-
 const updateScoreInPersonMonth = async (month, personId, labelId, scoreDelta = 0) => {
-    const existRecord = await topViewManageDao.getDeltaRecord(month, personId, labelId);
-    // 存在一条记录
-    if (existRecord) {
-        existRecord["ded_score"] += scoreDelta;
-        await topViewManageDao.updateDeltaScore(month, personId, labelId, existRecord["ded_score"]);
-    } else {
-        topViewManageDao.insertDeltaScore(month, personId, labelId, existRecord["ded_score"]);
+    try {
+        const existRecord = await topViewManageDao.getDeltaRecord(month, personId, labelId);
+        let count = 0;
+        // 存在一条记录
+        if (existRecord) {
+            // 注意表中的ded是扣的分数，在delta中表现为相反数
+            existRecord["ded_score"] -= scoreDelta;
+            count = await topViewManageDao.updateDeltaScore(month, personId, labelId, existRecord["ded_score"]);
+        } else {
+            // 注意表中的ded是扣的分数，在delta中表现为相反数
+            count = await topViewManageDao.insertDeltaScore(month, personId, labelId, -scoreDelta);
+        }
+        return count > 0 ? "success" : "fail";
+    } catch (e) {
+        console.error(e);
+        return "fail";
     }
-    return "success";
 };
 
+const updateRemarkInPersonMonth = async (month, personId, labelId, remark) => {
+    try {
+        const existRecord = await topViewManageDao.getDeltaRecord(month, personId, labelId);
+        let count = 0;
+        // 存在一条记录
+        if (existRecord) {
+            count = await topViewManageDao.updateDeltaScoreRemark(month, personId, labelId, remark);
+        } else {
+            count = await topViewManageDao.insertDeltaScoreRemark(month, personId, labelId, remark);
+        }
+        return count > 0 ? "success" : "fail";
+    } catch (e) {
+        console.error(e);
+        return "fail";
+    }
+};
 
 const getPersonsInClass = async (classId) => {
     return await topViewManageDao.getPersonsFromClassIdList([classId]);
@@ -283,6 +306,7 @@ const updatePersonInClass = async (personId, personName, flagInfo) => {
     return counts > 0 ? "success" : "fail";
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getAllMyCollectedGroups,
     getGroupAvgScore,
@@ -294,6 +318,7 @@ export default {
     chartsForClass,
     chartsForHistory,
     updateScoreInPersonMonth,
+    updateRemarkInPersonMonth,
     chatForDedScore,
     getPersonsInClass,
     addPersonInClass,

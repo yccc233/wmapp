@@ -24,15 +24,29 @@ export default function Manage({groupId, classId}) {
         setMonth(vStr);
     };
 
-    const itemRemarkChange = async (record, labelName, remark) => {
+    const itemRemarkChange = (record, label, remark) => {
         if (postIngProcessFlagRef.current) {
             message.info("请稍后再试");
         } else {
             postIngProcessFlagRef.current = true;
-            //     POST
-            record["items"][labelName]["remark"] = remark;
-            setTableData(prev => [...prev]);
-            postIngProcessFlagRef.current = false;
+            message.loading({key: "update-message", content: "正在更新"});
+            makePost("/topView/updateRemarkInPersonMonth", {month: month, personId: record.person_id, labelId: label.label_id, remark: remark})
+                .then(res => {
+                    if (res.code === 0) {
+                        record["items"][label.label_name_en]["remark"] = remark;
+                        setTableData(prev => [...prev]);
+                        message.success({key: "update-message", content: "更新完成"});
+                    } else {
+                        message.error({key: "update-message", content: "更新失败"});
+                    }
+                })
+                .catch(e => {
+                    console.error(e);
+                    message.error({key: "update-message", content: "更新异常"});
+                })
+                .finally(() => {
+                    postIngProcessFlagRef.current = false;
+                });
         }
     };
 
@@ -47,22 +61,50 @@ export default function Manage({groupId, classId}) {
             message.info("请稍后再试");
         } else {
             postIngProcessFlagRef.current = true;
-            //     POST
-            console.log("change score", month, record, label, scoreDelta);
-
-            let transScore = record["items"][label.label_name_en]["score"];
-            transScore = transScore + scoreDelta;
-            if (0 <= transScore && transScore <= 100) {
-                record["items"][label.label_name_en]["score"] = transScore;
-                calcAvgAndTotal(record);
-                setTableData(prev => [...prev]);
+            message.loading({key: "update-message", content: "正在更新"});
+            const score = record['items'][label.label_name_en]['score'];
+            // 兜底，分数不超过100且不低于0
+            if (score + scoreDelta > 100) {
+                scoreDelta = 100 - score;
             }
-            postIngProcessFlagRef.current = false;
+            if (score + scoreDelta < 0) {
+                scoreDelta = -score;
+            }
+            makePost("/topView/updateScoreInPersonMonth", {month: month, personId: record.person_id, labelId: label.label_id, scoreDelta: scoreDelta})
+                .then(res => {
+                    if (res.code === 0) {
+                        let transScore = record["items"][label.label_name_en]["score"];
+                        transScore = transScore + scoreDelta;
+                        if (0 <= transScore && transScore <= 100) {
+                            record["items"][label.label_name_en]["score"] = transScore;
+                            calcAvgAndTotal(record);
+                            setTableData(prev => [...prev]);
+                        }
+                        message.success({key: "update-message", content: "更新完成"});
+                    } else {
+                        message.error({key: "update-message", content: "更新失败"});
+                    }
+                })
+                .catch(e => {
+                    console.error(e);
+                    message.error({key: "update-message", content: "更新异常"});
+                })
+                .finally(() => {
+                    postIngProcessFlagRef.current = false;
+                });
+
         }
     };
 
     const genBaseColumns = (cols) => {
         return [{
+            title: '序号',
+            dataIndex: 'index',
+            key: 'index',
+            fixed: 'left',
+            showSorterTooltip: false,
+            width: 80
+        }, {
             title: '姓名',
             dataIndex: 'person_name',
             key: 'person_name',
@@ -91,37 +133,43 @@ export default function Manage({groupId, classId}) {
                 title: col.label_name,
                 dataIndex: col.label_name_en,
                 key: col.label_name_en,
-                width: 300,
+                width: 240,
                 sorter: (a, b) => a['items'][col.label_name_en]['score'] - b['items'][col.label_name_en]['score'],
                 showSorterTooltip: false,
                 render: (_, record) => {
-                    const unique = getRandomId(20);
-                    return <Space className={"score-func-space"}>
-                        <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col, -5)}>-5</span>
-                        <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col, -1)}>-1</span>
-                        <InputNumber size={"small"} value={record['items'][col.label_name_en]['score']}/>
-                        <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col, 1)}>+1</span>
-                        <span className={"ded-score-btn"}
-                              onClick={() => itemScoreChange(record, col, 5)}>+5</span>
+                    const unique = `${col.label_name_en}-${record["person_id"]}`;
+                    const remark = record['items'][col.label_name_en]['remark'];
+                    const score = record['items'][col.label_name_en]['score'];
 
+                    return <Space className={"score-func-space"}>
+                        <span className={"ded-score-btn"} style={score < 1 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                              onClick={() => score >= 1 && itemScoreChange(record, col, -5)}>-5</span>
+                        <span className={"ded-score-btn"} style={score < 1 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                              onClick={() => score >= 1 && itemScoreChange(record, col, -1)}>-1</span>
+                        <InputNumber style={{width: 48}} size={"small"} value={score} max={100} min={0} variant={"underlined"} controls={false} onBlur={e => itemScoreChange(record, col, e.target.value - score)}/>
+                        <span className={"ded-score-btn"} style={score > 99 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                              onClick={() => score <= 99 && itemScoreChange(record, col, 1)}>+1</span>
+                        <span className={"ded-score-btn"} style={score > 99 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                              onClick={() => score <= 99 && itemScoreChange(record, col, 5)}>+5</span>
                         <Popover
                             trigger="click"
                             zIndex={1024}
                             placement={"bottomLeft"}
-                            onOpenChange={open => open && setTimeout(() => document.getElementById(`id-input-remark-${unique}`)?.focus(), 100)}
+                            destroyTooltipOnHide
+                            onOpenChange={open => open && setTimeout(() => {
+                                const inputDom = document.getElementById(`id-input-remark-${unique}`);
+                                inputDom?.focus();
+                            }, 100)}
                             content={<Input.TextArea
                                 id={`id-input-remark-${unique}`}
                                 style={{width: 250}}
                                 placeholder={"# 请输入备注"}
-                                defultValue={record['items'][col.label_name_en]['remark']}
-                                onBlur={e => itemRemarkChange(record, col.label_name_en, e.target.value)}
+                                defaultValue={remark}
+                                onBlur={e => remark !== e.target.value.trim() && itemRemarkChange(record, col, e.target.value.trim())}
                             />}
                         >
-                            <Badge dot={!!record['items'][col.label_name_en]['remark']}>
-                                <AlignCenterOutlined className={"pointer"}/>
+                            <Badge dot={!!remark}>
+                                <AlignCenterOutlined className={"pointer"} style={{color: remark ? "#1890ff" : "#aaa"}}/>
                             </Badge>
                         </Popover>
                     </Space>

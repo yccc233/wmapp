@@ -52,6 +52,7 @@ router.post("/getClassAvgScoreInMonth", async function (req, res) {
         return;
     }
     const data = await topViewService.getClassAvgScoreInMonth(classIdList, month);
+    Object.values(data).forEach(arr => arr.forEach((a, i) => a.index = i + 1));
     RESPONSE.SUCCESS(req, res, data);
 })
 
@@ -98,6 +99,9 @@ router.post("/getChartData3", async function (req, res) {
  */
 
 
+/**
+ * scoreDelta需要的是分数的正比值，扣分的是负数
+ */
 router.post("/updateScoreInPersonMonth", async function (req, res) {
     const {month, personId, labelId, scoreDelta} = req.body;
     if (!month || !personId || !labelId) {
@@ -112,6 +116,20 @@ router.post("/updateScoreInPersonMonth", async function (req, res) {
     }
 })
 
+router.post("/updateRemarkInPersonMonth", async function (req, res) {
+    let {month, personId, labelId, remark} = req.body;
+    if (!month || !personId || !labelId) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    try {
+        remark = remark || null;
+        const data = await topViewService.updateRemarkInPersonMonth(month, personId, labelId, remark);
+        RESPONSE.SUCCESS(req, res, data);
+    } catch (e) {
+        RESPONSE.ERROR(req, res, e);
+    }
+})
 
 
 /**
