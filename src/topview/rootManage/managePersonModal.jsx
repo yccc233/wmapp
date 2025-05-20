@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Button, Input, Modal, Space, Table, Form, message} from "antd";
 import {makePost} from "@/src/utils.jsx";
-
+import {PlusOutlined} from "@ant-design/icons";
 
 const EditableCell = ({
                           editing,
@@ -150,7 +150,11 @@ export default function ManagePersonModal({visible, classId, close}) {
                     .catch(console.error);
             }
         });
-    }
+    };
+
+    const add = () => {
+
+    };
 
     useEffect(() => {
         if (visible && classId) {
@@ -188,7 +192,10 @@ export default function ManagePersonModal({visible, classId, close}) {
         width={1000}
         closable={false}
         footer={null}
-        title={"成员管理"}
+        title={<div style={{display: "flex", alignContent: "center", justifyContent: "space-between"}}>
+            <span>成员管理</span>
+            <Button size={"small"} type={"primary"} ghost style={{borderStyle: "dashed"}} icon={<PlusOutlined/>} onClick={add}>添加成员</Button>
+        </div>}
         destroyOnClose
         centered
         wrapClassName={"topview-manage-m-person-modal"}
