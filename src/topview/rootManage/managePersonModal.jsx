@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Button, Input, InputNumber, Modal, Space, Table, Form, message} from "antd";
+import {Button, Input, Modal, Space, Table, Form, message} from "antd";
 import {makePost} from "@/src/utils.jsx";
 
 
@@ -82,8 +82,8 @@ export default function ManagePersonModal({visible, classId, close}) {
                         <Button type={"link"} size={"small"} onClick={() => save(record)}>保存</Button>
                         <Button type={"link"} size={"small"} onClick={cancel}>取消</Button>
                     </> : <>
-                        <Button type={"link"} size={"small"} onClick={() => edit(record)} disabled={!!editId}>编辑</Button>
-                        <Button type={"link"} size={"small"} disabled={!!editId}>删除</Button>
+                        <Button type={"link"} size={"small"} onClick={() => edit(record)} disabled={!!editId}>修改</Button>
+                        <Button type={"link"} size={"small"} onClick={() => del(record)} disabled={!!editId}>删除</Button>
                     </>
                 }
             </Space>
@@ -104,11 +104,18 @@ export default function ManagePersonModal({visible, classId, close}) {
     const save = async (record) => {
         try {
             const row = await form.validateFields();
-            console.log(row)
             makePost("/topView/updatePersonInClass", {personId: record.person_id, personName: row.person_name, flagInfo: row.flag_info})
                 .then(res => {
                     if (res.code === 0) {
                         setEditId(null);
+                        setTableData(prevData => {
+                            const personItem = prevData.find(pd => pd.person_id === record.person_id);
+                            if (personItem) {
+                                personItem.person_name = row.person_name;
+                                personItem.flag_info = row.flag_info;
+                            }
+                            return [...prevData];
+                        });
                         message.success({key: "person-message", content: "更新成功！"});
                     }
                 });
@@ -116,6 +123,34 @@ export default function ManagePersonModal({visible, classId, close}) {
             console.warn("表单验证失败！", errInfo);
         }
     };
+
+    const del = (record) => {
+        Modal.confirm({
+            centered: true,
+            title: `确认删除当前人物-${record.person_name}？`,
+            content: <span style={{color: "#eb0000"}}>此操作无法逆转，请谨慎操作</span>,
+            onOk: () => {
+                makePost("/topView/deletePersonInClass", {personId: record.person_id})
+                    .then(res => {
+                        if (res.code === 0) {
+                            if (res.data === "success") {
+                                setTableData(prevData => {
+                                    const personIndex = prevData.findIndex(pd => pd.person_id === record.person_id);
+                                    if (personIndex > -1) {
+                                        prevData.splice(personIndex, 1);
+                                    }
+                                    return [...prevData];
+                                });
+                                message.success({key: "person-message", content: "删除成功！"});
+                            } else {
+                                message.error({key: "person-message", content: "删除失败！"});
+                            }
+                        }
+                    })
+                    .catch(console.error);
+            }
+        });
+    }
 
     useEffect(() => {
         if (visible && classId) {

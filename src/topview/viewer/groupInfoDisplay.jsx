@@ -3,8 +3,8 @@ import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import {makePost} from "@/src/utils.jsx";
 import {
+    ExclamationCircleOutlined,
     FallOutlined,
-    PicLeftOutlined,
     RiseOutlined
 } from "@ant-design/icons";
 import {DisplayCard1, DisplayCard2, DisplayCard3} from "@/src/topview/viewer/displayCard.jsx";
@@ -84,7 +84,7 @@ export default function GroupInfoDisplay({groupId}) {
                         <span>{record['items'][col.label_name_en]['score']}</span>
                         {record['items'][col.label_name_en]['remark'] ?
                             <Tooltip title={record['items'][col.label_name_en]['remark']}>
-                                <PicLeftOutlined style={{cursor: 'help', marginLeft: 10}}/>
+                                <ExclamationCircleOutlined style={{cursor: 'help', marginLeft: 10}}/>
                             </Tooltip> : null}
                     </>
                 }
