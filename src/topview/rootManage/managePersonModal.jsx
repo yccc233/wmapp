@@ -46,6 +46,10 @@ export default function ManagePersonModal({visible, classId, close}) {
     const [editId, setEditId] = useState(null);
     const [form] = Form.useForm();
 
+    const [addModalVisible, setAddModalVisible] = useState(false);
+    const [addForm] = Form.useForm();
+
+
     const tableColumns = [
         {
             key: "index",
@@ -152,8 +156,57 @@ export default function ManagePersonModal({visible, classId, close}) {
         });
     };
 
-    const add = () => {
+    const toAdd = () => {
+        setAddModalVisible(true);
+        addForm.resetFields();
+    };
 
+    const add = () => {
+        addForm.validateFields()
+            .then(values => {
+                // Check for duplicate names
+                const isDuplicate = tableData.some(person => person.person_name === values.person_name);
+                if (isDuplicate) {
+                    Modal.warning({
+                        title: "警告",
+                        content: `成员"${values.person_name}"已存在，请勿重复添加`,
+                        centered: true,
+                    });
+                    return;
+                }
+                // Make API call to add new person
+                makePost("/topView/addPersonInClass", {
+                    classId,
+                    personName: values.person_name,
+                    flagInfo: values.flag_info
+                })
+                    .then(res => {
+                        if (res.code === 0) {
+                            // Add new person to table data
+                            setTableData(prevData => [
+                                ...prevData,
+                                {
+                                    person_id: res.data.person_id,
+                                    person_name: values.person_name,
+                                    flag_info: values.flag_info,
+                                    update_time: new Date().toISOString(),
+                                    index: prevData.length + 1
+                                }
+                            ]);
+                            message.success({key: "person-message", content: "添加成功！"});
+                            setAddModalVisible(false);
+                        } else {
+                            message.error({key: "person-message", content: "添加失败！"});
+                        }
+                    })
+                    .catch(error => {
+                        console.error("添加人物失败:", error);
+                        message.error({key: "person-message", content: "添加失败！"});
+                    });
+            })
+            .catch(errorInfo => {
+                console.warn("表单验证失败:", errorInfo);
+            });
     };
 
     useEffect(() => {
@@ -186,35 +239,69 @@ export default function ManagePersonModal({visible, classId, close}) {
         };
     });
 
-    return <Modal
-        open={visible}
-        onCancel={close}
-        width={1000}
-        closable={false}
-        footer={null}
-        title={<div style={{display: "flex", alignContent: "center", justifyContent: "space-between"}}>
-            <span>成员管理</span>
-            <Button size={"small"} type={"primary"} ghost style={{borderStyle: "dashed"}} icon={<PlusOutlined/>} onClick={add}>添加成员</Button>
-        </div>}
-        destroyOnClose
-        centered
-        wrapClassName={"topview-manage-m-person-modal"}
-    >
-        <div className={"topview-manage-m-person"}>
-            <Form form={form} component={false}>
-                <Table
-                    loading={loading}
-                    scroll={{y: 600}}
-                    components={{
-                        body: {
-                            cell: EditableCell,
-                        },
-                    }}
-                    columns={mergedColumns}
-                    dataSource={tableData}
-                    pagination={{showSizeChanger: true, pageSizeOptions: [50, 100, 200], defaultPageSize: 50}}
-                />
+    return <>
+        <Modal
+            open={visible}
+            onCancel={close}
+            width={1000}
+            closable={false}
+            footer={null}
+            title={<div style={{display: "flex", alignContent: "center", justifyContent: "space-between"}}>
+                <span>成员管理</span>
+                <Button size={"small"} type={"primary"} ghost style={{borderStyle: "dashed"}} icon={<PlusOutlined/>} onClick={toAdd}>添加成员</Button>
+            </div>}
+            destroyOnClose
+            centered
+            wrapClassName={"topview-manage-m-person-modal"}
+        >
+            <div className={"topview-manage-m-person"}>
+                <Form form={form} component={false}>
+                    <Table
+                        loading={loading}
+                        scroll={{y: 600}}
+                        components={{
+                            body: {
+                                cell: EditableCell,
+                            },
+                        }}
+                        columns={mergedColumns}
+                        dataSource={tableData}
+                        pagination={{showSizeChanger: true, pageSizeOptions: [50, 100, 200], defaultPageSize: 50}}
+                    />
+                </Form>
+            </div>
+        </Modal>
+        <Modal
+            title="添加成员"
+            open={addModalVisible}
+            centered
+            destroyOnClose
+            onOk={add}
+            onCancel={() => setAddModalVisible(false)}
+        >
+            <Form
+                form={addForm}
+                layout="vertical"
+                initialValues={{
+                    person_name: '',
+                    flag_info: ''
+                }}
+            >
+                <Form.Item
+                    label="姓名"
+                    name="person_name"
+                    rules={[{required: true, message: '请姓名'}]}
+                >
+                    <Input placeholder="请输入姓名"/>
+                </Form.Item>
+                <Form.Item
+                    label="身份标记"
+                    name="flag_info"
+                    className={"mt10"}
+                >
+                    <Input placeholder="身份标记（可选）"/>
+                </Form.Item>
             </Form>
-        </div>
-    </Modal>;
+        </Modal>
+    </>;
 }

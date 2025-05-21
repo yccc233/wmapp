@@ -1,9 +1,9 @@
 import {useEffect, useRef, useState} from "react";
 import dayjs from "dayjs";
-import {Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table} from "antd";
+import {Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tag} from "antd";
 import {AlignCenterOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined} from "@ant-design/icons";
 import ManagePersonModal from "@/src/topview/rootManage/managePersonModal.jsx";
-import {makePost} from "@/src/utils.jsx";
+import {getRandomColorFromString, getRandomTagColorFromString, makePost} from "@/src/utils.jsx";
 import {formatNumber, getRandomId} from "@/server/common/utils.js";
 import 'dayjs/locale/zh-cn';
 
@@ -112,6 +112,12 @@ export default function Manage({groupId, classId}) {
             showSorterTooltip: false,
             sorter: (a, b) => a.person_name.localeCompare(b.person_name),
             width: 100,
+            render: (_, record) => (
+                <Space>
+                    {record.person_name}
+                    {record.flag_info && <Tag color={getRandomTagColorFromString(record.flag_info)}>{record.flag_info}</Tag>}
+                </Space>
+            )
         }, {
             title: '平均',
             dataIndex: 'avg_score',
