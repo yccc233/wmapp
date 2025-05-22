@@ -44,7 +44,6 @@ export default function PortalEditModal({ onSave }) {
     };
 
     const formChange = (changedValues, allValues) => {
-        console.log("ccccc", changedValues);
         setCount(prev => prev + 1);
         if (changedValues.portal_img) {
             getBaseClient();
@@ -82,9 +81,6 @@ export default function PortalEditModal({ onSave }) {
     useEffect(() => {
         getBaseClient();
     }, [curPortal.portal_img]);
-
-    console.log([curPortal]);
-
 
     return <Modal
         title={isNew ? "新增门户" : curPortal.portal_title}
