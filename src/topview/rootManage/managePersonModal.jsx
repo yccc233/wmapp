@@ -1,7 +1,9 @@
-import {useEffect, useState} from "react";
-import {Button, Input, Modal, Space, Table, Form, message} from "antd";
-import {makePost} from "@/src/utils.jsx";
-import {PlusOutlined} from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { Button, Input, Modal, Space, Table, Form, message } from "antd";
+import { makePost } from "@/src/utils.jsx";
+import { PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
+import { allTimeFormat } from "@/src/riskview/config.jsx";
 
 const EditableCell = ({
                           editing,
@@ -22,12 +24,12 @@ const EditableCell = ({
             {editing ? (
                 <Form.Item
                     name={dataIndex}
-                    style={{margin: 0}}
+                    style={{ margin: 0 }}
                     rules={[
                         {
                             required: required,
-                            message: msg,
-                        },
+                            message: msg
+                        }
                     ]}
                 >
                     {inputNode}
@@ -39,7 +41,7 @@ const EditableCell = ({
     );
 };
 
-export default function ManagePersonModal({visible, classId, close}) {
+export default function ManagePersonModal({ visible, classId, close }) {
 
     const [loading, setLoading] = useState(true);
     const [tableData, setTableData] = useState([]);
@@ -48,7 +50,6 @@ export default function ManagePersonModal({visible, classId, close}) {
 
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [addForm] = Form.useForm();
-
 
     const tableColumns = [
         {
@@ -68,7 +69,7 @@ export default function ManagePersonModal({visible, classId, close}) {
             title: "身份标记",
             editable: true,
             sorter: (a, b) => a.flag_info && !b.flag_info ? true : false,
-            render: text => text || <span style={{fontStyle: "italic"}}>(无)</span>
+            render: text => text || <span style={{ fontStyle: "italic" }}>(无)</span>
         }, {
             key: "update_time",
             dataIndex: "update_time",
@@ -108,7 +109,7 @@ export default function ManagePersonModal({visible, classId, close}) {
     const save = async (record) => {
         try {
             const row = await form.validateFields();
-            makePost("/topView/updatePersonInClass", {personId: record.person_id, personName: row.person_name, flagInfo: row.flag_info})
+            makePost("/topView/updatePersonInClass", { personId: record.person_id, personName: row.person_name, flagInfo: row.flag_info })
                 .then(res => {
                     if (res.code === 0) {
                         setEditId(null);
@@ -120,7 +121,7 @@ export default function ManagePersonModal({visible, classId, close}) {
                             }
                             return [...prevData];
                         });
-                        message.success({key: "person-message", content: "更新成功！"});
+                        message.success({ key: "person-message", content: "更新成功！" });
                     }
                 });
         } catch (errInfo) {
@@ -132,9 +133,9 @@ export default function ManagePersonModal({visible, classId, close}) {
         Modal.confirm({
             centered: true,
             title: `确认删除当前人物-${record.person_name}？`,
-            content: <span style={{color: "#eb0000"}}>此操作无法逆转，请谨慎操作</span>,
+            content: <span style={{ color: "#eb0000" }}>此操作无法逆转，请谨慎操作</span>,
             onOk: () => {
-                makePost("/topView/deletePersonInClass", {personId: record.person_id})
+                makePost("/topView/deletePersonInClass", { personId: record.person_id })
                     .then(res => {
                         if (res.code === 0) {
                             if (res.data === "success") {
@@ -145,9 +146,9 @@ export default function ManagePersonModal({visible, classId, close}) {
                                     }
                                     return [...prevData];
                                 });
-                                message.success({key: "person-message", content: "删除成功！"});
+                                message.success({ key: "person-message", content: "删除成功！" });
                             } else {
-                                message.error({key: "person-message", content: "删除失败！"});
+                                message.error({ key: "person-message", content: "删除失败！" });
                             }
                         }
                     })
@@ -170,7 +171,7 @@ export default function ManagePersonModal({visible, classId, close}) {
                     Modal.warning({
                         title: "警告",
                         content: `成员"${values.person_name}"已存在，请勿重复添加`,
-                        centered: true,
+                        centered: true
                     });
                     return;
                 }
@@ -189,19 +190,19 @@ export default function ManagePersonModal({visible, classId, close}) {
                                     person_id: res.data.person_id,
                                     person_name: values.person_name,
                                     flag_info: values.flag_info,
-                                    update_time: new Date().toISOString(),
+                                    update_time: moment().format(allTimeFormat),
                                     index: prevData.length + 1
                                 }
                             ]);
-                            message.success({key: "person-message", content: "添加成功！"});
+                            message.success({ key: "person-message", content: "添加成功！" });
                             setAddModalVisible(false);
                         } else {
-                            message.error({key: "person-message", content: "添加失败！"});
+                            message.error({ key: "person-message", content: "添加失败！" });
                         }
                     })
                     .catch(error => {
                         console.error("添加人物失败:", error);
-                        message.error({key: "person-message", content: "添加失败！"});
+                        message.error({ key: "person-message", content: "添加失败！" });
                     });
             })
             .catch(errorInfo => {
@@ -212,7 +213,7 @@ export default function ManagePersonModal({visible, classId, close}) {
     useEffect(() => {
         if (visible && classId) {
             setLoading(true);
-            makePost("/topView/getPersonsInClass", {classId, sortBy: "Name"})
+            makePost("/topView/getPersonsInClass", { classId, sortBy: "Name" })
                 .then(res => {
                     setTableData(res.data);
                     setLoading(false);
@@ -228,14 +229,14 @@ export default function ManagePersonModal({visible, classId, close}) {
             ...col,
             onCell: (record) => ({
                 record,
-                inputType: 'text',
+                inputType: "text",
                 dataIndex: col.dataIndex,
                 title: col.title,
                 required: col.dataIndex === "person_name",
                 msg: col.dataIndex === "person_name" ? "必填项" : null,
                 placeholder: col.title,
                 editing: record.person_id === editId
-            }),
+            })
         };
     });
 
@@ -246,9 +247,9 @@ export default function ManagePersonModal({visible, classId, close}) {
             width={1000}
             closable={false}
             footer={null}
-            title={<div style={{display: "flex", alignContent: "center", justifyContent: "space-between"}}>
+            title={<div style={{ display: "flex", alignContent: "center", justifyContent: "space-between" }}>
                 <span>成员管理</span>
-                <Button size={"small"} type={"primary"} ghost style={{borderStyle: "dashed"}} icon={<PlusOutlined/>} onClick={toAdd}>添加成员</Button>
+                <Button size={"small"} type={"primary"} ghost style={{ borderStyle: "dashed" }} icon={<PlusOutlined/>} onClick={toAdd}>添加成员</Button>
             </div>}
             destroyOnClose
             centered
@@ -258,15 +259,15 @@ export default function ManagePersonModal({visible, classId, close}) {
                 <Form form={form} component={false}>
                     <Table
                         loading={loading}
-                        scroll={{y: 600}}
+                        scroll={{ y: 600 }}
                         components={{
                             body: {
-                                cell: EditableCell,
-                            },
+                                cell: EditableCell
+                            }
                         }}
                         columns={mergedColumns}
                         dataSource={tableData}
-                        pagination={{showSizeChanger: true, pageSizeOptions: [50, 100, 200], defaultPageSize: 50}}
+                        pagination={{ showSizeChanger: true, pageSizeOptions: [50, 100, 200], defaultPageSize: 50 }}
                     />
                 </Form>
             </div>
@@ -283,23 +284,23 @@ export default function ManagePersonModal({visible, classId, close}) {
                 form={addForm}
                 layout="vertical"
                 initialValues={{
-                    person_name: '',
-                    flag_info: ''
+                    person_name: "",
+                    flag_info: ""
                 }}
             >
                 <Form.Item
                     label="姓名"
                     name="person_name"
-                    rules={[{required: true, message: '请姓名'}]}
+                    rules={[{ required: true, message: "请姓名" }]}
                 >
-                    <Input placeholder="请输入姓名"/>
+                    <Input placeholder="请输入姓名" autoComplete="off"/>
                 </Form.Item>
                 <Form.Item
                     label="身份标记"
                     name="flag_info"
                     className={"mt10"}
                 >
-                    <Input placeholder="身份标记（可选）"/>
+                    <Input placeholder="身份标记（可选）" autoComplete="off"/>
                 </Form.Item>
             </Form>
         </Modal>

@@ -1,16 +1,16 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
-import {Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tag} from "antd";
-import {AlignCenterOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined} from "@ant-design/icons";
+import { Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tag } from "antd";
+import { AlignCenterOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import ManagePersonModal from "@/src/topview/rootManage/managePersonModal.jsx";
-import {getRandomColorFromString, getRandomTagColorFromString, makePost} from "@/src/utils.jsx";
-import {formatNumber, getRandomId} from "@/server/common/utils.js";
-import 'dayjs/locale/zh-cn';
+import { getRandomColorFromString, getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
+import { formatNumber, getRandomId } from "@/server/common/utils.js";
+import "dayjs/locale/zh-cn";
 
-export default function Manage({groupId, classId}) {
+export default function Manage({ groupId, classId }) {
 
     const [loading, setLoading] = useState(true);
-    const [month, setMonth] = useState(dayjs().format('YYYY-MM'));
+    const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
     const [managePersonFlag, setManagePersonFlag] = useState(false);
 
     const [columns, setColumns] = useState([]);
@@ -29,20 +29,20 @@ export default function Manage({groupId, classId}) {
             message.info("请稍后再试");
         } else {
             postIngProcessFlagRef.current = true;
-            message.loading({key: "update-message", content: "正在更新"});
-            makePost("/topView/updateRemarkInPersonMonth", {month: month, personId: record.person_id, labelId: label.label_id, remark: remark})
+            message.loading({ key: "update-message", content: "正在更新" });
+            makePost("/topView/updateRemarkInPersonMonth", { month: month, personId: record.person_id, labelId: label.label_id, remark: remark })
                 .then(res => {
                     if (res.code === 0) {
                         record["items"][label.label_name_en]["remark"] = remark;
                         setTableData(prev => [...prev]);
-                        message.success({key: "update-message", content: "更新完成"});
+                        message.success({ key: "update-message", content: "更新完成" });
                     } else {
-                        message.error({key: "update-message", content: "更新失败"});
+                        message.error({ key: "update-message", content: "更新失败" });
                     }
                 })
                 .catch(e => {
                     console.error(e);
-                    message.error({key: "update-message", content: "更新异常"});
+                    message.error({ key: "update-message", content: "更新异常" });
                 })
                 .finally(() => {
                     postIngProcessFlagRef.current = false;
@@ -61,8 +61,8 @@ export default function Manage({groupId, classId}) {
             message.info("请稍后再试");
         } else {
             postIngProcessFlagRef.current = true;
-            message.loading({key: "update-message", content: "正在更新"});
-            const score = record['items'][label.label_name_en]['score'];
+            message.loading({ key: "update-message", content: "正在更新" });
+            const score = record["items"][label.label_name_en]["score"];
             // 兜底，分数不超过100且不低于0
             if (score + scoreDelta > 100) {
                 scoreDelta = 100 - score;
@@ -70,7 +70,7 @@ export default function Manage({groupId, classId}) {
             if (score + scoreDelta < 0) {
                 scoreDelta = -score;
             }
-            makePost("/topView/updateScoreInPersonMonth", {month: month, personId: record.person_id, labelId: label.label_id, scoreDelta: scoreDelta})
+            makePost("/topView/updateScoreInPersonMonth", { month: month, personId: record.person_id, labelId: label.label_id, scoreDelta: scoreDelta })
                 .then(res => {
                     if (res.code === 0) {
                         let transScore = record["items"][label.label_name_en]["score"];
@@ -80,14 +80,14 @@ export default function Manage({groupId, classId}) {
                             calcAvgAndTotal(record);
                             setTableData(prev => [...prev]);
                         }
-                        message.success({key: "update-message", content: "更新完成"});
+                        message.success({ key: "update-message", content: "更新完成" });
                     } else {
-                        message.error({key: "update-message", content: "更新失败"});
+                        message.error({ key: "update-message", content: "更新失败" });
                     }
                 })
                 .catch(e => {
                     console.error(e);
-                    message.error({key: "update-message", content: "更新异常"});
+                    message.error({ key: "update-message", content: "更新异常" });
                 })
                 .finally(() => {
                     postIngProcessFlagRef.current = false;
@@ -98,20 +98,20 @@ export default function Manage({groupId, classId}) {
 
     const genBaseColumns = (cols) => {
         return [{
-            title: '序号',
-            dataIndex: 'index',
-            key: 'index',
-            fixed: 'left',
+            title: "序号",
+            dataIndex: "index",
+            key: "index",
+            fixed: "left",
             showSorterTooltip: false,
-            width: 80
+            width: 100
         }, {
-            title: '姓名',
-            dataIndex: 'person_name',
-            key: 'person_name',
-            fixed: 'left',
+            title: "姓名",
+            dataIndex: "person_name",
+            key: "person_name",
+            fixed: "left",
             showSorterTooltip: false,
             sorter: (a, b) => a.person_name.localeCompare(b.person_name),
-            width: 100,
+            width: 180,
             render: (_, record) => (
                 <Space>
                     {record.person_name}
@@ -119,43 +119,43 @@ export default function Manage({groupId, classId}) {
                 </Space>
             )
         }, {
-            title: '平均',
-            dataIndex: 'avg_score',
-            key: 'avg_score',
-            fixed: 'left',
+            title: "平均",
+            dataIndex: "avg_score",
+            key: "avg_score",
+            fixed: "left",
             sorter: (a, b) => a.avg_score - b.avg_score,
             showSorterTooltip: false,
-            width: 100,
+            width: 120
         }, {
-            title: '总分',
-            dataIndex: 'total_score',
-            key: 'total_score',
-            fixed: 'left',
+            title: "总分",
+            dataIndex: "total_score",
+            key: "total_score",
+            fixed: "left",
             sorter: (a, b) => a.total_score - b.total_score,
             showSorterTooltip: false,
-            width: 100,
+            width: 120
         },
             ...cols.map(col => ({
                 title: col.label_name,
                 dataIndex: col.label_name_en,
                 key: col.label_name_en,
-                width: 240,
-                sorter: (a, b) => a['items'][col.label_name_en]['score'] - b['items'][col.label_name_en]['score'],
+                width: 250,
+                sorter: (a, b) => a["items"][col.label_name_en]["score"] - b["items"][col.label_name_en]["score"],
                 showSorterTooltip: false,
                 render: (_, record) => {
                     const unique = `${col.label_name_en}-${record["person_id"]}`;
-                    const remark = record['items'][col.label_name_en]['remark'];
-                    const score = record['items'][col.label_name_en]['score'];
+                    const remark = record["items"][col.label_name_en]["remark"];
+                    const score = record["items"][col.label_name_en]["score"];
 
                     return <Space className={"score-func-space"}>
-                        <span className={"ded-score-btn"} style={score < 1 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                        <span className={"ded-score-btn"} style={score < 1 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
                               onClick={() => score >= 1 && itemScoreChange(record, col, -5)}>-5</span>
-                        <span className={"ded-score-btn"} style={score < 1 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                        <span className={"ded-score-btn"} style={score < 1 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
                               onClick={() => score >= 1 && itemScoreChange(record, col, -1)}>-1</span>
-                        <InputNumber style={{width: 48}} size={"small"} value={score} max={100} min={0} variant={"underlined"} controls={false} onBlur={e => itemScoreChange(record, col, e.target.value - score)}/>
-                        <span className={"ded-score-btn"} style={score > 99 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                        <InputNumber style={{ width: 48 }} size={"small"} value={score} max={100} min={0} variant={"underlined"} controls={false} onBlur={e => itemScoreChange(record, col, e.target.value - score)}/>
+                        <span className={"ded-score-btn"} style={score > 99 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
                               onClick={() => score <= 99 && itemScoreChange(record, col, 1)}>+1</span>
-                        <span className={"ded-score-btn"} style={score > 99 ? {"cursor": "not-allowed", "background": "#ccc"} : null}
+                        <span className={"ded-score-btn"} style={score > 99 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
                               onClick={() => score <= 99 && itemScoreChange(record, col, 5)}>+5</span>
                         <Popover
                             trigger="click"
@@ -168,22 +168,21 @@ export default function Manage({groupId, classId}) {
                             }, 100)}
                             content={<Input.TextArea
                                 id={`id-input-remark-${unique}`}
-                                style={{width: 250}}
+                                style={{ width: 250 }}
                                 placeholder={"# 请输入备注"}
                                 defaultValue={remark}
                                 onBlur={e => remark !== e.target.value.trim() && itemRemarkChange(record, col, e.target.value.trim())}
                             />}
                         >
                             <Badge dot={!!remark}>
-                                <AlignCenterOutlined className={"pointer"} style={{color: remark ? "#1890ff" : "#aaa"}}/>
+                                <AlignCenterOutlined className={"pointer"} style={{ color: remark ? "#1890ff" : "#aaa" }}/>
                             </Badge>
                         </Popover>
-                    </Space>
+                    </Space>;
                 }
             }))
         ];
     };
-
 
     const refresh = () => {
         getPersonsAndScores(() => {
@@ -193,7 +192,7 @@ export default function Manage({groupId, classId}) {
 
     const getPersonsAndScores = (callback) => {
         setLoading(true);
-        makePost("/topview/getClassAvgScoreInMonth", {classIdList: [classId], month: month})
+        makePost("/topview/getClassAvgScoreInMonth", { classIdList: [classId], month: month })
             .then(res => {
                 if (res.data) {
                     setTableData(res.data[classId]);
@@ -246,7 +245,7 @@ export default function Manage({groupId, classId}) {
                 <Input
                     size={"large"}
                     prefix={<SearchOutlined/>}
-                    style={{width: 200}}
+                    style={{ width: 200 }}
                     allowClear
                     placeholder={"输入人名进行检索"}
                     onPressEnter={e => setKws(e.target.value)}
@@ -262,7 +261,7 @@ export default function Manage({groupId, classId}) {
                     classId={classId}
                     close={() => setManagePersonFlag(false)}
                 />
-                <Button type={"primary"} ghost style={{borderStyle: "dashed"}}
+                <Button type={"primary"} ghost style={{ borderStyle: "dashed" }}
                         icon={<UserSwitchOutlined className={"mr5"}/>} size={"large"}
                         onClick={() => setManagePersonFlag(!managePersonFlag)}>
                     管理成员

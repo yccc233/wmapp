@@ -1,15 +1,11 @@
-import {DatePicker, Select, Space, Table, Tooltip} from "antd";
-import {useEffect, useState} from "react";
+import { DatePicker, Select, Space, Table, Tag, Tooltip } from "antd";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import {makePost} from "@/src/utils.jsx";
-import {
-    ExclamationCircleOutlined,
-    FallOutlined,
-    RiseOutlined
-} from "@ant-design/icons";
-import {DisplayCard1, DisplayCard2, DisplayCard3} from "@/src/topview/viewer/displayCard.jsx";
+import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
+import { ExclamationCircleOutlined, FallOutlined, RiseOutlined } from "@ant-design/icons";
+import { DisplayCard1, DisplayCard2, DisplayCard3 } from "@/src/topview/viewer/displayCard.jsx";
 
-export default function GroupInfoDisplay({groupId}) {
+export default function GroupInfoDisplay({ groupId }) {
     const [filterCondition, setFilterCondition] = useState({
         month: dayjs().format("YYYY-MM"),
         class: -1
@@ -22,44 +18,50 @@ export default function GroupInfoDisplay({groupId}) {
 
     const genBaseColumns = (cols) => {
         return [{
-            title: '排名',
-            dataIndex: 'range',
-            key: 'range',
-            fixed: 'left',
-            width: 60,
+            title: "排名",
+            dataIndex: "range",
+            key: "range",
+            fixed: "left",
+            width: 60
         }, {
-            title: '班组',
-            dataIndex: 'class_name',
-            key: 'class_name',
-            fixed: 'left',
-            width: 100,
+            title: "班组",
+            dataIndex: "class_name",
+            key: "class_name",
+            fixed: "left",
+            width: 100
         }, {
-            title: '姓名',
-            dataIndex: 'person_name',
-            key: 'person_name',
-            fixed: 'left',
-            width: 100,
+            title: "姓名",
+            dataIndex: "person_name",
+            key: "person_name",
+            fixed: "left",
+            width: 150,
+            render: (_, record) => (
+                <Space>
+                    {record.person_name}
+                    {record.flag_info && <Tag color={getRandomTagColorFromString(record.flag_info)}>{record.flag_info}</Tag>}
+                </Space>
+            )
         }, {
-            title: '平均',
-            dataIndex: 'avg_score',
-            key: 'avg_score',
-            fixed: 'left',
+            title: "平均",
+            dataIndex: "avg_score",
+            key: "avg_score",
+            fixed: "left",
             sorter: (a, b) => a.avg_score - b.avg_score,
             showSorterTooltip: false,
-            width: 100,
+            width: 100
         }, {
-            title: '总分',
-            dataIndex: 'total_score',
-            key: 'total_score',
-            fixed: 'left',
+            title: "总分",
+            dataIndex: "total_score",
+            key: "total_score",
+            fixed: "left",
             sorter: (a, b) => a.total_score - b.total_score,
             showSorterTooltip: false,
-            width: 100,
+            width: 100
         }, {
-            title: '排名变动',
-            dataIndex: 'range_float',
-            key: 'range_float',
-            fixed: 'left',
+            title: "排名变动",
+            dataIndex: "range_float",
+            key: "range_float",
+            fixed: "left",
             width: 100,
             showSorterTooltip: false,
             sorter: (a, b) => a.range_float - b.range_float,
@@ -67,7 +69,7 @@ export default function GroupInfoDisplay({groupId}) {
                 return <span title={"较上个月排名变动"}>
                     {text > 0 ? <RiseOutlined className={"fwb mr5 success"}/> :
                         text < 0 ? <FallOutlined className={"fwb mr5 error"}/> :
-                            <FallOutlined className={"fwb mr5"} style={{color: "transparent"}}/>}
+                            <FallOutlined className={"fwb mr5"} style={{ color: "transparent" }}/>}
                     {Math.abs(text)}
                         </span>;
             }
@@ -77,16 +79,16 @@ export default function GroupInfoDisplay({groupId}) {
                 dataIndex: col.label_name_en,
                 key: col.label_name_en,
                 width: 100,
-                sorter: (a, b) => a['items'][col.label_name_en]['score'] - b['items'][col.label_name_en]['score'],
+                sorter: (a, b) => a["items"][col.label_name_en]["score"] - b["items"][col.label_name_en]["score"],
                 showSorterTooltip: false,
                 render: (_, record) => {
                     return <>
-                        <span>{record['items'][col.label_name_en]['score']}</span>
-                        {record['items'][col.label_name_en]['remark'] ?
-                            <Tooltip title={record['items'][col.label_name_en]['remark']}>
-                                <ExclamationCircleOutlined style={{cursor: 'help', marginLeft: 10}}/>
+                        <span>{record["items"][col.label_name_en]["score"]}</span>
+                        {record["items"][col.label_name_en]["remark"] ?
+                            <Tooltip title={record["items"][col.label_name_en]["remark"]}>
+                                <ExclamationCircleOutlined style={{ cursor: "help", marginLeft: 10 }}/>
                             </Tooltip> : null}
-                    </>
+                    </>;
                 }
             }))
         ];
@@ -94,7 +96,7 @@ export default function GroupInfoDisplay({groupId}) {
 
     const getScore = (_groupId, _month) => {
         Promise.all([
-            makePost("/topview/getGroupAvgScore", {groupId: _groupId, month: _month}),
+            makePost("/topview/getGroupAvgScore", { groupId: _groupId, month: _month }),
             makePost("/topview/getGroupAvgScore", {
                 groupId: _groupId,
                 month: dayjs(_month).subtract(1, "month").format("YYYY-MM")
@@ -143,7 +145,7 @@ export default function GroupInfoDisplay({groupId}) {
                 getScore(groupId, filterCondition.month);
             }
         });
-        makePost("/topview/getClassesByGroupId", {groupId: groupId}).then(res => {
+        makePost("/topview/getClassesByGroupId", { groupId: groupId }).then(res => {
             if (res.data) {
                 setClassList(res.data);
             }
@@ -170,7 +172,7 @@ export default function GroupInfoDisplay({groupId}) {
                     <span className={"cond-title"}>统计时间：</span>
                     <DatePicker
                         picker="month"
-                        disabledDate={current => current && current > dayjs().endOf('month')}
+                        disabledDate={current => current && current > dayjs().endOf("month")}
                         allowClear={false}
                         value={dayjs(filterCondition.month)}
                         onChange={monthChange}
@@ -178,7 +180,7 @@ export default function GroupInfoDisplay({groupId}) {
                 </div>
                 <div className={"conditions"}>
                     <span className={"cond-title"}>班：</span>
-                    <Select style={{width: 100}} value={filterCondition.class}
+                    <Select style={{ width: 100 }} value={filterCondition.class}
                             onChange={classChange}>
                         <Select.Option value={-1}>全部</Select.Option>
                         {classList.map((item, ind) => (
