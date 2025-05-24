@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tag } from "antd";
-import { AlignCenterOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined } from "@ant-design/icons";
+import { EditOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import ManagePersonModal from "@/src/topview/rootManage/managePersonModal.jsx";
-import { getRandomColorFromString, getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
-import { formatNumber, getRandomId } from "@/server/common/utils.js";
+import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
+import { formatNumber } from "@/server/common/utils.js";
 import "dayjs/locale/zh-cn";
 
 export default function Manage({ groupId, classId }) {
@@ -175,7 +175,7 @@ export default function Manage({ groupId, classId }) {
                             />}
                         >
                             <Badge dot={!!remark}>
-                                <AlignCenterOutlined className={"pointer"} style={{ color: remark ? "#1890ff" : "#aaa" }}/>
+                                <EditOutlined className={"pointer"} style={{ color: remark ? "#1890ff" : "#aaa" }}/>
                             </Badge>
                         </Popover>
                     </Space>;
