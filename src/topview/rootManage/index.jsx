@@ -1,9 +1,9 @@
 "use client"
-import {Button, Cascader, Select, Space} from "antd";
-import {useEffect, useState} from "react";
-import {makePost} from "@/src/utils.jsx";
+import { Button, Cascader, Select, Space } from "antd";
+import { useEffect, useState } from "react";
+import { makePost } from "@/src/utils.jsx";
 import Manage from "@/src/topview/rootManage/manage.jsx";
-import {PEmpty} from "@/src/components/commonUtils.jsx";
+import { PEmpty } from "@/src/components/commonUtils.jsx";
 
 export default function Index() {
 
@@ -18,7 +18,7 @@ export default function Index() {
         const groupId = groupIds[groupIds.length - 1];
         setActiveGroupId(groupId);
         if (groupId) {
-            makePost("/topview/getClassesByGroupId", {groupId}).then(res => {
+            makePost("/topview/getClassesByGroupId", { groupId }).then(res => {
                 if (res.data) {
                     setClassList(res.data.map(classItem => ({
                         label: classItem.class_name,
@@ -35,6 +35,10 @@ export default function Index() {
 
     const loginOut = () => {
         window.location.href = "/wmapp/login";
+    };
+
+    const backToStore = () => {
+        window.location.href = "/wmapp/appstore";
     };
 
     useEffect(() => {
@@ -58,11 +62,14 @@ export default function Index() {
     return <div className={"topview-manage"}>
         <div className={"top"}>
             <Space className={"flex1"}>
-                <Cascader allowClear={false} style={{width: 300}} options={groupList} onChange={groupChange} allow placeholder="请选择组"/>
-                <Select style={{width: 300}} options={classList} onChange={classChange} placeholder="请选择班组"/>
+                <Cascader allowClear={false} style={{ width: 300 }} options={groupList} onChange={groupChange} allow placeholder="请选择组"/>
+                <Select style={{ width: 300 }} options={classList} onChange={classChange} placeholder="请选择班组"/>
             </Space>
             <div>
-                <Button type={"link"} onClick={loginOut}>
+                <Button size={"small"} type={"link"} onClick={backToStore}>
+                    首页
+                </Button>
+                <Button size={"small"} type={"link"} onClick={loginOut}>
                     登出
                 </Button>
             </div>
