@@ -5,6 +5,7 @@ import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
 import { ExclamationCircleOutlined, FallOutlined, RiseOutlined } from "@ant-design/icons";
 import { DisplayCard1, DisplayCard2, DisplayCard3 } from "@/src/topview/viewer/displayCard.jsx";
 
+
 export default function GroupInfoDisplay({ groupId }) {
     const [filterCondition, setFilterCondition] = useState({
         month: dayjs().format("YYYY-MM"),
@@ -28,17 +29,18 @@ export default function GroupInfoDisplay({ groupId }) {
             dataIndex: "class_name",
             key: "class_name",
             fixed: "left",
-            width: 100
+            width: 120,
+            render: (text, record) => `${record.group_name} / ${text}`
         }, {
             title: "姓名",
             dataIndex: "person_name",
             key: "person_name",
             fixed: "left",
-            width: 150,
+            width: 160,
             render: (_, record) => (
                 <Space>
                     {record.person_name}
-                    {record.flag_info && <Tag color={getRandomTagColorFromString(record.flag_info)}>{record.flag_info}</Tag>}
+                    {record.flag_info && <Tag color={getRandomTagColorFromString(record.flag_info,7)}>{record.flag_info}</Tag>}
                 </Space>
             )
         }, {
@@ -48,7 +50,7 @@ export default function GroupInfoDisplay({ groupId }) {
             fixed: "left",
             sorter: (a, b) => a.avg_score - b.avg_score,
             showSorterTooltip: false,
-            width: 100
+            width: 80
         }, {
             title: "总分",
             dataIndex: "total_score",
@@ -56,13 +58,13 @@ export default function GroupInfoDisplay({ groupId }) {
             fixed: "left",
             sorter: (a, b) => a.total_score - b.total_score,
             showSorterTooltip: false,
-            width: 100
+            width: 80
         }, {
             title: "排名变动",
             dataIndex: "range_float",
             key: "range_float",
             fixed: "left",
-            width: 100,
+            width: 90,
             showSorterTooltip: false,
             sorter: (a, b) => a.range_float - b.range_float,
             render: text => {

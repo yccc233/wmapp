@@ -1,6 +1,7 @@
 import topViewManageDao from "../dao/topViewManageDao.js";
-import {formatNumber} from "../common/utils.js";
+import { formatNumber } from "../common/utils.js";
 import dayjs from "dayjs";
+
 
 const getAllMyCollectedGroups = async (userId) => {
     let allGroups = await topViewManageDao.getAllGroups();
@@ -36,7 +37,7 @@ const getAllMyCollectedGroups = async (userId) => {
         delete group.child_group_ids;
         delete group.visible;
         delete group.insert_time;
-    })
+    });
     allGroups = allGroups.filter((group) => !group.isLeaf);
     return allGroups;
 };
@@ -47,7 +48,7 @@ const getLabelNames = async () => {
     return labels.sort((a, b) => a.display_order - b.display_order).map(label => ({
         label_name: label.label_name,
         label_name_en: label.label_name_en,
-        label_id: label.label_id,
+        label_id: label.label_id
     }));
 };
 
@@ -63,6 +64,7 @@ const getGroupAvgScore = async (groupId, month) => {
     } else {
         classList = await topViewManageDao.getClassListByGroupId(groupId);
     }
+    const allGroupList = await topViewManageDao.getAllGroups();
     if (classList.length > 0) {
         const persons = await topViewManageDao.getPersonsFromClassIdList(classList.map(cl => cl.class_id), month);
         const dedScores = await topViewManageDao.getDedScoresByPersonIds(persons.map(p => p.person_id), month);
@@ -75,13 +77,25 @@ const getGroupAvgScore = async (groupId, month) => {
                 const personInLabelDedScore = personDedScores.find(d => d.label_id === label.label_id);
                 const score = 100 - (personInLabelDedScore ? personInLabelDedScore.ded_score : 0);
                 const remark = personInLabelDedScore?.remark || "";
-                person['items'][label.label_name_en] = {score, remark};
+                person["items"][label.label_name_en] = { score, remark };
                 totalScore += score;
             });
             person.total_score = totalScore;
             person.avg_score = formatNumber(totalScore / labels.length);
             person.class_id = person.related_class_id;
-            person.class_name = classList.find(cl => cl.class_id === person.class_id)?.class_name;
+            const personClass = classList.find(cl => cl.class_id === person.class_id);
+            let related_group_id = null;
+            // 获取组信息
+            if (personClass) {
+                person.class_name = personClass.class_name;
+                related_group_id = personClass.related_group_id;
+            }
+            // 获取班信息
+            const personGroup = allGroupList.find(g => g.group_id === related_group_id);
+            if (personGroup) {
+                person.group_id = personGroup.group_id;
+                person.group_name = personGroup.group_name;
+            }
             delete person.related_class_id;
             delete person.insert_time;
         });
@@ -104,7 +118,7 @@ const getClassPersonsAvgScore = async (classId, month) => {
             const personInLabelDedScore = personDedScores.find(d => d.label_id === label.label_id);
             const score = 100 - (personInLabelDedScore ? personInLabelDedScore.ded_score : 0);
             const remark = personInLabelDedScore?.remark || "";
-            person['items'][label.label_name_en] = {score, remark};
+            person["items"][label.label_name_en] = { score, remark };
             totalScore += score;
         });
         person.total_score = totalScore;
@@ -160,19 +174,22 @@ const getClassInfoByClassId = async (classId) => {
 
 const chartsForClass = async (classIdList, month) => {
     const classMap = await getClassAvgScoreInMonth(classIdList, month);
-    const classData = [];
+    let classData = [];
+    const allGroupList = await topViewManageDao.getAllGroups();
     for (const classId of classIdList) {
         const classInfo = await topViewManageDao.getClassByClassId(classId);
         const classPersons = classMap[classId];
-        delete classInfo.insert_time;
-        delete classInfo.related_group_id;
-        delete classInfo.visible;
         classInfo.persons_count = classPersons.length;
         classInfo.avg_score = formatNumber(classPersons.reduce((acc, curr) => acc + curr.avg_score, 0) / classPersons.length, 2);
         classInfo.min_score = classPersons.reduce((score, person) => score < person.avg_score ? score : person.avg_score, 100);
         classInfo.max_score = classPersons.reduce((score, person) => score > person.avg_score ? score : person.avg_score, 0);
+        classInfo.group_name = allGroupList.find(g => g.group_id === classInfo.related_group_id)?.group_name;
+        delete classInfo.insert_time;
+        delete classInfo.related_group_id;
+        delete classInfo.visible;
         classData.push(classInfo);
     }
+    classData = classData.filter(c => c.persons_count > 0);
     classData.sort((a, b) => b.avg_score - a.avg_score);
     return classData;
 };
@@ -188,7 +205,7 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
             data: []
         });
     }
-    const monthList = Array.from({length}).map((_, ind) => dayjs(startMonth).subtract(ind, "months").format('YYYY-MM')).reverse();
+    const monthList = Array.from({ length }).map((_, ind) => dayjs(startMonth).subtract(ind, "months").format("YYYY-MM")).reverse();
     let minScore = 100, maxScore = 0;
     for (const month of monthList) {
         const classMap = await getClassAvgScoreInMonth(classIdList, month);
@@ -299,12 +316,12 @@ const addPersonInClass = async (classId, personName, flagInfo) => {
 const deletePersonInClass = async (personId) => {
     const counts = await topViewManageDao.deletePersonInClass(personId);
     return counts > 0 ? "success" : "fail";
-}
+};
 
 const updatePersonInClass = async (personId, personName, flagInfo) => {
     const counts = await topViewManageDao.updatePersonInClass(personId, personName, flagInfo);
     return counts > 0 ? "success" : "fail";
-}
+};
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -324,4 +341,4 @@ export default {
     addPersonInClass,
     deletePersonInClass,
     updatePersonInClass
-}
+};
