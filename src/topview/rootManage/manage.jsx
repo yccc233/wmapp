@@ -6,6 +6,7 @@ import ManagePersonModal from "@/src/topview/rootManage/managePersonModal.jsx";
 import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
 import { formatNumber } from "@/server/common/utils.js";
 import "dayjs/locale/zh-cn";
+import { TextAreaRemark } from "@/src/topview/components.jsx";
 
 export default function Manage({ groupId, classId }) {
 
@@ -103,6 +104,13 @@ export default function Manage({ groupId, classId }) {
             key: "index",
             fixed: "left",
             showSorterTooltip: false,
+            width: 80
+        }, {
+            title: "段",
+            dataIndex: "flag_info",
+            key: "flag_info",
+            fixed: "left",
+            sorter: (a, b) => a.flag_info.localeCompare(b.flag_info),
             width: 100
         }, {
             title: "姓名",
@@ -111,11 +119,11 @@ export default function Manage({ groupId, classId }) {
             fixed: "left",
             showSorterTooltip: false,
             sorter: (a, b) => a.person_name.localeCompare(b.person_name),
-            width: 180,
+            width: 130,
             render: (_, record) => (
                 <Space>
                     {record.person_name}
-                    {record.flag_info && <Tag color={getRandomTagColorFromString(record.flag_info)}>{record.flag_info}</Tag>}
+                    {record.label_info && <Tag color={getRandomTagColorFromString(record.label_info)}>{record.label_info}</Tag>}
                 </Space>
             )
         }, {
@@ -125,7 +133,7 @@ export default function Manage({ groupId, classId }) {
             fixed: "left",
             sorter: (a, b) => a.avg_score - b.avg_score,
             showSorterTooltip: false,
-            width: 120
+            width: 100
         }, {
             title: "总分",
             dataIndex: "total_score",
@@ -133,7 +141,7 @@ export default function Manage({ groupId, classId }) {
             fixed: "left",
             sorter: (a, b) => a.total_score - b.total_score,
             showSorterTooltip: false,
-            width: 120
+            width: 100
         },
             ...cols.map(col => ({
                 title: col.label_name,
@@ -166,13 +174,7 @@ export default function Manage({ groupId, classId }) {
                                 const inputDom = document.getElementById(`id-input-remark-${unique}`);
                                 inputDom?.focus();
                             }, 100)}
-                            content={<Input.TextArea
-                                id={`id-input-remark-${unique}`}
-                                style={{ width: 250 }}
-                                placeholder={"# 请输入备注"}
-                                defaultValue={remark}
-                                onBlur={e => remark !== e.target.value.trim() && itemRemarkChange(record, col, e.target.value.trim())}
-                            />}
+                            content={<TextAreaRemark unique={unique} defaultValue={remark} onCommit={value => value !== remark && itemRemarkChange(record, col, value)}/>}
                         >
                             <Badge dot={!!remark}>
                                 <EditOutlined className={"pointer"} style={{ color: remark ? "#1890ff" : "#aaa" }}/>

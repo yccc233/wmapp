@@ -269,3 +269,7 @@
     word-break: break-all;
     white-space: pre-wrap;
 }
+
+.align-right {
+    text-align: right;
+}

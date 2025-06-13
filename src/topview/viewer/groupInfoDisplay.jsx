@@ -1,17 +1,20 @@
-import { DatePicker, Select, Space, Table, Tag, Tooltip } from "antd";
+import { DatePicker, Select, Space, Table, Tag } from "antd";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
-import { ExclamationCircleOutlined, FallOutlined, RiseOutlined } from "@ant-design/icons";
+import { FallOutlined, RiseOutlined } from "@ant-design/icons";
 import { DisplayCard1, DisplayCard2, DisplayCard3 } from "@/src/topview/viewer/displayCard.jsx";
+import { ToolTipRemark } from "@/src/topview/components.jsx";
 
 
 export default function GroupInfoDisplay({ groupId }) {
     const [filterCondition, setFilterCondition] = useState({
         month: dayjs().format("YYYY-MM"),
-        class: -1
+        class: -1,
+        type: ""
     });
     const [classList, setClassList] = useState([]);
+    const [typeList, setTypeList] = useState([]);
     const [memberData, setMemberData] = useState([]);
     const [tableData, setTableData] = useState([]);
 
@@ -25,22 +28,33 @@ export default function GroupInfoDisplay({ groupId }) {
             fixed: "left",
             width: 60
         }, {
-            title: "班组",
+            title: "组",
+            dataIndex: "group_name",
+            key: "group_name",
+            fixed: "left",
+            width: 65
+        }, {
+            title: "班",
             dataIndex: "class_name",
             key: "class_name",
             fixed: "left",
-            width: 120,
-            render: (text, record) => `${record.group_name} / ${text}`
+            width: 65
+        }, {
+            title: "段",
+            dataIndex: "flag_info",
+            key: "flag_info",
+            fixed: "left",
+            width: 65
         }, {
             title: "姓名",
             dataIndex: "person_name",
             key: "person_name",
             fixed: "left",
-            width: 160,
+            width: 100,
             render: (_, record) => (
                 <Space>
                     {record.person_name}
-                    {record.flag_info && <Tag color={getRandomTagColorFromString(record.flag_info,7)}>{record.flag_info}</Tag>}
+                    {record.label_info && <Tag color={getRandomTagColorFromString(record.label_info, 7)}>{record.label_info}</Tag>}
                 </Space>
             )
         }, {
@@ -86,10 +100,7 @@ export default function GroupInfoDisplay({ groupId }) {
                 render: (_, record) => {
                     return <>
                         <span>{record["items"][col.label_name_en]["score"]}</span>
-                        {record["items"][col.label_name_en]["remark"] ?
-                            <Tooltip title={record["items"][col.label_name_en]["remark"]}>
-                                <ExclamationCircleOutlined style={{ cursor: "help", marginLeft: 10 }}/>
-                            </Tooltip> : null}
+                        {record["items"][col.label_name_en]["remark"] ? <ToolTipRemark remark={record["items"][col.label_name_en]["remark"]}/> : null}
                     </>;
                 }
             }))
@@ -114,8 +125,13 @@ export default function GroupInfoDisplay({ groupId }) {
                             item.range_float = "-";
                         }
                     });
+                    if (filterCondition.type !== "" || filterCondition.class !== -1) {
+                        setFilterCondition(prev => ({ ...prev, class: -1, type: "" }));
+                    }
                     setTableData(res1.data);
                     setMemberData(res1.data);
+                    const flagList = res1.data.map(d => d.flag_info).filter(d => d);
+                    setTypeList(Array.from(new Set(flagList)));
                 }
             });
     };
@@ -137,6 +153,18 @@ export default function GroupInfoDisplay({ groupId }) {
             setTableData([...memberData]);
         } else {
             setTableData(memberData.filter(m => m.class_id === valueId));
+        }
+    };
+
+    const typeChange = (valueId) => {
+        setFilterCondition({
+            ...filterCondition,
+            type: valueId
+        });
+        if (valueId === "") {
+            setTableData([...memberData]);
+        } else {
+            setTableData(memberData.filter(m => m.flag_info === valueId));
         }
     };
 
@@ -188,6 +216,17 @@ export default function GroupInfoDisplay({ groupId }) {
                         {classList.map((item, ind) => (
                             <Select.Option key={`class-list-${ind}`}
                                            value={item.class_id}>{item.class_name}</Select.Option>
+                        ))}
+                    </Select>
+                </div>
+                <div className={"conditions"}>
+                    <span className={"cond-title"}>段：</span>
+                    <Select style={{ width: 100 }} value={filterCondition.type}
+                            onChange={typeChange}>
+                        <Select.Option value={""}>全部</Select.Option>
+                        {typeList.map((item, ind) => (
+                            <Select.Option key={`type-list-${ind}`}
+                                           value={item}>{item}</Select.Option>
                         ))}
                     </Select>
                 </div>
