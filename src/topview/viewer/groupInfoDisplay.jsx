@@ -98,10 +98,10 @@ export default function GroupInfoDisplay({ groupId }) {
                 sorter: (a, b) => a["items"][col.label_name_en]["score"] - b["items"][col.label_name_en]["score"],
                 showSorterTooltip: false,
                 render: (_, record) => {
-                    return <>
+                    return <div className={"h_center"}>
                         <span>{record["items"][col.label_name_en]["score"]}</span>
                         {record["items"][col.label_name_en]["remark"] ? <ToolTipRemark remark={record["items"][col.label_name_en]["remark"]}/> : null}
-                    </>;
+                    </div>;
                 }
             }))
         ];
@@ -235,6 +235,7 @@ export default function GroupInfoDisplay({ groupId }) {
                 下表统计了班组内成员所拥有的分数，表格支持筛选、过滤、排序等操作，扣除的分数在后面会有备注说明，可以修改统计时间和班组来进一步查看班组的成员情况。
             </div>
             <Table
+                className={"display-table"}
                 size={"small"}
                 rowKey="person_id"
                 columns={finalColumns}

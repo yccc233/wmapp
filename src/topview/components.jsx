@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { Badge, Input, Popover } from "antd";
+import { Input, Popover, Typography } from "antd";
+
+const { Paragraph } = Typography;
+
 
 export const TextAreaRemark = ({ unique, defaultValue, onCommit }) => {
     const [value, setValue] = useState(defaultValue || "");
@@ -20,23 +23,29 @@ export const TextAreaRemark = ({ unique, defaultValue, onCommit }) => {
             onChange={e => setValue(e.target.value)}
             onBlur={blur}
         />
-        <span className={"gray fs12 align-right"}>{paragraphs.length}个段落</span>
+        <span className={"gray fs11 align-right"}>已备注 {paragraphs.length} 项</span>
     </div>;
 };
 
 
 export const ToolTipRemark = ({ remark }) => {
-
     const [paragraphs, setParagraphs] = useState([]);
-
 
     useEffect(() => {
         const _p = remark.split(/\n{2,}/).filter(v => v);
         setParagraphs(_p);
     }, [remark]);
 
-
-    return <Popover title={""}>
-        <Badge color="#faad14" style={{ marginLeft: 6 }} size={"small"} count={paragraphs.length}/>
+    return <Popover
+        title={"备注"}
+        content={<Typography style={{ maxWidth: 500 }}>
+            {paragraphs.map((b, i) => <blockquote key={`b-${i}`}>
+                {b.split("\n").map((p, j) => <Paragraph key={`p-${j}`} style={{marginBottom: 5}}>{p}</Paragraph>)}
+            </blockquote>)}
+        </Typography>}
+    >
+        <span className={"remark-flag"}>
+            {paragraphs.length}
+        </span>
     </Popover>;
 };

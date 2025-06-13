@@ -292,6 +292,21 @@
                 }
             }
 
+            .display-table {
+                .remark-flag {
+                    font-size: 12px;
+                    margin-left: 5px;
+                    padding: 0 6px;
+                    background: #efb041;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 2px solid #fff;
+                    cursor: cell;
+                }
+            }
+
             .ant-table {
                 background: transparent;
 
