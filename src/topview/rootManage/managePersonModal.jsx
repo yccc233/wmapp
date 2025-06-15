@@ -86,10 +86,10 @@ export default function ManagePersonModal({ visible, classId, close }) {
                     record.person_id === editId ? <>
                         <Button type={"link"} size={"small"} onClick={() => save(record)}>保存</Button>
                         <Button type={"link"} size={"small"} onClick={cancel}>取消</Button>
-                    </> : <>
+                    </> : record.person_id ? <>
                         <Button type={"link"} size={"small"} onClick={() => edit(record)} disabled={!!editId}>修改</Button>
                         <Button type={"link"} size={"small"} onClick={() => del(record)} disabled={!!editId}>删除</Button>
-                    </>
+                    </> : null
                 }
             </Space>
         }];
