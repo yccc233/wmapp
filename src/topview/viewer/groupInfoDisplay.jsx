@@ -28,19 +28,19 @@ export default function GroupInfoDisplay({ groupId }) {
             fixed: "left",
             width: 60
         }, {
-            title: "组",
+            title: "机组",
             dataIndex: "group_name",
             key: "group_name",
             fixed: "left",
             width: 65
         }, {
-            title: "班",
+            title: "班组",
             dataIndex: "class_name",
             key: "class_name",
             fixed: "left",
-            width: 65
+            width: 100
         }, {
-            title: "段",
+            title: "岗位",
             dataIndex: "flag_info",
             key: "flag_info",
             fixed: "left",

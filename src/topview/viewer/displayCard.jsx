@@ -21,7 +21,7 @@ export const DisplayCard1 = ({ classList, month }) => {
             makePost("/topview/getChartData1", { classIdList: classList.map(c => c.class_id), month })
                 .then(res => {
                     if (res.code === 0) {
-                        let _displayData = res.data;
+                        let _displayData = res.data.slice(0, 3);
                         Array.from({ length: _displayData.length < 3 ? 3 - _displayData.length : 0 }).forEach(() => {
                             _displayData.push({});
                         });
@@ -38,7 +38,7 @@ export const DisplayCard1 = ({ classList, month }) => {
         <div className={"display-1"}>
             <div className={"line line-top"}>
                 <div className={"line-item"} style={{ width: 72, flex: "unset" }}>排名</div>
-                <div className={"line-item"} style={{ width: 120, flex: "unset" }}>班组</div>
+                <div className={"line-item"} style={{ width: 150, flex: "unset" }}>班组</div>
                 <div className={"line-item"}>人员数</div>
                 <div className={"line-item"}>平均分</div>
                 <div className={"line-item"}>最高分</div>
@@ -50,7 +50,7 @@ export const DisplayCard1 = ({ classList, month }) => {
                         {
                             item.class_name ? <>
                                 <div className={"line-item"} style={{ width: 72, flex: "unset" }}>{getSort(ind + 1)}</div>
-                                <div className={"line-item"} style={{ width: 120, flex: "unset" }}>{item.group_name} / {item.class_name}</div>
+                                <div className={"line-item"} style={{ width: 150, flex: "unset" }}>{item.group_name} / {item.class_name}</div>
                                 <div className={"line-item"}><TeamOutlined className={"mr2"}/>{item.persons_count}</div>
                                 <div className={"line-item"}>{item.avg_score}</div>
                                 <div className={"line-item"}>{item.max_score}</div>
@@ -77,6 +77,8 @@ export const DisplayCard2 = ({ classList, month }) => {
                         if (!echartsRef.current) {
                             echartsRef.current = echarts.init(domRef.current);
                         }
+
+                        const legendData = res.data.items.map(eachClass => eachClass.label_name);
                         // 配置 ECharts 选项
                         const option = {
                             grid: {
@@ -86,7 +88,7 @@ export const DisplayCard2 = ({ classList, month }) => {
                                 bottom: "10%"
                             },
                             legend: {
-                                data: res.data.items.map(eachClass => eachClass.label_name),
+                                data: legendData.length > 3 ? [] : legendData,
                                 textStyle: {
                                     color: "white" // 设置图例文字颜色为白色
                                 },

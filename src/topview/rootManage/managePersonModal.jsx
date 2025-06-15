@@ -66,7 +66,7 @@ export default function ManagePersonModal({ visible, classId, close }) {
         }, {
             key: "flag_info",
             dataIndex: "flag_info",
-            title: "段名称",
+            title: "岗位",
             editable: true,
             sorter: (a, b) => a.flag_info && !b.flag_info ? true : false,
             render: text => text || <span style={{ fontStyle: "italic" }}>(无)</span>
@@ -296,11 +296,11 @@ export default function ManagePersonModal({ visible, classId, close }) {
                     <Input placeholder="请输入姓名" autoComplete="off"/>
                 </Form.Item>
                 <Form.Item
-                    label="段名称"
+                    label="岗位"
                     name="flag_info"
                     className={"mt10"}
                 >
-                    <Input placeholder="段名称（选填）" autoComplete="off"/>
+                    <Input placeholder="岗位（选填）" autoComplete="off"/>
                 </Form.Item>
             </Form>
         </Modal>

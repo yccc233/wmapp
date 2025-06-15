@@ -106,7 +106,7 @@ export default function Manage({ groupId, classId }) {
             showSorterTooltip: false,
             width: 80
         }, {
-            title: "段",
+            title: "岗位",
             dataIndex: "flag_info",
             key: "flag_info",
             fixed: "left",
