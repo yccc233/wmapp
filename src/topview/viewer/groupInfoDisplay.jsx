@@ -144,16 +144,25 @@ export default function GroupInfoDisplay({ groupId }) {
         getScore(groupId, dateString);
     };
 
+    const setTableByConditions = (classValue, typeValue) => {
+        setTableData(prev => {
+            let tar = [...memberData];
+            if (classValue !== -1) {
+                tar = tar.filter(t => t.class_id === classValue);
+            }
+            if (typeValue !== "") {
+                tar = tar.filter(t => t.flag_info === typeValue);
+            }
+            return tar;
+        });
+    };
+
     const classChange = (valueId) => {
         setFilterCondition({
             ...filterCondition,
             class: valueId
         });
-        if (valueId === -1) {
-            setTableData([...memberData]);
-        } else {
-            setTableData(memberData.filter(m => m.class_id === valueId));
-        }
+        setTableByConditions(valueId, filterCondition.type);
     };
 
     const typeChange = (valueId) => {
@@ -161,11 +170,7 @@ export default function GroupInfoDisplay({ groupId }) {
             ...filterCondition,
             type: valueId
         });
-        if (valueId === "") {
-            setTableData([...memberData]);
-        } else {
-            setTableData(memberData.filter(m => m.flag_info === valueId));
-        }
+        setTableByConditions(filterCondition.class, valueId);
     };
 
     useEffect(() => {

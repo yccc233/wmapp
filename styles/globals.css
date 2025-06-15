@@ -281,3 +281,7 @@
 .align-right {
     text-align: right;
 }
+
+.j-s-between {
+    justify-content: space-between;
+}

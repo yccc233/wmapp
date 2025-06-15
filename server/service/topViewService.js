@@ -199,11 +199,14 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
 
     for (const classId of classIdList) {
         const classInfo = await getClassInfoByClassId(classId);
-        classData.push({
+        const appendObj = {
             class_id: classInfo.class_id,
             class_name: classInfo.class_name,
+            group_name: classInfo.related_group?.group_name || "",
             data: []
-        });
+        };
+        appendObj.label_name = appendObj.group_name + "/" + appendObj.class_name;
+        classData.push(appendObj);
     }
     const monthList = Array.from({ length }).map((_, ind) => dayjs(startMonth).subtract(ind, "months").format("YYYY-MM")).reverse();
     let minScore = 100, maxScore = 0;

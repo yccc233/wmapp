@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getRandomColor, makePost } from "@/src/utils.jsx";
 import { Empty } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
@@ -86,7 +86,7 @@ export const DisplayCard2 = ({ classList, month }) => {
                                 bottom: "10%"
                             },
                             legend: {
-                                data: res.data.items.map(eachClass => eachClass.class_name),
+                                data: res.data.items.map(eachClass => eachClass.label_name),
                                 textStyle: {
                                     color: "white" // 设置图例文字颜色为白色
                                 },
@@ -130,7 +130,7 @@ export const DisplayCard2 = ({ classList, month }) => {
                             },
                             series: res.data.items.map(eachClass => ({
                                 type: "line",
-                                name: eachClass.class_name,
+                                name: eachClass.label_name,
                                 data: eachClass.data.map(d => d.avg_score)
                             }))
                         };
