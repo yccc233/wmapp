@@ -8,6 +8,8 @@ import { ToolTipRemark } from "@/src/topview/components.jsx";
 
 
 export default function GroupInfoDisplay({ groupId }) {
+
+    const [loading, setLoading] = useState(true);
     const [filterCondition, setFilterCondition] = useState({
         month: dayjs().format("YYYY-MM"),
         class: -1,
@@ -108,6 +110,7 @@ export default function GroupInfoDisplay({ groupId }) {
     };
 
     const getScore = (_groupId, _month) => {
+        setLoading(true);
         Promise.all([
             makePost("/topview/getGroupAvgScore", { groupId: _groupId, month: _month }),
             makePost("/topview/getGroupAvgScore", {
@@ -132,6 +135,7 @@ export default function GroupInfoDisplay({ groupId }) {
                     setMemberData(res1.data);
                     const flagList = res1.data.map(d => d.flag_info).filter(d => d);
                     setTypeList(Array.from(new Set(flagList)));
+                    setLoading(false);
                 }
             });
     };
@@ -242,6 +246,7 @@ export default function GroupInfoDisplay({ groupId }) {
             <Table
                 className={"display-table"}
                 size={"small"}
+                loading={loading}
                 rowKey="person_id"
                 columns={finalColumns}
                 dataSource={tableData}
