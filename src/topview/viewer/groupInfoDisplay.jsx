@@ -219,7 +219,7 @@ export default function GroupInfoDisplay({ groupId }) {
                 </div>
                 <div className={"conditions"}>
                     <span className={"cond-title"}>班：</span>
-                    <Select style={{ width: 100 }} value={filterCondition.class}
+                    <Select style={{ width: 100 }} popupMatchSelectWidth={false} value={filterCondition.class}
                             onChange={classChange}>
                         <Select.Option value={-1}>全部</Select.Option>
                         {classList.map((item, ind) => (
@@ -230,7 +230,7 @@ export default function GroupInfoDisplay({ groupId }) {
                 </div>
                 <div className={"conditions"}>
                     <span className={"cond-title"}>段：</span>
-                    <Select style={{ width: 100 }} value={filterCondition.type}
+                    <Select style={{ width: 100 }} popupMatchSelectWidth={false} value={filterCondition.type}
                             onChange={typeChange}>
                         <Select.Option value={""}>全部</Select.Option>
                         {typeList.map((item, ind) => (
