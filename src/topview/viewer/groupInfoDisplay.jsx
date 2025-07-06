@@ -5,13 +5,14 @@ import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
 import { FallOutlined, RiseOutlined } from "@ant-design/icons";
 import { DisplayCard1, DisplayCard2, DisplayCard3 } from "@/src/topview/viewer/displayCard.jsx";
 import { ToolTipRemark } from "@/src/topview/components.jsx";
+import { getMonthRange } from "@/src/topview/util.jsx";
 
+const currentMonth = dayjs().format("YYYY-MM")
 
 export default function GroupInfoDisplay({ groupId }) {
-
     const [loading, setLoading] = useState(true);
     const [filterCondition, setFilterCondition] = useState({
-        month: dayjs().format("YYYY-MM"),
+        monthRange: [currentMonth, currentMonth],
         class: -1,
         type: ""
     });
@@ -88,7 +89,7 @@ export default function GroupInfoDisplay({ groupId }) {
                     {text > 0 ? <RiseOutlined className={"fwb mr5 success"}/> :
                         text < 0 ? <FallOutlined className={"fwb mr5 error"}/> :
                             <FallOutlined className={"fwb mr5"} style={{ color: "transparent" }}/>}
-                    {Math.abs(text)}
+                    {Math.abs(text) || "-"}
                         </span>;
             }
         },
@@ -109,43 +110,60 @@ export default function GroupInfoDisplay({ groupId }) {
         ];
     };
 
-    const getScore = (_groupId, _month) => {
+    const getScore = (_groupId, monthRange) => {
         setLoading(true);
-        Promise.all([
-            makePost("/topview/getGroupAvgScore", { groupId: _groupId, month: _month }),
-            makePost("/topview/getGroupAvgScore", {
-                groupId: _groupId,
-                month: dayjs(_month).subtract(1, "month").format("YYYY-MM")
-            })
-        ])
-            .then(([res1, res2]) => {
-                if (res1.data && res2.data) {
-                    res1.data.forEach(item => {
-                        const lastMonthData = res2.data.find(d => d.person_id === item.person_id);
-                        if (lastMonthData) {
-                            item.range_float = lastMonthData.range - item.range;
-                        } else {
-                            item.range_float = "-";
+        const months = getMonthRange(monthRange[0], monthRange[1]);
+        if (months.length === 1) {
+            const _month = months[0];
+            Promise.all([
+                makePost("/topview/getGroupAvgScore", { groupId: _groupId, month: _month }),
+                makePost("/topview/getGroupAvgScore", {
+                    groupId: _groupId,
+                    month: dayjs(_month).subtract(1, "month").format("YYYY-MM")
+                })
+            ])
+                .then(([res1, res2]) => {
+                    if (res1.data && res2.data) {
+                        res1.data.forEach(item => {
+                            const lastMonthData = res2.data.find(d => d.person_id === item.person_id);
+                            if (lastMonthData) {
+                                item.range_float = lastMonthData.range - item.range;
+                            }
+                        });
+                        if (filterCondition.type !== "" || filterCondition.class !== -1) {
+                            setFilterCondition(prev => ({ ...prev, class: -1, type: "" }));
                         }
-                    });
-                    if (filterCondition.type !== "" || filterCondition.class !== -1) {
-                        setFilterCondition(prev => ({ ...prev, class: -1, type: "" }));
+                        setTableData(res1.data);
+                        setMemberData(res1.data);
+                        const flagList = res1.data.map(d => d.flag_info).filter(d => d);
+                        setTypeList(Array.from(new Set(flagList)));
                     }
-                    setTableData(res1.data);
-                    setMemberData(res1.data);
-                    const flagList = res1.data.map(d => d.flag_info).filter(d => d);
-                    setTypeList(Array.from(new Set(flagList)));
                     setLoading(false);
-                }
-            });
+                });
+        } else {
+            makePost("/topview/getGroupAvgScoreInMonthRange", { groupId: _groupId, startMonth: monthRange[0], endMonth: monthRange[1] })
+                .then(res => {
+                    if (res.data) {
+                        if (filterCondition.type !== "" || filterCondition.class !== -1) {
+                            setFilterCondition(prev => ({ ...prev, class: -1, type: "" }));
+                        }
+                        setTableData(res.data);
+                        setMemberData(res.data);
+                        const flagList = res.data.map(d => d.flag_info).filter(d => d);
+                        setTypeList(Array.from(new Set(flagList)));
+                    }
+                    setLoading(false);
+                });
+        }
+
     };
 
-    const monthChange = (_, dateString) => {
+    const monthChange = (_, dateRange) => {
         setFilterCondition({
             ...filterCondition,
-            month: dateString
+            monthRange: dateRange
         });
-        getScore(groupId, dateString);
+        getScore(groupId, dateRange);
     };
 
     const setTableByConditions = (classValue, typeValue) => {
@@ -181,7 +199,7 @@ export default function GroupInfoDisplay({ groupId }) {
         makePost("/topview/getLabelNames").then(res1 => {
             if (res1.data) {
                 setColumns(genBaseColumns(res1.data));
-                getScore(groupId, filterCondition.month);
+                getScore(groupId, filterCondition.monthRange);
             }
         });
         makePost("/topview/getClassesByGroupId", { groupId: groupId }).then(res => {
@@ -208,12 +226,13 @@ export default function GroupInfoDisplay({ groupId }) {
         <div className={"members-info"}>
             <Space size={"large"}>
                 <div className={"conditions"}>
-                    <span className={"cond-title"}>统计时间：</span>
-                    <DatePicker
+                    <span className={"cond-title"}>时间：</span>
+                    <DatePicker.RangePicker
                         picker="month"
-                        disabledDate={current => current && current > dayjs().endOf("month")}
+                        style={{ width: 200 }}
+                        // disabledDate={current => current && current > dayjs().endOf("month")}
                         allowClear={false}
-                        value={dayjs(filterCondition.month)}
+                        value={[dayjs(filterCondition.monthRange[0]), dayjs(filterCondition.monthRange[1])]}
                         onChange={monthChange}
                     />
                 </div>
@@ -258,9 +277,9 @@ export default function GroupInfoDisplay({ groupId }) {
             />
         </div>
         <div className={"other-info"}>
-            <DisplayCard1 groupId={groupId} classList={classList} month={filterCondition.month}/>
-            <DisplayCard2 groupId={groupId} classList={classList} month={filterCondition.month}/>
-            <DisplayCard3 groupId={groupId} classList={classList} month={filterCondition.month}/>
+            <DisplayCard1 groupId={groupId} classList={classList} month={currentMonth}/>
+            <DisplayCard2 groupId={groupId} classList={classList} month={currentMonth}/>
+            <DisplayCard3 groupId={groupId} classList={classList} month={currentMonth}/>
         </div>
     </div>;
 }

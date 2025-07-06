@@ -1,6 +1,7 @@
 import topViewManageDao from "../dao/topViewManageDao.js";
 import { formatNumber } from "../common/utils.js";
 import dayjs from "dayjs";
+import topViewUtils from "../utils/topViewUtils.js";
 
 
 const getAllMyCollectedGroups = async (userId) => {
@@ -105,6 +106,34 @@ const getGroupAvgScore = async (groupId, month) => {
     }
 };
 
+const getGroupAvgScoreInMonthRange = async (groupId, startMonth, endMonth) => {
+    const months = topViewUtils.getMonthRange(startMonth, endMonth);
+    let lastPersons = {};
+    for (let i = 0; i < months.length; i++) {
+        const month = months[i];
+        const persons = await getGroupAvgScore(groupId, month);
+        persons.forEach(personItem => {
+            const person_id = personItem.person_id;
+            if (lastPersons[person_id]) {
+                lastPersons[person_id]["months_state"][month] = { avg: personItem.avg_score, total: personItem.total_score };
+            } else {
+                lastPersons[person_id] = {
+                    ...personItem,
+                    months_state: {
+                        [month]: { avg: personItem.avg_score, total: personItem.total_score }
+                    }
+                };
+            }
+        });
+    }
+    lastPersons = Object.values(lastPersons);
+    lastPersons.forEach(person => {
+        person.total_score = Object.values(person.months_state).reduce((total, item) => total + item.total, 0);
+        person.avg_score = Object.values(person.months_state).reduce((total, item) => total + item.avg, 0) / (months.length || 1);
+    });
+    return lastPersons;
+};
+
 const getClassPersonsAvgScore = async (classId, month) => {
     const labels = await topViewManageDao.getLabelInfoByLabelIdList();
     const classInfo = await topViewManageDao.getClassByClassId(classId);
@@ -138,6 +167,39 @@ const getClassAvgScoreInMonth = async (classIdList, month) => {
     const classMap = {};
     for (const classId of classIdList) {
         classMap[classId] = await getClassPersonsAvgScore(classId, month);
+    }
+    return classMap;
+};
+
+
+const getClassAvgScoreInMonthRange = async (classIdList, startMonth, endMonth) => {
+    const classMap = {};
+    for (const classId of classIdList) {
+        let classScoreTemp = {};
+        const months = topViewUtils.getMonthRange(startMonth, endMonth);
+        for (let i = 0; i < months.length; i++) {
+            const month = months[i];
+            const monthTargetScorePersons = await getClassPersonsAvgScore(classId, month);
+            monthTargetScorePersons.forEach(monthTargetScoreItem => {
+                const person_id = monthTargetScoreItem.person_id;
+                if (classScoreTemp[person_id]) {
+                    classScoreTemp[person_id]["months_state"][month] = { avg: monthTargetScoreItem.avg_score, total: monthTargetScoreItem.total_score };
+                } else {
+                    classScoreTemp[person_id] = {
+                        ...monthTargetScoreItem,
+                        months_state: {
+                            [month]: { avg: monthTargetScoreItem.avg_score, total: monthTargetScoreItem.total_score }
+                        }
+                    };
+                }
+            });
+        }
+        classScoreTemp = Object.values(classScoreTemp);
+        classScoreTemp.forEach(person => {
+            person.total_score = Object.values(person.months_state).reduce((total, item) => total + item.total, 0);
+            person.avg_score = Object.values(person.months_state).reduce((total, item) => total + item.avg, 0) / (months.length || 1);
+        });
+        classMap[classId] = classScoreTemp;
     }
     return classMap;
 };
@@ -330,9 +392,11 @@ const updatePersonInClass = async (personId, personName, flagInfo) => {
 export default {
     getAllMyCollectedGroups,
     getGroupAvgScore,
+    getGroupAvgScoreInMonthRange,
     getGroupInfoByGroupId,
     getClassInfoByClassId,
     getClassAvgScoreInMonth,
+    getClassAvgScoreInMonthRange,
     getLabelNames,
     getClassesByGroupId,
     chartsForClass,

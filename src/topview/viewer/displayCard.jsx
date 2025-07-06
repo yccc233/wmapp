@@ -9,8 +9,8 @@ export const DisplayCard1 = ({ classList, month }) => {
     const [displayData, setDisplayData] = useState([]);
 
     const getSort = (rankInd) => {
-        if (rankInd < 4) {
-            return <img width={36} src={`/img/topview/sort-${rankInd}.png`} alt={"排名"}/>;
+        if (rankInd < 5) {
+            return <img style={{ width: 24, height: 30 }} src={`/img/topview/sort-new-${rankInd}.png`} alt={""}/>;
         } else {
             return rankInd;
         }
@@ -21,8 +21,8 @@ export const DisplayCard1 = ({ classList, month }) => {
             makePost("/topview/getChartData1", { classIdList: classList.map(c => c.class_id), month })
                 .then(res => {
                     if (res.code === 0) {
-                        let _displayData = res.data.slice(0, 3);
-                        Array.from({ length: _displayData.length < 3 ? 3 - _displayData.length : 0 }).forEach(() => {
+                        let _displayData = res.data.slice(0, 4);
+                        Array.from({ length: _displayData.length < 4 ? 4 - _displayData.length : 0 }).forEach(() => {
                             _displayData.push({});
                         });
                         setDisplayData(_displayData);

@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tag } from "antd";
-import { EditOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined } from "@ant-design/icons";
+import { EditOutlined, ReloadOutlined, SearchOutlined, UploadOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import ManagePersonModal from "@/src/topview/rootManage/managePersonModal.jsx";
 import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
 import { formatNumber } from "@/server/common/utils.js";
 import "dayjs/locale/zh-cn";
 import { TextAreaRemark } from "@/src/topview/components.jsx";
+import ExcelImportModal from "@/src/topview/rootManage/excelImportModal.jsx";
+
 
 export default function Manage({ groupId, classId }) {
 
     const [loading, setLoading] = useState(true);
     const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
+    const [excelImportFlag, setExcelImportFlag] = useState(false);
     const [managePersonFlag, setManagePersonFlag] = useState(false);
 
     const [columns, setColumns] = useState([]);
@@ -258,16 +261,25 @@ export default function Manage({ groupId, classId }) {
                 </Button>
             </Space>
             <div>
-                <ManagePersonModal
-                    visible={managePersonFlag}
-                    classId={classId}
-                    close={() => setManagePersonFlag(false)}
+                <Button type={"link"} style={{ marginRight: 10 }}
+                        icon={<UploadOutlined className={"mr5"}/>} size={"large"}
+                        onClick={() => setExcelImportFlag(!excelImportFlag)}>
+                    导入分数
+                </Button>
+                <ExcelImportModal
+                    visible={excelImportFlag}
+                    close={() => setExcelImportFlag(false)}
                 />
                 <Button type={"primary"} ghost style={{ borderStyle: "dashed" }}
                         icon={<UserSwitchOutlined className={"mr5"}/>} size={"large"}
                         onClick={() => setManagePersonFlag(!managePersonFlag)}>
                     管理成员
                 </Button>
+                <ManagePersonModal
+                    visible={managePersonFlag}
+                    classId={classId}
+                    close={() => setManagePersonFlag(false)}
+                />
             </div>
         </div>
         <div className={"manage-table mt20"}>
