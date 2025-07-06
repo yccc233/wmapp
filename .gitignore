@@ -35,5 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
+# 研发环境
 .idea
+
+# 应用级别
+wmapp.log
+wmapp.pid
