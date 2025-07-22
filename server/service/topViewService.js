@@ -129,7 +129,7 @@ const getGroupAvgScoreInMonthRange = async (groupId, startMonth, endMonth) => {
     lastPersons = Object.values(lastPersons);
     lastPersons.forEach(person => {
         person.total_score = Object.values(person.months_state).reduce((total, item) => total + item.total, 0);
-        person.avg_score = Object.values(person.months_state).reduce((total, item) => total + item.avg, 0) / (months.length || 1);
+
     });
     return lastPersons;
 };
@@ -197,7 +197,7 @@ const getClassAvgScoreInMonthRange = async (classIdList, startMonth, endMonth) =
         classScoreTemp = Object.values(classScoreTemp);
         classScoreTemp.forEach(person => {
             person.total_score = Object.values(person.months_state).reduce((total, item) => total + item.total, 0);
-            person.avg_score = Object.values(person.months_state).reduce((total, item) => total + item.avg, 0) / (months.length || 1);
+            person.avg_score = parseFloat((Object.values(person.months_state).reduce((total, item) => total + item.avg, 0) / (months.length || 1)).toFixed(1));
         });
         classMap[classId] = classScoreTemp;
     }

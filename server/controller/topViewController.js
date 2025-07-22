@@ -50,10 +50,17 @@ router.post("/getGroupAvgScoreInMonthRange", async function (req, res) {
         return;
     }
     let data = await topViewService.getGroupAvgScoreInMonthRange(groupId, startMonth, endMonth);
-    data = data.sort((a, b) => b.avg_score - a.avg_score).map((d, i) => ({
-        ...d,
-        range: i + 1
-    }));
+    data = data
+        .sort((a, b) => {
+            if (b.avg_score !== a.avg_score) {
+                return b.avg_score - a.avg_score;
+            }
+            return b.total_score - a.total_score;
+        })
+        .map((d, i) => ({
+            ...d,
+            range: i + 1
+        }));
     RESPONSE.SUCCESS(req, res, data);
 });
 
