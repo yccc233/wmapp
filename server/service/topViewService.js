@@ -334,16 +334,22 @@ const chartForDedScore = async (groupId, month) => {
 
 
 const getAllPersonsInfo = async () => {
-    const allPersonList = await topViewManageDao.getAllPersons();
-    const allClassList = await topViewManageDao.getAllClassList();
-    const allGroupList = await topViewManageDao.getAllGroups();
-    allClassList.forEach(cls => {
-        cls.related_group = allGroupList.find(g => g.group_id === cls.related_group_id);
+    const [allPersonList, allClassList, allGroupList] = await Promise.all([
+        topViewManageDao.getAllPersons(),
+        topViewManageDao.getAllClassList(),
+        topViewManageDao.getAllGroups()
+    ]);
+    const groupMap = new Map(allGroupList.map(g => [g.group_id, g]));
+    const classMap = new Map(allClassList.map(c => {
+        c.related_group = groupMap.get(c.related_group_id);
+        return [c.class_id, c];
+    }));
+    return allPersonList.map(person => {
+        return {
+            ...person,
+            related_class: classMap.get(person.related_class_id)
+        };
     });
-    allPersonList.forEach(person => {
-        person.related_class = allClassList.find(c => c.class_id === person.related_class_id);
-    });
-    return allPersonList;
 };
 
 const updateScoreInPersonMonth = async (month, personId, labelId, scoreDelta = 0) => {
