@@ -5,17 +5,17 @@ import { InboxOutlined, PlusOutlined } from "@ant-design/icons";
 export default function ExcelImportModal({ visible, close }) {
 
     return <Modal
-        open={visible}
-        onCancel={close}
         width={1000}
         closable={false}
         footer={null}
         title={<div style={{ display: "flex", alignContent: "center", justifyContent: "space-between" }}>
-            <span>成员管理</span>
+            <span>批量处理</span>
         </div>}
         destroyOnClose
         centered
         wrapClassName={"topview-manage-excel-import-modal"}
+        open={visible}
+        onCancel={close}
     >
         <Upload.Dragger
             name={"file"}
@@ -40,8 +40,10 @@ export default function ExcelImportModal({ visible, close }) {
             </p>
             <p className="ant-upload-text">点击或拖拽文件到此区域</p>
             <p className="ant-upload-hint">
-                Support for a single or bulk upload. Strictly prohibited from uploading company data or other
-                banned files.
+                仅支持excel文件类型上传，上传完成后选择需要导入分数的记录，点击完成后即可录入分数
+            </p>
+            <p className="ant-upload-hint">
+                注意不可重复导入，扣除分数会进行累加！
             </p>
         </Upload.Dragger>
 

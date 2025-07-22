@@ -7,7 +7,8 @@ import { DisplayCard1, DisplayCard2, DisplayCard3 } from "@/src/topview/viewer/d
 import { ToolTipRemark } from "@/src/topview/components.jsx";
 import { getMonthRange } from "@/src/topview/util.jsx";
 
-const currentMonth = dayjs().format("YYYY-MM")
+
+const currentMonth = dayjs().format("YYYY-MM");
 
 export default function GroupInfoDisplay({ groupId }) {
     const [loading, setLoading] = useState(true);

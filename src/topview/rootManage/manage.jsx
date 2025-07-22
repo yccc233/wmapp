@@ -14,7 +14,6 @@ export default function Manage({ groupId, classId }) {
     const maxScore = 120;
     const [loading, setLoading] = useState(true);
     const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
-    const [excelImportFlag, setExcelImportFlag] = useState(false);
     const [managePersonFlag, setManagePersonFlag] = useState(false);
 
     const [columns, setColumns] = useState([]);
@@ -261,15 +260,6 @@ export default function Manage({ groupId, classId }) {
                 </Button>
             </Space>
             <div>
-                <Button type={"link"} style={{ marginRight: 10 }}
-                        icon={<UploadOutlined className={"mr5"}/>} size={"large"}
-                        onClick={() => setExcelImportFlag(!excelImportFlag)}>
-                    导入分数
-                </Button>
-                <ExcelImportModal
-                    visible={excelImportFlag}
-                    close={() => setExcelImportFlag(false)}
-                />
                 <Button type={"primary"} ghost style={{ borderStyle: "dashed" }}
                         icon={<UserSwitchOutlined className={"mr5"}/>} size={"large"}
                         onClick={() => setManagePersonFlag(!managePersonFlag)}>
