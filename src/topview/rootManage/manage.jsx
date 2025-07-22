@@ -11,7 +11,7 @@ import ExcelImportModal from "@/src/topview/rootManage/excelImportModal.jsx";
 
 
 export default function Manage({ groupId, classId }) {
-
+    const maxScore = 120;
     const [loading, setLoading] = useState(true);
     const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
     const [excelImportFlag, setExcelImportFlag] = useState(false);
@@ -67,9 +67,9 @@ export default function Manage({ groupId, classId }) {
             postIngProcessFlagRef.current = true;
             message.loading({ key: "update-message", content: "正在更新" });
             const score = record["items"][label.label_name_en]["score"];
-            // 兜底，分数不超过100且不低于0
-            if (score + scoreDelta > 100) {
-                scoreDelta = 100 - score;
+            // 兜底，分数不超过 maxScore 且不低于0
+            if (score + scoreDelta > maxScore) {
+                scoreDelta = maxScore - score;
             }
             if (score + scoreDelta < 0) {
                 scoreDelta = -score;
@@ -79,7 +79,7 @@ export default function Manage({ groupId, classId }) {
                     if (res.code === 0) {
                         let transScore = record["items"][label.label_name_en]["score"];
                         transScore = transScore + scoreDelta;
-                        if (0 <= transScore && transScore <= 100) {
+                        if (0 <= transScore && transScore <= maxScore) {
                             record["items"][label.label_name_en]["score"] = transScore;
                             calcAvgAndTotal(record);
                             setTableData(prev => [...prev]);
@@ -163,11 +163,11 @@ export default function Manage({ groupId, classId }) {
                               onClick={() => score >= 1 && itemScoreChange(record, col, -5)}>-5</span>
                         <span className={"ded-score-btn"} style={score < 1 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
                               onClick={() => score >= 1 && itemScoreChange(record, col, -1)}>-1</span>
-                        <InputNumber style={{ width: 48 }} size={"small"} value={score} max={100} min={0} variant={"underlined"} controls={false} onBlur={e => itemScoreChange(record, col, e.target.value - score)}/>
-                        <span className={"ded-score-btn"} style={score > 99 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
-                              onClick={() => score <= 99 && itemScoreChange(record, col, 1)}>+1</span>
-                        <span className={"ded-score-btn"} style={score > 99 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
-                              onClick={() => score <= 99 && itemScoreChange(record, col, 5)}>+5</span>
+                        <InputNumber style={{ width: 48 }} size={"small"} value={score} max={maxScore} min={0} variant={"underlined"} controls={false} onBlur={e => itemScoreChange(record, col, e.target.value - score)}/>
+                        <span className={"ded-score-btn"} style={score > maxScore - 1 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
+                              onClick={() => score <= maxScore - 1 && itemScoreChange(record, col, 1)}>+1</span>
+                        <span className={"ded-score-btn"} style={score > maxScore - 1 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
+                              onClick={() => score <= maxScore - 1 && itemScoreChange(record, col, 5)}>+5</span>
                         <Popover
                             trigger="click"
                             zIndex={1024}
