@@ -116,7 +116,7 @@ router.post("/getChartData3", async function (req, res) {
         RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
         return;
     }
-    const data = await topViewService.chatForDedScore(groupId, month);
+    const data = await topViewService.chartForDedScore(groupId, month);
     RESPONSE.SUCCESS(req, res, data);
 });
 
@@ -130,6 +130,15 @@ router.post("/getChartData3", async function (req, res) {
  * 4.修改备注
  * 5.管理人员，增删改查四个接口
  */
+
+router.post("/getAllPersons", async function (req, res) {
+    try {
+        const data = await topViewService.getAllPersonsInfo();
+        RESPONSE.SUCCESS(req, res, data);
+    } catch (e) {
+        RESPONSE.ERROR(req, res, e);
+    }
+});
 
 
 /**

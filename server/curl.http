@@ -131,6 +131,15 @@ Content-Type: application/json
 Cookie: username=root1; userid=201
 
 
+
+###
+
+POST http://localhost:2999/wmappserver/topview/getAllPersons
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+
+
 ###
 
 POST http://127.0.0.1:2999/wmappserver/topview/updateScoreInPersonMonth

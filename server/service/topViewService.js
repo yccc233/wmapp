@@ -301,7 +301,7 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
     };
 };
 
-const chatForDedScore = async (groupId, month) => {
+const chartForDedScore = async (groupId, month) => {
     let classList;
     if (groupId === -1) {
         classList = await topViewManageDao.getAllClassList();
@@ -330,6 +330,20 @@ const chatForDedScore = async (groupId, month) => {
     }
     dedList.sort((a, b) => b.dedScore - a.dedScore);
     return dedList;
+};
+
+
+const getAllPersonsInfo = async () => {
+    const allPersonList = await topViewManageDao.getAllPersons();
+    const allClassList = await topViewManageDao.getAllClassList();
+    const allGroupList = await topViewManageDao.getAllGroups();
+    allClassList.forEach(cls => {
+        cls.related_group = allGroupList.find(g => g.group_id === cls.related_group_id);
+    });
+    allPersonList.forEach(person => {
+        person.related_class = allClassList.find(c => c.class_id === person.related_class_id);
+    });
+    return allPersonList;
 };
 
 const updateScoreInPersonMonth = async (month, personId, labelId, scoreDelta = 0) => {
@@ -403,7 +417,8 @@ export default {
     chartsForHistory,
     updateScoreInPersonMonth,
     updateRemarkInPersonMonth,
-    chatForDedScore,
+    getAllPersonsInfo,
+    chartForDedScore,
     getPersonsInClass,
     addPersonInClass,
     deletePersonInClass,
