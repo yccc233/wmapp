@@ -7,7 +7,6 @@ import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
 import { formatNumber } from "@/server/common/utils.js";
 import "dayjs/locale/zh-cn";
 import { TextAreaRemark } from "@/src/topview/components.jsx";
-import ExcelImportModal from "@/src/topview/rootManage/excelImportModal.jsx";
 
 
 export default function Manage({ groupId, classId }) {

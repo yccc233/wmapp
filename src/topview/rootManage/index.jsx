@@ -1,18 +1,18 @@
-"use client"
+"use client";
 import { Button, Cascader, Select, Space } from "antd";
 import { useEffect, useState } from "react";
 import { makePost } from "@/src/utils.jsx";
 import Manage from "@/src/topview/rootManage/manage.jsx";
 import { PEmpty } from "@/src/components/commonUtils.jsx";
-import { UploadOutlined } from "@ant-design/icons";
-import ExcelImportModal from "@/src/topview/rootManage/excelImportModal.jsx";
+import BatchManage from "./batchManage";
+import RevokeScore from "@/src/topview/rootManage/revokeScore.jsx";
+
 
 export default function Index() {
 
 
     const [groupList, setGroupList] = useState([]);
     const [classList, setClassList] = useState([]);
-    const [excelImportFlag, setExcelImportFlag] = useState(false);
 
     const [activeGroupId, setActiveGroupId] = useState(null);
     const [activeClassId, setActiveClassId] = useState(null);
@@ -25,7 +25,7 @@ export default function Index() {
                 if (res.data) {
                     setClassList(res.data.map(classItem => ({
                         label: classItem.class_name,
-                        value: classItem.class_id,
+                        value: classItem.class_id
                     })));
                 }
             });
@@ -53,7 +53,7 @@ export default function Index() {
                         label: group.group_name,
                         children: group.children ? group.children.map(child => ({
                             value: child.group_id,
-                            label: child.group_name,
+                            label: child.group_name
                         })) : null
                     }));
                 }
@@ -67,15 +67,8 @@ export default function Index() {
             <Space className={"flex1"}>
                 <Cascader allowClear={false} style={{ width: 300 }} options={groupList} onChange={groupChange} allow placeholder="请选择机组"/>
                 <Select style={{ width: 300 }} options={classList} onChange={classChange} placeholder="请选择班组"/>
-                <Button type={"primary"} ghost style={{ marginLeft: 100 }}
-                        icon={<UploadOutlined className={"mr5"}/>}
-                        onClick={() => setExcelImportFlag(!excelImportFlag)}>
-                    导入分数
-                </Button>
-                <ExcelImportModal
-                    visible={excelImportFlag}
-                    close={() => setExcelImportFlag(false)}
-                />
+                <BatchManage/>
+                <RevokeScore/>
             </Space>
             <div>
                 <Button size={"small"} type={"link"} onClick={backToStore}>
