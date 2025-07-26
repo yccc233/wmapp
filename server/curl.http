@@ -170,6 +170,37 @@ Cookie: username=root1; userid=201
 
 ###
 
+POST http://localhost:2999/wmappserver/topview/updateBatchInfoInPersonMonth
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+{
+  "records": [
+    {
+      "month": "2025-05",
+      "personId": 10002,
+      "labelId": 3002,
+      "scoreDelta": -3,
+      "remark": "表现不佳"
+    },
+    {
+      "month": "2025-05",
+      "personId": 10003,
+      "labelId": 3001,
+      "scoreDelta": 2,
+      "remark": "表现优秀"
+    },
+    {
+      "month": "2025-06",
+      "personId": 10002,
+      "labelId": 3003,
+      "scoreDelta": 1,
+      "remark": "有所进步"
+    }
+  ]
+}
+
+
 ###
 
 POST http://127.0.0.1:2999/wmappserver/topview/getPersonsInClass

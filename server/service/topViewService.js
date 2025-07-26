@@ -345,9 +345,11 @@ const getAllPersonsInfo = async () => {
         return [c.class_id, c];
     }));
     return allPersonList.map(person => {
+        const relatedClass = classMap.get(person.related_class_id);
         return {
             ...person,
-            related_class: classMap.get(person.related_class_id)
+            related_class: relatedClass,
+            related_group: relatedClass?.related_group
         };
     });
 };
@@ -389,6 +391,20 @@ const updateRemarkInPersonMonth = async (month, personId, labelId, remark) => {
     }
 };
 
+const updateBatchInfoInPersonMonth = async (records) => {
+    const failed = [];
+    for (const rec of records) {
+        try {
+            await updateScoreInPersonMonth(rec.month, rec.personId, rec.labelId, rec.scoreDelta);
+            await updateRemarkInPersonMonth(rec.month, rec.personId, rec.labelId, rec.remark);
+        } catch (e) {
+            console.error(e);
+            failed.push(rec);
+        }
+    }
+    return failed;
+};
+
 const getPersonsInClass = async (classId) => {
     return await topViewManageDao.getPersonsFromClassIdList([classId]);
 };
@@ -423,6 +439,7 @@ export default {
     chartsForHistory,
     updateScoreInPersonMonth,
     updateRemarkInPersonMonth,
+    updateBatchInfoInPersonMonth,
     getAllPersonsInfo,
     chartForDedScore,
     getPersonsInClass,

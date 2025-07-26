@@ -175,6 +175,26 @@ router.post("/updateRemarkInPersonMonth", async function (req, res) {
 
 
 /**
+ * 批量记录接口，目前使用多批次的方法，效率很低，后续可以改进
+ * @param records   [{month, personId, labelId, scoreDelta, remark}]
+ */
+router.post("/updateBatchInfoInPersonMonth", async function (req, res) {
+    let { records } = req.body;
+    if (!records) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    try {
+        const failedRecords = await topViewService.updateBatchInfoInPersonMonth(records);
+        RESPONSE.SUCCESS(req, res, failedRecords);
+    } catch (e) {
+        RESPONSE.ERROR(req, res, e);
+    }
+});
+
+
+
+/**
  * @param sortBy default | Name
  */
 router.post("/getPersonsInClass", async function (req, res) {
