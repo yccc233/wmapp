@@ -98,7 +98,7 @@ export default function GroupInfoDisplay({ groupId }) {
                 title: col.label_name,
                 dataIndex: col.label_name_en,
                 key: col.label_name_en,
-                width: 100,
+                width: 120,
                 sorter: (a, b) => a["items"][col.label_name_en]["score"] - b["items"][col.label_name_en]["score"],
                 showSorterTooltip: false,
                 render: (_, record) => {

@@ -89,7 +89,7 @@ export default function Uploader({ startLineKey = "时间范围", readCallBack }
                 {
                     fileInfo ?
                         <span>
-                            上传文件“{fileInfo.fileName}”
+                            上传文件“<span style={{ color: "#1890ff", fontWeight: "bold" }}>{fileInfo.fileName}</span>”
                         </span>
                         : <span>暂无上传文件</span>
                 }

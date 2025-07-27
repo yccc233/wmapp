@@ -24,13 +24,26 @@ export default function HandleImportModal({ visible, close }) {
     >
         <Tabs>
             <Tabs.TabPane key="30001" tab="厂办查处">
-                <ExcelManage labelId={"30001"} labelName={"厂办查处"}/>
+                <ExcelManage
+                    labelId={"30001"} labelName={"厂办查处"}
+                    fieldDate={"违章时间"} fieldScore={"分值"} fieldRemark={"违章情况"}
+                    fieldViolationName={"违章人员姓名"} fieldCheckName={"检查人员姓名"}
+                />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="压力" key="2">
-                {/* Content for Pressure tab */}
+            <Tabs.TabPane key="3000230003" tab="工厂内查处">
+                <ExcelManage
+                    labelId={"30002"} labelName={"工场检查"}
+                    labelIdPlus={"30003"} labelNamePlus={"班组长查违章"}
+                    fieldDate={"违章时间"} fieldScore={"分值"} fieldRemark={"违章情况"}
+                    fieldViolationName={"违章人员姓名"} fieldCheckName={"检查人员姓名"}
+                />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="性能" key="3">
-                {/* Content for Performance tab */}
+            <Tabs.TabPane key="30004" tab="工厂内查处">
+                <ExcelManage
+                    labelId={"30004"} labelName={"安保系统使用"}
+                    fieldDate={"发现日期"} fieldScore={"匹配危险源"}
+                    fieldCheckName={"发现人姓名"}
+                />
             </Tabs.TabPane>
         </Tabs>
     </Modal>;
@@ -42,9 +55,9 @@ export default function HandleImportModal({ visible, close }) {
 
 const ExcelManage = (props) => {
     const {
-        labelId, labelName,
-        fieldData = "违章时间", fieldScore = "分值", fieldRemark = "违章情况",
-        fieldViolationName = "违章人员姓名", fieldCheckName = "检查人员姓名"
+        labelId, labelName, labelIdPlus, labelNamePlus,
+        fieldDate, fieldScore, fieldRemark,
+        fieldViolationName, fieldCheckName
     } = props;
 
     const columns = [
@@ -103,34 +116,75 @@ const ExcelManage = (props) => {
         for (const person of systemPersonList) {
             sysPersonMap[person.person_name] = person;
         }
-        // 在这里处理每个记录
-        for (const record of arrayData) {
-            // 找到违章人员
-            const violationPersonName = record[fieldViolationName];
-            if (sysPersonMap[violationPersonName]) {
-                displayData.push({
-                    person: sysPersonMap[violationPersonName],
-                    label: { labelName, labelId },
-                    date: record[fieldData],
-                    month: moment(record[fieldData]).format(monthFormat),
-                    name: violationPersonName,
-                    deltaScore: 0 - Number(record[fieldScore]) * 2,
-                    remark: record[fieldRemark]
-                });
+
+        if (labelId === "30004") {
+            // 单独处理（比较特殊，不是通用的）
+            // 找到不在人员名单里的，日期用第一个数据的日期
+            const date = arrayData[0] && arrayData[0][fieldDate];
+            const excelNameFlagMap = arrayData.reduce((t, p) => {
+                t[p[fieldCheckName]] = p;
+                return t;
+            }, {});
+            for (const person of systemPersonList) {
+                if (!excelNameFlagMap[person.person_name]) {
+                    displayData.push({
+                        person: person,
+                        label: { labelName, labelId },
+                        date: date,
+                        month: moment(date).format(monthFormat),
+                        name: person.person_name,
+                        deltaScore: -5,
+                        remark: "当月未进行隐患排查"
+                    });
+                }
             }
-            // 找到检查人员
-            if (fieldCheckName && sysPersonMap[record[fieldCheckName]]) {
-                displayData.push({
-                    person: sysPersonMap[record[fieldCheckName]],
-                    label: { labelName, labelId },
-                    date: record[fieldData],
-                    month: moment(record[fieldData]).format(monthFormat),
-                    name: record[fieldCheckName],
-                    deltaScore: Number(record[fieldScore]),
-                    remark: `检查加分，检查项：\n${record[fieldRemark]}`
-                });
+            // 找未匹配的
+            for (const record of arrayData) {
+                const pName = record[fieldCheckName];
+                const person = sysPersonMap[pName];
+                if (record[fieldScore] === "未匹配" && person) {
+                    displayData.push({
+                        person: person,
+                        label: { labelName, labelId },
+                        date: record[fieldDate],
+                        month: moment(record[fieldDate]).format(monthFormat),
+                        name: pName,
+                        deltaScore: -3,
+                        remark: "未匹配危险源"
+                    });
+                }
+            }
+        } else {
+            // 在这里处理每个记录
+            for (const record of arrayData) {
+                // 找到违章人员
+                const violationPersonName = record[fieldViolationName];
+                if (sysPersonMap[violationPersonName]) {
+                    displayData.push({
+                        person: sysPersonMap[violationPersonName],
+                        label: { labelName, labelId },
+                        date: record[fieldDate],
+                        month: moment(record[fieldDate]).format(monthFormat),
+                        name: violationPersonName,
+                        deltaScore: 0 - Number(record[fieldScore]) * 2,
+                        remark: record[fieldRemark]
+                    });
+                }
+                // 找到检查人员
+                if (fieldCheckName && sysPersonMap[record[fieldCheckName]]) {
+                    displayData.push({
+                        person: sysPersonMap[record[fieldCheckName]],
+                        label: labelIdPlus && labelNamePlus ? { labelName: labelNamePlus, labelId: labelIdPlus } : { labelName, labelId },
+                        date: record[fieldDate],
+                        month: moment(record[fieldDate]).format(monthFormat),
+                        name: record[fieldCheckName],
+                        deltaScore: Number(record[fieldScore]),
+                        remark: `检查加分，检查项：\n${record[fieldRemark]}`
+                    });
+                }
             }
         }
+        console.log("处理结果", { arrayData, systemPersonList, sysPersonMap, displayData });
         setTableData(displayData);
     };
 
@@ -161,15 +215,15 @@ const ExcelManage = (props) => {
             .then(res => {
                 setPostWaiting(false);
                 setExecFlag(true);
-                message.success("导入成功！")
+                message.success("导入成功！");
                 console.log("导出异常结果：", res.data);
             });
     };
 
     return <div className={"manage-excel-import-tab"}>
         <div className={"import-notice-field"}>
-            需要注意字段名称和内容：
-            {fieldData && <Tag color="blue">{fieldData}</Tag>}
+            需要注意的表格中列字段：
+            {fieldDate && <Tag color="blue">{fieldDate}</Tag>}
             {fieldScore && <Tag color="green">{fieldScore}</Tag>}
             {fieldRemark && <Tag color="orange">{fieldRemark}</Tag>}
             {fieldViolationName && <Tag color="red">{fieldViolationName}</Tag>}
