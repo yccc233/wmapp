@@ -24,6 +24,7 @@ export default function RevokeScore() {
                 className="ml20"
                 type="primary"
                 danger
+                style={{ display: "none" }}
                 icon={<RedoOutlined/>}
                 onClick={showModal}
             >
@@ -37,8 +38,6 @@ export default function RevokeScore() {
                 onCancel={handleCancel}
                 confirmLoading={loading}
             >
-
-
 
 
             </Modal>
