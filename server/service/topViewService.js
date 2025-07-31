@@ -424,6 +424,11 @@ const updatePersonInClass = async (personId, personName, flagInfo) => {
     return counts > 0 ? "success" : "fail";
 };
 
+const revokeScoreInMonth = async (month, labelIdList) => {
+    return await topViewManageDao.deleteScoreFromMonthAndLabel(month, labelIdList);
+};
+
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getAllMyCollectedGroups,
@@ -445,5 +450,6 @@ export default {
     getPersonsInClass,
     addPersonInClass,
     deletePersonInClass,
-    updatePersonInClass
+    updatePersonInClass,
+    revokeScoreInMonth
 };

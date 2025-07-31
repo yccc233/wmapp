@@ -255,3 +255,17 @@ Cookie: username=root1; userid=201
 }
 
 ###
+
+POST http://localhost:2999/wmappserver/topview/revokeScoreInMonth
+Content-Type: application/json
+Cookie: username=root1; userid=201
+
+{
+  "month": "2025-07",
+  "labelIdList": [
+    30004,
+    30003
+  ]
+}
+
+###

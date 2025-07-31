@@ -332,6 +332,27 @@ const updatePersonInClass = async (personId, personName, flagInfo) => {
     });
 };
 
+const deleteScoreFromMonthAndLabel = async (month, labelIds) => {
+    const placeholders = labelIds.map(() => "?").join(",");
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getWMAPPDatabase();
+        const sql = `
+            delete
+            from tbl_topview_scores_deduct
+            where deduct_month = ?
+              and label_id in (${placeholders})
+        `;
+        db.run(sql, [month, ...labelIds], function (err) {
+            console.log(err, this);
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.changes);
+            }
+        });
+    });
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getAllGroups,
@@ -351,5 +372,6 @@ export default {
     insertDeltaScoreRemark,
     addPersonInClass,
     deletePersonInClass,
-    updatePersonInClass
+    updatePersonInClass,
+    deleteScoreFromMonthAndLabel
 };

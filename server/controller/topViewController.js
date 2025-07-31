@@ -245,4 +245,19 @@ router.post("/updatePersonInClass", async function (req, res) {
     RESPONSE.SUCCESS(req, res, data);
 });
 
+
+router.post("/revokeScoreInMonth", async function (req, res) {
+    const { month, labelIdList } = req.body;
+    if (!month || !labelIdList) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    if (labelIdList.length === 0) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.BADPARAMS.title);
+        return;
+    }
+    const data = await topViewService.revokeScoreInMonth(month, labelIdList);
+    RESPONSE.SUCCESS(req, res, { effect: data });
+});
+
 export default router;

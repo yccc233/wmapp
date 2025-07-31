@@ -1,9 +1,8 @@
-import { Button, Modal, Upload, message, Tabs, Table, Space, Tag } from "antd";
-import { InboxOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, message, Modal, Table, Tabs, Tag } from "antd";
 import Uploader from "@/src/topview/rootManage/batchManage/uploader.jsx";
 import { makePost } from "@/src/utils.jsx";
 import moment from "moment";
-import { dateFormat, monthFormat } from "@/src/riskview/config.jsx";
+import { monthFormat } from "@/src/riskview/config.jsx";
 import { useState } from "react";
 
 
@@ -38,7 +37,7 @@ export default function HandleImportModal({ visible, close }) {
                     fieldViolationName={"违章人员姓名"} fieldCheckName={"检查人员姓名"}
                 />
             </Tabs.TabPane>
-            <Tabs.TabPane key="30004" tab="工厂内查处">
+            <Tabs.TabPane key="30004" tab="安保系统使用">
                 <ExcelManage
                     labelId={"30004"} labelName={"安保系统使用"}
                     fieldDate={"发现日期"} fieldScore={"匹配危险源"}
@@ -55,54 +54,22 @@ export default function HandleImportModal({ visible, close }) {
 
 const ExcelManage = (props) => {
     const {
-        labelId, labelName, labelIdPlus, labelNamePlus,
-        fieldDate, fieldScore, fieldRemark,
-        fieldViolationName, fieldCheckName
+        labelId, labelName, labelIdPlus, labelNamePlus, fieldDate, fieldScore, fieldRemark, fieldViolationName, fieldCheckName
     } = props;
 
-    const columns = [
-        {
-            title: "序号",
-            dataIndex: "label",
-            key: "label",
-            width: 50,
-            align: "center",
-            render: (_, __, index) => index + 1
-        },
-        {
-            title: "违章日期",
-            dataIndex: "date",
-            key: "date",
-            width: 140
-        },
-        {
-            title: "相关人",
-            dataIndex: "name",
-            key: "name",
-            width: 200,
-            render: (text, record) => `${text} (${record.person.related_group?.group_name}${record.person.related_class?.class_name})`
-        },
-        {
-            title: "标签类型",
-            dataIndex: "label",
-            key: "label",
-            width: 120,
-            render: (label) => label?.labelName || "未知"
-        },
-        {
-            title: "分值变化",
-            dataIndex: "deltaScore",
-            key: "deltaScore",
-            width: 100,
-            render: (score) => score > 0 ? `+${score}` : score
-        },
-        {
-            title: "备注说明",
-            dataIndex: "remark",
-            key: "remark",
-            ellipsis: true
-        }
-    ];
+    const columns = [{
+        title: "序号", dataIndex: "label", key: "label", width: 50, align: "center", render: (_, __, index) => index + 1
+    }, {
+        title: "违章日期", dataIndex: "date", key: "date", width: 140
+    }, {
+        title: "相关人", dataIndex: "name", key: "name", width: 200, render: (text, record) => `${text} (${record.person.related_group?.group_name}${record.person.related_class?.class_name})`
+    }, {
+        title: "标签类型", dataIndex: "label", key: "label", width: 120, render: (label) => label?.labelName || "未知"
+    }, {
+        title: "分值变化", dataIndex: "deltaScore", key: "deltaScore", width: 100, render: (score) => score > 0 ? `+${score}` : score
+    }, {
+        title: "备注说明", dataIndex: "remark", key: "remark", ellipsis: true
+    }];
 
     const [tableData, setTableData] = useState([]);
     const [postWaiting, setPostWaiting] = useState(false);
@@ -128,13 +95,7 @@ const ExcelManage = (props) => {
             for (const person of systemPersonList) {
                 if (!excelNameFlagMap[person.person_name]) {
                     displayData.push({
-                        person: person,
-                        label: { labelName, labelId },
-                        date: date,
-                        month: moment(date).format(monthFormat),
-                        name: person.person_name,
-                        deltaScore: -5,
-                        remark: "当月未进行隐患排查"
+                        person: person, label: { labelName, labelId }, date: date, month: moment(date).format(monthFormat), name: person.person_name, deltaScore: -5, remark: "当月未进行隐患排查"
                     });
                 }
             }
@@ -144,13 +105,7 @@ const ExcelManage = (props) => {
                 const person = sysPersonMap[pName];
                 if (record[fieldScore] === "未匹配" && person) {
                     displayData.push({
-                        person: person,
-                        label: { labelName, labelId },
-                        date: record[fieldDate],
-                        month: moment(record[fieldDate]).format(monthFormat),
-                        name: pName,
-                        deltaScore: -3,
-                        remark: "未匹配危险源"
+                        person: person, label: { labelName, labelId }, date: record[fieldDate], month: moment(record[fieldDate]).format(monthFormat), name: pName, deltaScore: -3, remark: "未匹配危险源"
                     });
                 }
             }
@@ -161,25 +116,13 @@ const ExcelManage = (props) => {
                 const violationPersonName = record[fieldViolationName];
                 if (sysPersonMap[violationPersonName]) {
                     displayData.push({
-                        person: sysPersonMap[violationPersonName],
-                        label: { labelName, labelId },
-                        date: record[fieldDate],
-                        month: moment(record[fieldDate]).format(monthFormat),
-                        name: violationPersonName,
-                        deltaScore: 0 - Number(record[fieldScore]) * 2,
-                        remark: record[fieldRemark]
+                        person: sysPersonMap[violationPersonName], label: { labelName, labelId }, date: record[fieldDate], month: moment(record[fieldDate]).format(monthFormat), name: violationPersonName, deltaScore: 0 - Number(record[fieldScore]) * 2, remark: record[fieldRemark]
                     });
                 }
                 // 找到检查人员
                 if (fieldCheckName && sysPersonMap[record[fieldCheckName]]) {
                     displayData.push({
-                        person: sysPersonMap[record[fieldCheckName]],
-                        label: labelIdPlus && labelNamePlus ? { labelName: labelNamePlus, labelId: labelIdPlus } : { labelName, labelId },
-                        date: record[fieldDate],
-                        month: moment(record[fieldDate]).format(monthFormat),
-                        name: record[fieldCheckName],
-                        deltaScore: Number(record[fieldScore]),
-                        remark: `检查加分，检查项：\n${record[fieldRemark]}`
+                        person: sysPersonMap[record[fieldCheckName]], label: labelIdPlus && labelNamePlus ? { labelName: labelNamePlus, labelId: labelIdPlus } : { labelName, labelId }, date: record[fieldDate], month: moment(record[fieldDate]).format(monthFormat), name: record[fieldCheckName], deltaScore: Number(record[fieldScore]), remark: `检查加分，检查项：\n${record[fieldRemark]}`
                     });
                 }
             }
@@ -202,11 +145,7 @@ const ExcelManage = (props) => {
                 recordsMap[mapKey].remark.push(oneItem.remark);
             } else {
                 recordsMap[mapKey] = {
-                    month: month,
-                    personId: personId,
-                    labelId: labelId,
-                    scoreDelta: oneItem.deltaScore,
-                    remark: [oneItem.remark]
+                    month: month, personId: personId, labelId: labelId, scoreDelta: oneItem.deltaScore, remark: [oneItem.remark]
                 };
             }
         }
@@ -229,9 +168,7 @@ const ExcelManage = (props) => {
             {fieldViolationName && <Tag color="red">{fieldViolationName}</Tag>}
             {fieldCheckName && <Tag color="purple">{fieldCheckName}</Tag>}
         </div>
-        {
-            labelId ? <Uploader readCallBack={dataHandle}/> : null
-        }
+        {labelId ? <Uploader readCallBack={dataHandle}/> : null}
         <div className={"mt10"}>
             <Table
                 size={"small"}

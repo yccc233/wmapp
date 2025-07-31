@@ -1,8 +1,9 @@
 import moment from "moment";
 
+
 const LOGGER = (req, res, ret) => {
     // 获取当前时间
-    const currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    const currentTime = moment().format("YYYY-MM-DD HH:mm:ss");
     // 获取请求的接口（路径）
     const apiEndpoint = req.originalUrl;
     // 获取请求的参数（查询参数或请求体参数）
@@ -20,7 +21,7 @@ export default {
         const result = {
             code: 0,
             data: data,
-            message: ''
+            message: ""
         };
         res.end(JSON.stringify(result));
         LOGGER(req, res, result);
@@ -40,6 +41,9 @@ export default {
         },
         NULLTYPE: {
             title: "参数不应该为空"
+        },
+        BADPARAMS: {
+            title: "参数不符合要求"
         }
     }
-}
+};
