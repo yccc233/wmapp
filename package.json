@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "front": "next dev",
+    "front": "next dev -p 80",
     "server": "nodemon ./server/app.js",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 80",
     "lint": "next lint",
     "dev": "concurrently \"npm run front\" \"npm run server\"",
     "prod": "concurrently \"npm run start\" \"npm run server\""
