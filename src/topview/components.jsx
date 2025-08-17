@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Input, Popover, Typography } from "antd";
 
-const { Paragraph } = Typography;
+
+const { Paragraph, Title } = Typography;
 
 
 export const TextAreaRemark = ({ unique, defaultValue, onCommit }) => {
@@ -24,7 +25,7 @@ export const TextAreaRemark = ({ unique, defaultValue, onCommit }) => {
             onBlur={blur}
         />
         <div className={"gray fs11 h_center j-s-between"}>
-            <span />
+            <span/>
             <span>已备注 {paragraphs.length} 项</span>
         </div>
     </div>;
@@ -35,20 +36,28 @@ export const ToolTipRemark = ({ remark }) => {
     const [paragraphs, setParagraphs] = useState([]);
 
     useEffect(() => {
-        const _p = remark.split(/\n{2,}/).filter(v => v);
+        const _p = remark.split(/\n{2,}/).filter(v => v).map(eachItem => ({
+            type: eachItem.startsWith("# ") ? "title" : "content",
+            content: eachItem.startsWith("# ") ? eachItem.substring(2) : eachItem
+        }));
         setParagraphs(_p);
     }, [remark]);
 
     return <Popover
         title={"备注"}
-        content={<Typography style={{ maxWidth: 500 }}>
-            {paragraphs.map((b, i) => <blockquote key={`b-${i}`}>
-                {b.split("\n").map((p, j) => <Paragraph key={`p-${j}`} style={{ marginBottom: 5 }}>{p}</Paragraph>)}
-            </blockquote>)}
+        trigger={"click"}
+        content={<Typography style={{ maxWidth: 1000, maxHeight: "100vh", overflow: "auto" }}>
+            {paragraphs.map((p, i) => {
+                return p.type === "title" ? <Title key={`t-${i}`} level={3}>
+                    {p.content}
+                </Title> : <blockquote key={`b-${i}`}>
+                    {p.content.split("\n").map((c, j) => <Paragraph key={`p-${j}`} style={{ marginBottom: 5 }}>{c}</Paragraph>)}
+                </blockquote>;
+            })}
         </Typography>}
     >
         <span className={"remark-flag"}>
-            {paragraphs.length}
+            {paragraphs.filter(p => p.type === "content").length}
         </span>
     </Popover>;
 };

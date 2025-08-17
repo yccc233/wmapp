@@ -115,14 +115,28 @@ const getGroupAvgScoreInMonthRange = async (groupId, startMonth, endMonth) => {
         persons.forEach(personItem => {
             const person_id = personItem.person_id;
             if (lastPersons[person_id]) {
+                // 合并处理
                 lastPersons[person_id]["months_state"][month] = { avg: personItem.avg_score, total: personItem.total_score };
+                Object.keys(lastPersons[person_id].items).forEach(label => {
+                    const newItems = personItem.items[label];
+                    lastPersons[person_id]["items"][label].score = lastPersons[person_id]["items"][label].score + newItems.score;
+                    if (newItems.remark) {
+                        lastPersons[person_id]["items"][label].remark = (lastPersons[person_id]["items"][label].remark + `\n\n# ${month}\n\n${newItems.remark}`).trim();
+                    }
+                });
             } else {
+                // 单独处理
                 lastPersons[person_id] = {
                     ...personItem,
                     months_state: {
                         [month]: { avg: personItem.avg_score, total: personItem.total_score }
                     }
                 };
+                Object.values(lastPersons[person_id].items).forEach(items => {
+                    if (items.remark) {
+                        items.remark = "# " + month + "\n\n" + items.remark;
+                    }
+                });
             }
         });
     }

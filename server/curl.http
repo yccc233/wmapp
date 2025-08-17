@@ -32,8 +32,8 @@ Content-Type: application/json
 
 {
   "groupId": -1,
-  "startMonth": "2025-03",
-  "endMonth": "2025-07"
+  "startMonth": "2025-02",
+  "endMonth": "2025-08"
 }
 
 ###
