@@ -27,6 +27,16 @@ router.post("/getClassesByGroupId", async function (req, res) {
     RESPONSE.SUCCESS(req, res, classList);
 });
 
+router.post("/getClassesInfoByIdList", async function (req, res) {
+    const { classIdList } = req.body;
+    if (!classIdList) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    const classList = await topViewService.getClassesInfoByIdList(classIdList);
+    RESPONSE.SUCCESS(req, res, classList);
+});
+
 router.post("/getGroupAvgScore", async function (req, res) {
     const { month } = req.body;
     const groupId = Number(req.body.groupId);

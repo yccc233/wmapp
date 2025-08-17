@@ -234,6 +234,28 @@ const getClassesByGroupId = async (groupId) => {
     }));
 };
 
+const getClassesInfoByIdList = async (classIdList) => {
+    // 获取所有班级信息
+    const classInfoList = await topViewManageDao.getClassByClassIdList(classIdList);
+    // 获取所有组信息
+    const allGroupList = await topViewManageDao.getAllGroups();
+    // 创建组ID到组信息的映射
+    const groupMap = new Map(allGroupList.map(group => [group.group_id, group]));
+    // 为每个班级添加关联的组信息
+    return classInfoList.map(classInfo => {
+        const relatedGroup = groupMap.get(classInfo.related_group_id);
+        return {
+            class_id: classInfo.class_id,
+            class_name: classInfo.class_name,
+            related_group_id: classInfo.related_group_id,
+            related_group: relatedGroup ? {
+                group_id: relatedGroup.group_id,
+                group_name: relatedGroup.group_name
+            } : null
+        };
+    });
+};
+
 const getGroupInfoByGroupId = async (groupId) => {
     // 暂时不做扩展
     const groupInfo = await topViewManageDao.getGroupInfoByGroupId(groupId);
@@ -466,6 +488,7 @@ export default {
     getClassAvgScoreInMonthRange,
     getLabelNames,
     getClassesByGroupId,
+    getClassesInfoByIdList,
     chartsForClass,
     chartsForHistory,
     updateScoreInPersonMonth,

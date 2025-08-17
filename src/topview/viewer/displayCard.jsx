@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getRandomColor, makePost } from "@/src/utils.jsx";
-import { Empty } from "antd";
+import { Checkbox, Divider, Empty, Modal } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
 
 
@@ -64,93 +64,149 @@ export const DisplayCard1 = ({ classList, monthRange }) => {
     </div>;
 };
 
-
 export const DisplayCard2 = ({ classList, month }) => {
     const domRef = useRef(null);
     const echartsRef = useRef(null);
+    const [showModal, setShowModal] = useState(false);
+    const [classInfoList, setClassInfoList] = useState([]);
+    const [tempSelected, setTempSelected] = useState([]);
+    const [finalSelected, setFinalSelected] = useState([]);
 
     useEffect(() => {
-        if (classList.length > 0) {
-            makePost("/topview/getChartData2", { classIdList: classList.map(c => c.class_id), startMonth: month })
-                .then(res => {
-                    if (res.code === 0) {
-                        if (!echartsRef.current) {
-                            echartsRef.current = echarts.init(domRef.current);
-                        }
+        makePost("/topview/getClassesInfoByIdList", { classIdList: classList.map(c => c.class_id) })
+            .then(res => {
+                if (res.code === 0) {
+                    res.data.forEach(item => {
+                        item.display_name = item.related_group ? `${item.related_group.group_name}/${item.class_name}` : item.class_name;
+                    });
+                    setClassInfoList(res.data);
+                    setTempSelected(res.data);
+                    setFinalSelected(res.data);
+                }
+            });
+    }, [classList]);
 
-                        const legendData = res.data.items.map(eachClass => eachClass.label_name);
-                        // 配置 ECharts 选项
-                        const option = {
-                            grid: {
-                                left: "5%",
-                                right: "5%",
-                                top: "20%",
-                                bottom: "10%"
-                            },
-                            legend: {
-                                data: legendData.length > 3 ? [] : legendData,
-                                textStyle: {
-                                    color: "white" // 设置图例文字颜色为白色
-                                },
-                                top: 0,
-                                right: "4%"
-                            },
-                            tooltip: {
-                                trigger: "axis", // 触发类型为坐标轴触发
-                                axisPointer: {
-                                    type: "cross", // 指示器类型为十字准星
-                                    crossStyle: {
-                                        color: "#999" // 十字准星颜色
-                                    }
-                                },
-                                textStyle: {
-                                    color: "white" // 设置 tooltip 文字颜色为白色
-                                },
-                                backgroundColor: "rgba(0, 0, 0, 0.7)" // 设置 tooltip 背景颜色
-                            },
-                            xAxis: {
-                                type: "category",
-                                data: res.data.months,
-                                axisLabel: {
-                                    color: "white" // 设置 X 轴标签字体颜色为白色
+    // 销毁函数：在依赖变化或组件卸载时调用
+    const destroyChart = () => {
+        if (echartsRef.current) {
+            echartsRef.current.dispose(); // 销毁实例
+            echartsRef.current = null; // 清空引用
+        }
+    };
+
+    useEffect(() => {
+        if (finalSelected.length > 0) {
+            makePost("/topview/getChartData2", {
+                classIdList: finalSelected.map(c => c.class_id),
+                startMonth: month,
+                length: 12
+            }).then(res => {
+                if (res.code === 0) {
+                    destroyChart();
+                    echartsRef.current = echarts.init(domRef.current);
+                    const legendData = res.data.items.map(item => item.label_name);
+                    const option = {
+                        grid: { left: "8%", right: "5%", top: "20%", bottom: "10%" },
+                        legend: {
+                            data: legendData.length > 5 ? [] : legendData,
+                            textStyle: { color: "white" },
+                            top: 0,
+                            right: "4%"
+                        },
+                        tooltip: {
+                            trigger: "axis",
+                            axisPointer: { type: "cross", crossStyle: { color: "#999" } },
+                            textStyle: { color: "white" },
+                            backgroundColor: "rgba(0, 0, 0, 0.7)"
+                        },
+                        xAxis: {
+                            type: "category",
+                            data: res.data.months,
+                            axisLabel: { color: "white" }
+                        },
+                        yAxis: {
+                            type: "value",
+                            min: res.data.minScore - 0.5,
+                            max: res.data.maxScore + 0.5,
+                            splitLine: { show: true, lineStyle: { color: "#004488" } },
+                            axisLabel: {
+                                color: "white",
+                                formatter: function (value) {
+                                    return Number.isInteger(value) ? value : value.toFixed(1);
                                 }
                             },
-                            yAxis: {
-                                type: "value",
-                                min: res.data.minScore - 5,
-                                max: res.data.maxScore < 95 ? res.data.maxScore + 5 : 100,
-                                splitLine: {
-                                    show: true,
-                                    lineStyle: {
-                                        color: "#004488"
-                                    }
-                                },
-                                axisLabel: {
-                                    color: "white" // 设置 X 轴标签字体颜色为白色
-                                },
-                                confine: true
-                            },
-                            series: res.data.items.map(eachClass => ({
-                                type: "line",
-                                name: eachClass.label_name,
-                                data: eachClass.data.map(d => d.avg_score)
-                            }))
-                        };
-                        // 使用刚指定的配置项和数据显示图表。
-                        echartsRef.current.setOption(option);
-                    }
-                });
+                            confine: true
+                        },
+                        series: res.data.items.map(item => ({
+                            type: "line",
+                            name: item.label_name,
+                            data: item.data.map(d => d.avg_score)
+                        }))
+                    };
+                    echartsRef.current.setOption(option);
+                }
+            });
+        } else {
+            destroyChart();
         }
-    }, [classList, month]);
+        return () => {
+            destroyChart();
+        };
+    }, [finalSelected, month]);
+
+    const handleCheckboxChange = (checkedValues) => {
+        setTempSelected(classInfoList.filter(c => checkedValues.includes(c.class_id)));
+    };
+
+    const handleSelectAll = (checked) => {
+        setTempSelected(checked ? [...classInfoList] : []);
+    };
+
+    const handleOk = () => {
+        setFinalSelected(tempSelected);
+        setShowModal(false);
+    };
 
     return <div className={"board"}>
-        <div className={"title"}>排名趋势</div>
+        <div className={"title"}>
+            排名趋势
+            <span className={"func"} onClick={() => setShowModal(true)}>已展示{finalSelected.length}个</span>
+            <Modal
+                open={showModal}
+                centered
+                title={"展示配置"}
+                destroyOnClose
+                onOk={handleOk}
+                onCancel={() => setShowModal(false)}
+            >
+                <div>
+                    <Checkbox
+                        indeterminate={tempSelected.length > 0 && tempSelected.length < classInfoList.length}
+                        checked={tempSelected.length === classInfoList.length}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                    >
+                        全选
+                    </Checkbox>
+                </div>
+                <Divider style={{ margin: "10px 0" }}/>
+                <Checkbox.Group
+                    value={tempSelected.map(c => c.class_id)}
+                    onChange={handleCheckboxChange}
+                    style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}
+                >
+                    {classInfoList.map(c => (
+                        <div key={c.class_id} style={{ margin: "4px 0" }}>
+                            <Checkbox value={c.class_id}>{c.display_name}</Checkbox>
+                        </div>
+                    ))}
+                </Checkbox.Group>
+            </Modal>
+        </div>
         <div className={"display-2"}>
             <div ref={domRef} style={{ width: "100%", height: "100%" }}/>
         </div>
     </div>;
 };
-
 
 export const DisplayCard3 = ({ groupId, monthRange }) => {
 

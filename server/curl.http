@@ -49,6 +49,24 @@ Content-Type: application/json
 ###
 
 
+POST http://127.0.0.1:2999/wmappserver/topview/getClassesInfoByIdList
+Content-Type: application/json
+
+{
+  "classIdList": [
+    20001,
+    20002,
+    20003,
+    20004,
+    20101,
+    20102,
+    20103
+  ]
+}
+
+###
+
+
 POST http://127.0.0.1:2999/wmappserver/topview/getClassAvgScoreInMonth
 Content-Type: application/json
 

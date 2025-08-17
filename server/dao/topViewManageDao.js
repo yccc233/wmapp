@@ -112,6 +112,25 @@ const getClassByClassId = async (classId) => {
     });
 };
 
+const getClassByClassIdList = async (classIdList) => {
+    return new Promise((resolve, reject) => {
+        const db = DATABASE.getWMAPPDatabase();
+        const sql = `
+            select related_group_id, class_id, class_name
+            from tbl_topview_classes_def
+            where visible = 1
+              and class_id in (${classIdList.join(",")})
+        `;
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
 const getAllClassList = async () => {
     return new Promise((resolve, reject) => {
         const db = DATABASE.getWMAPPDatabase();
@@ -362,6 +381,7 @@ export default {
     getAllClassList,
     getClassListByGroupId,
     getClassByClassId,
+    getClassByClassIdList,
     getPersonsFromClassIdList,
     getDedScoresByPersonIds,
     getDeltaRecord,
