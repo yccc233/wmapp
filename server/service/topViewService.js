@@ -248,8 +248,8 @@ const getClassInfoByClassId = async (classId) => {
     return classInfo;
 };
 
-const chartsForClass = async (classIdList, month) => {
-    const classMap = await getClassAvgScoreInMonth(classIdList, month);
+const chartsForClass = async (classIdList, monthRange) => {
+    const classMap = await getClassAvgScoreInMonthRange(classIdList, monthRange[0], monthRange[1]);
     let classData = [];
     const allGroupList = await topViewManageDao.getAllGroups();
     for (const classId of classIdList) {
@@ -315,26 +315,37 @@ const chartsForHistory = async (classIdList, startMonth, length) => {
     };
 };
 
-const chartForDedScore = async (groupId, month) => {
+const chartForDedScore = async (groupId, monthRange) => {
     let classList;
     if (groupId === -1) {
         classList = await topViewManageDao.getAllClassList();
     } else {
         classList = await topViewManageDao.getClassListByGroupId(groupId);
     }
+
     const personsList = await topViewManageDao.getPersonsFromClassIdList(classList.map(c => c.class_id));
     const personIdList = personsList.map(p => p.person_id);
-    const dedScore = await topViewManageDao.getDedScoresByPersonIds(personIdList, month);
+
+    // 获取月份范围内的所有月份
+    const months = topViewUtils.getMonthRange(monthRange[0], monthRange[1]);
     const dedScoreMap = {};
-    for (const dedInfo of dedScore) {
-        if (dedScoreMap[dedInfo.label_id]) {
-            dedScoreMap[dedInfo.label_id] += dedInfo.ded_score;
-        } else {
-            dedScoreMap[dedInfo.label_id] = dedInfo.ded_score;
+
+    // 遍历每个月获取扣分数据
+    for (const month of months) {
+        const dedScore = await topViewManageDao.getDedScoresByPersonIds(personIdList, month);
+
+        for (const dedInfo of dedScore) {
+            if (dedScoreMap[dedInfo.label_id]) {
+                dedScoreMap[dedInfo.label_id] += dedInfo.ded_score;
+            } else {
+                dedScoreMap[dedInfo.label_id] = dedInfo.ded_score;
+            }
         }
     }
+
     const dedList = [];
     const labelInfos = await topViewManageDao.getLabelInfoByLabelIdList(Object.keys(dedScoreMap));
+
     for (const dedScoreLabelId of Object.keys(dedScoreMap)) {
         const label = labelInfos.find(l => l.label_id === Number(dedScoreLabelId));
         if (label) {
@@ -342,6 +353,7 @@ const chartForDedScore = async (groupId, month) => {
             dedList.push(label);
         }
     }
+
     dedList.sort((a, b) => b.dedScore - a.dedScore);
     return dedList;
 };

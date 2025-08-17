@@ -91,12 +91,12 @@ router.post("/getClassAvgScoreInMonthRange", async function (req, res) {
 
 
 router.post("/getChartData1", async function (req, res) {
-    const { classIdList, month } = req.body;
-    if (!month || !Array.isArray(classIdList)) {
+    const { classIdList, monthRange } = req.body;
+    if (!monthRange || !Array.isArray(classIdList)) {
         RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
         return;
     }
-    const data = await topViewService.chartsForClass(classIdList, month);
+    const data = await topViewService.chartsForClass(classIdList, monthRange);
     RESPONSE.SUCCESS(req, res, data);
 });
 
@@ -111,12 +111,12 @@ router.post("/getChartData2", async function (req, res) {
 });
 
 router.post("/getChartData3", async function (req, res) {
-    const { groupId, month } = req.body;
-    if (!month) {
+    const { groupId, monthRange } = req.body;
+    if (!monthRange) {
         RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
         return;
     }
-    const data = await topViewService.chartForDedScore(groupId, month);
+    const data = await topViewService.chartForDedScore(groupId, monthRange);
     RESPONSE.SUCCESS(req, res, data);
 });
 

@@ -4,7 +4,7 @@ import { Empty } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
 
 
-export const DisplayCard1 = ({ classList, month }) => {
+export const DisplayCard1 = ({ classList, monthRange }) => {
 
     const [displayData, setDisplayData] = useState([]);
 
@@ -18,7 +18,7 @@ export const DisplayCard1 = ({ classList, month }) => {
 
     useEffect(() => {
         if (classList.length > 0) {
-            makePost("/topview/getChartData1", { classIdList: classList.map(c => c.class_id), month })
+            makePost("/topview/getChartData1", { classIdList: classList.map(c => c.class_id), monthRange: monthRange })
                 .then(res => {
                     if (res.code === 0) {
                         let _displayData = res.data.slice(0, 4);
@@ -31,7 +31,7 @@ export const DisplayCard1 = ({ classList, month }) => {
         } else {
             setDisplayData([]);
         }
-    }, [classList, month]);
+    }, [classList, monthRange]);
 
     return <div className={"board"}>
         <div className={"title"}>班组排名</div>
@@ -152,7 +152,7 @@ export const DisplayCard2 = ({ classList, month }) => {
 };
 
 
-export const DisplayCard3 = ({ groupId, month }) => {
+export const DisplayCard3 = ({ groupId, monthRange }) => {
 
     const domRef = useRef(null);
     const echartsRef = useRef(null);
@@ -161,7 +161,7 @@ export const DisplayCard3 = ({ groupId, month }) => {
 
     useEffect(() => {
         if (groupId) {
-            makePost("/topview/getChartData3", { groupId: groupId, month: month })
+            makePost("/topview/getChartData3", { groupId: groupId, monthRange: monthRange })
                 .then(res => {
                     if (res.code === 0) {
                         const values = res.data.map(d => ({
@@ -209,7 +209,7 @@ export const DisplayCard3 = ({ groupId, month }) => {
                     }
                 });
         }
-    }, [groupId, month]);
+    }, [groupId, monthRange]);
 
     return <div className={"board"}>
         <div className={"title"}>扣分大类</div>

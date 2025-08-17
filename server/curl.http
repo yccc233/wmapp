@@ -92,7 +92,10 @@ Content-Type: application/json
     20003,
     20004
   ],
-  "month": "2025-06"
+  "monthRange": [
+    "2025-03",
+    "2025-08"
+  ]
 }
 
 ###
@@ -119,8 +122,11 @@ POST http://127.0.0.1:2999/wmappserver/topview/getChartData3
 Content-Type: application/json
 
 {
-  "groupId": 1003,
-  "month": "2025-01"
+  "groupId": -1,
+  "monthRange": [
+    "2025-01",
+    "2025-08"
+  ]
 }
 
 
