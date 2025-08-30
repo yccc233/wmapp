@@ -15,6 +15,7 @@ export default function Manage({ month, groupId, classId }) {
 
     const [columns, setColumns] = useState([]);
     const [tableData, setTableData] = useState([]);
+    const [tablePage, setTablePage] = useState(1);
 
     const [labelNameList, setLabelNameList] = useState(null);
 
@@ -204,11 +205,12 @@ export default function Manage({ month, groupId, classId }) {
 
     const getPersonsAndScores = (callback) => {
         setLoading(true);
+        setTablePage(1);
         makePost("/topview/getAvgScoreInDifferent", {
             startMonth: month,
             endMonth: month,
             groupIdList: !classId && groupId ? [groupId] : null,
-            classId: classId ? [classId] : null
+            classIdList: classId ? [classId] : null
         })
             .then(res => {
                 if (res.data) {
@@ -261,9 +263,13 @@ export default function Manage({ month, groupId, classId }) {
                 </Button>
             </Space>
             <div>
-                <Button type={"primary"} ghost style={{ borderStyle: "dashed" }}
-                        icon={<UserSwitchOutlined className={"mr5"}/>} size={"large"}
-                        onClick={() => setManagePersonFlag(!managePersonFlag)}>
+                <Button
+                    type={"primary"} ghost style={{ borderStyle: "dashed" }}
+                    disabled={!classId}
+                    title={classId ? "" : "请先选择班组"}
+                    icon={<UserSwitchOutlined className={"mr5"}/>} size={"large"}
+                    onClick={() => setManagePersonFlag(!managePersonFlag)}
+                >
                     管理成员
                 </Button>
                 <ManagePersonModal
@@ -279,11 +285,18 @@ export default function Manage({ month, groupId, classId }) {
                 rowKey="person_id"
                 columns={finalColumns}
                 dataSource={showedTableData}
-                pagination={false}
                 bordered={true}
                 scroll={{
                     x: 1000 || columns.reduce((l, n) => n.width ? l + n.width : l, 0),
-                    y: window.innerHeight - 230
+                    y: window.innerHeight - 280
+                }}
+                pagination={{
+                    current: tablePage,
+                    defaultPageSize: 25,
+                    showSizeChanger: false,
+                    showQuickJumper: false,
+                    showTotal: (total, range) => `第 ${range[0]} ~ ${range[1]} 条，共 ${total} 条`,
+                    onChange: p => setTablePage(p)
                 }}
             />
         </div>

@@ -8,23 +8,21 @@ import BatchManage from "./batchManage";
 import RevokeScore from "@/src/topview/rootManage/revokeScore.jsx";
 import dayjs from "dayjs";
 
-
 export default function Index() {
-
-
     const [groupList, setGroupList] = useState([]);
     const [classList, setClassList] = useState([]);
-    const [activeMonth, setActiveMonth] = useState(dayjs().format("YYYY-MM"));
-    const [activeGroupId, setActiveGroupId] = useState(null);
-    const [activeClassId, setActiveClassId] = useState(null);
-
+    const [filters, setFilters] = useState({
+        month: dayjs().format("YYYY-MM"),
+        groupId: null,
+        classId: null
+    });
     const monthChange = (_, vStr) => {
-        setActiveMonth(vStr);
+        setFilters(prev => ({ ...prev, month: vStr }));
     };
 
     const groupChange = (groupIds) => {
         const groupId = groupIds ? groupIds[groupIds.length - 1] : null;
-        setActiveGroupId(groupId);
+        setFilters(prev => ({ ...prev, groupId, classId: null }));
         if (groupId) {
             makePost("/topview/getClassesByGroupId", { groupId }).then(res => {
                 if (res.data) {
@@ -34,11 +32,13 @@ export default function Index() {
                     })));
                 }
             });
+        } else {
+            setClassList([]);
         }
     };
 
     const classChange = (classId) => {
-        setActiveClassId(classId);
+        setFilters(prev => ({ ...prev, classId }));
     };
 
     const loginOut = () => {
@@ -70,9 +70,9 @@ export default function Index() {
     return <div className={"topview-manage"}>
         <div className={"top"}>
             <Space className={"flex1"}>
-                <DatePicker picker="month" size={"large"} style={{ width: 110 }} allowClear={false} value={dayjs(activeMonth)} onChange={monthChange}/>
+                <DatePicker picker="month" size={"large"} style={{ width: 110 }} allowClear={false} value={dayjs(filters.month)} onChange={monthChange}/>
                 <Cascader allowClear style={{ width: 150 }} size={"large"} options={groupList} onChange={groupChange} allow placeholder="请选择机组"/>
-                <Select allowClear style={{ width: 150 }} size={"large"} options={classList} onChange={classChange} placeholder="请选择班组"/>
+                <Select allowClear style={{ width: 150 }} size={"large"} options={classList} onChange={classChange} value={filters.classId} placeholder="请选择班组"/>
                 <BatchManage/>
                 <RevokeScore/>
             </Space>
@@ -86,7 +86,7 @@ export default function Index() {
             </div>
         </div>
         <div className={"manage"}>
-            <Manage month={activeMonth} groupId={activeGroupId} classId={activeClassId}/> :
+            <Manage month={filters.month} groupId={filters.groupId} classId={filters.classId}/> :
             <PEmpty description={"请先选择上方的班组选项"}/>
         </div>
     </div>;
