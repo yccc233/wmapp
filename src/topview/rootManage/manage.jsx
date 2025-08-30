@@ -164,7 +164,7 @@ export default function Manage({ month, groupId, classId }) {
                 showSorterTooltip: false,
                 render: (_, record) => {
                     const unique = `${col.label_name_en}-${record["person_id"]}`;
-                    const remark = record["items"][col.label_name_en]["remark"];
+                    const remark = record["items"][col.label_name_en]["remark"]?.replace(/^#\s\d{4}-\d{2}\s*/, "") || "";
                     const score = record["items"][col.label_name_en]["score"];
                     return <Space className={"score-func-space"}>
                         <span className={"ded-score-btn"} style={score < 1 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
