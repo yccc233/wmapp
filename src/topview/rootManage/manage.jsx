@@ -79,7 +79,7 @@ export default function Manage({ month, groupId, classId }) {
                             calcAvgAndTotal(record);
                             setTableData(prev => [...prev]);
                         }
-                        message.success({ key: "update-message", content: "更新完成" });
+                        message.success({ key: "update-message", content: "更新成功" });
                     } else {
                         message.error({ key: "update-message", content: "更新失败" });
                     }
