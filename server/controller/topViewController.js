@@ -99,6 +99,19 @@ router.post("/getClassAvgScoreInMonthRange", async function (req, res) {
     RESPONSE.SUCCESS(req, res, data);
 });
 
+router.post("/getAvgScoreInDifferent", async function (req, res) {
+    const { startMonth, endMonth, groupIdList, classIdList } = req.body;
+    if (!startMonth && !endMonth) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    let data = await topViewService.getAvgScoreInDifferent(startMonth, endMonth, groupIdList, classIdList);
+    data = data.sort((a, b) => b.avg_score - a.avg_score).map((d, i) => ({
+        ...d,
+        index: i + 1
+    }));
+    RESPONSE.SUCCESS(req, res, data);
+});
 
 router.post("/getChartData1", async function (req, res) {
     const { classIdList, monthRange } = req.body;

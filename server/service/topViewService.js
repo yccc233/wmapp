@@ -2,6 +2,7 @@ import topViewManageDao from "../dao/topViewManageDao.js";
 import { formatNumber } from "../common/utils.js";
 import dayjs from "dayjs";
 import topViewUtils from "../utils/topViewUtils.js";
+import lodash from "lodash";
 
 
 const getAllMyCollectedGroups = async (userId) => {
@@ -216,6 +217,27 @@ const getClassAvgScoreInMonthRange = async (classIdList, startMonth, endMonth) =
         classMap[classId] = classScoreTemp;
     }
     return classMap;
+};
+
+const getAvgScoreInDifferent = async (startMonth, endMonth, groupIdList, classIdList) => {
+    let allData = [];
+    // startMonth和endMonth必有，后面两个参数可有可无
+    if (classIdList?.length > 0) {
+        let classData = await getClassAvgScoreInMonthRange(classIdList, startMonth, endMonth);
+        return lodash.flatMap(classData);
+    } else {
+        let gIds;
+        if (groupIdList?.length > 0) {
+            gIds = groupIdList;
+        } else {
+            gIds = await topViewManageDao.getAllGroups();
+            gIds = gIds.map(g => g.group_id);
+        }
+        for (const groupId of gIds) {
+            allData = allData.concat(await getGroupAvgScoreInMonthRange(groupId, startMonth, endMonth));
+        }
+        return allData;
+    }
 };
 
 /**
@@ -486,6 +508,7 @@ export default {
     getClassInfoByClassId,
     getClassAvgScoreInMonth,
     getClassAvgScoreInMonthRange,
+    getAvgScoreInDifferent,
     getLabelNames,
     getClassesByGroupId,
     getClassesInfoByIdList,

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import dayjs from "dayjs";
-import { Badge, Button, DatePicker, Input, InputNumber, message, Popover, Space, Table, Tag } from "antd";
-import { EditOutlined, ReloadOutlined, SearchOutlined, UploadOutlined, UserSwitchOutlined } from "@ant-design/icons";
+import { Badge, Button, Input, InputNumber, message, Popover, Space, Table, Tag } from "antd";
+import { EditOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import ManagePersonModal from "@/src/topview/rootManage/managePersonModal.jsx";
 import { getRandomTagColorFromString, makePost } from "@/src/utils.jsx";
 import { formatNumber } from "@/server/common/utils.js";
@@ -9,22 +8,19 @@ import "dayjs/locale/zh-cn";
 import { TextAreaRemark } from "@/src/topview/components.jsx";
 
 
-export default function Manage({ groupId, classId }) {
+export default function Manage({ month, groupId, classId }) {
     const maxScore = 120;
     const [loading, setLoading] = useState(true);
-    const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
     const [managePersonFlag, setManagePersonFlag] = useState(false);
 
     const [columns, setColumns] = useState([]);
     const [tableData, setTableData] = useState([]);
 
+    const [labelNameList, setLabelNameList] = useState(null);
+
     const [kws, setKws] = useState("");
 
     const postIngProcessFlagRef = useRef(false);
-
-    const monthChange = (_, vStr) => {
-        setMonth(vStr);
-    };
 
     const itemRemarkChange = (record, label, remark) => {
         if (postIngProcessFlagRef.current) {
@@ -106,6 +102,20 @@ export default function Manage({ groupId, classId }) {
             fixed: "left",
             showSorterTooltip: false,
             width: 80
+        }, groupId ? null : {
+            title: "机组",
+            dataIndex: "group_name",
+            key: "group_name",
+            fixed: "left",
+            sorter: (a, b) => a.group_name.localeCompare(b.group_name),
+            width: 120
+        }, classId ? null : {
+            title: "班组",
+            dataIndex: "class_name",
+            key: "class_name",
+            fixed: "left",
+            sorter: (a, b) => a.class_name.localeCompare(b.class_name),
+            width: 150
         }, {
             title: "岗位",
             dataIndex: "flag_info",
@@ -155,7 +165,6 @@ export default function Manage({ groupId, classId }) {
                     const unique = `${col.label_name_en}-${record["person_id"]}`;
                     const remark = record["items"][col.label_name_en]["remark"];
                     const score = record["items"][col.label_name_en]["score"];
-
                     return <Space className={"score-func-space"}>
                         <span className={"ded-score-btn"} style={score < 1 ? { "cursor": "not-allowed", "background": "#ccc" } : null}
                               onClick={() => score >= 1 && itemScoreChange(record, col, -5)}>-5</span>
@@ -184,7 +193,7 @@ export default function Manage({ groupId, classId }) {
                     </Space>;
                 }
             }))
-        ];
+        ].filter(col => col);
     };
 
     const refresh = () => {
@@ -195,10 +204,15 @@ export default function Manage({ groupId, classId }) {
 
     const getPersonsAndScores = (callback) => {
         setLoading(true);
-        makePost("/topview/getClassAvgScoreInMonth", { classIdList: [classId], month: month })
+        makePost("/topview/getAvgScoreInDifferent", {
+            startMonth: month,
+            endMonth: month,
+            groupIdList: !classId && groupId ? [groupId] : null,
+            classId: classId ? [classId] : null
+        })
             .then(res => {
                 if (res.data) {
-                    setTableData(res.data[classId]);
+                    setTableData(res.data);
                     setLoading(false);
                     typeof callback === "function" && callback();
                 }
@@ -207,27 +221,22 @@ export default function Manage({ groupId, classId }) {
 
     useEffect(() => {
         getPersonsAndScores();
-    }, [groupId, classId, month]);
+    }, [month, groupId, classId]);
+
+    useEffect(() => {
+        if (labelNameList) {
+            setColumns(genBaseColumns(labelNameList));
+        }
+    }, [labelNameList, month, groupId, classId]);
 
     useEffect(() => {
         makePost("/topview/getLabelNames").then(res => {
-            if (res.data) {
-                setColumns(genBaseColumns(res.data));
-            }
+            setLabelNameList(res.data);
         });
     }, []);
 
-    const finalColumns = columns.map(col => {
-        // if (col.key === 'class_name') {
-        //     col.filters = classList.map(cl => ({
-        //         text: cl.class_name,
-        //         value: cl.class_name,
-        //     }));
-        //     col.onFilter = (value, record) => record.class_name.indexOf(value) === 0
-        //
-        // }
-        return col;
-    });
+    const finalColumns = columns;
+
 
     let showedTableData = tableData;
 
@@ -238,13 +247,6 @@ export default function Manage({ groupId, classId }) {
     return <div className={"manage-class"}>
         <div className={"func-s"}>
             <Space size={"large"}>
-                <DatePicker
-                    picker="month"
-                    size={"large"}
-                    allowClear={false}
-                    value={dayjs(month)}
-                    onChange={monthChange}
-                />
                 <Input
                     size={"large"}
                     prefix={<SearchOutlined/>}
