@@ -1,3 +1,4 @@
+"use client";
 import { DatePicker, Select, Space, Table, Tag } from "antd";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -273,7 +274,7 @@ export default function GroupInfoDisplay({ groupId }) {
                 pagination={false}
                 scroll={{
                     x: 1000 || columns.reduce((l, n) => n.width ? l + n.width : l, 0),
-                    y: window.innerHeight - 380
+                    y: typeof window === "object" ? window.innerHeight - 380 : 200
                 }}
             />
         </div>

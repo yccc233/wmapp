@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef, useState } from "react";
 import { Badge, Button, Input, InputNumber, message, Popover, Space, Table, Tag } from "antd";
 import { EditOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined } from "@ant-design/icons";
@@ -288,7 +289,7 @@ export default function Manage({ month, groupId, classId }) {
                 bordered={true}
                 scroll={{
                     x: 1000 || columns.reduce((l, n) => n.width ? l + n.width : l, 0),
-                    y: window.innerHeight - 280
+                    y: typeof window === "object" ? window.innerHeight - 280 : 200
                 }}
                 pagination={{
                     current: tablePage,
