@@ -50,7 +50,20 @@ router.post("/getSystemConfigByKey", async function (req, res) {
 });
 
 router.post("/getUserPreference", async function (req, res) {
-    const { key, userId } = req.body;
+    const { userId, key } = req.body;
+    if (!userId || !key) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
+    RESPONSE.SUCCESS(req, res, {});
+});
+
+router.post("/recordUserPreference", async function (req, res) {
+    const { userId, key, value } = req.body;
+    if (!userId || !key) {
+        RESPONSE.ERROR(req, res, RESPONSE.CODE.MISSPARAMS.title);
+        return;
+    }
     RESPONSE.SUCCESS(req, res, {});
 });
 
