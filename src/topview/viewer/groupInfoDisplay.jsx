@@ -25,6 +25,8 @@ export default function GroupInfoDisplay({ groupId }) {
 
     const [columns, setColumns] = useState([]);
 
+    const [scrollY, setScrollY] = useState(200);
+
     const genBaseColumns = (cols) => {
         return [{
             title: "排名",
@@ -211,18 +213,11 @@ export default function GroupInfoDisplay({ groupId }) {
         });
     }, [groupId]);
 
+    useEffect(() => {
+        setScrollY(typeof window !== "undefined" ? window.innerHeight - 380 : 200);
+    }, []);
 
-    const finalColumns = columns.map(col => {
-        // if (col.key === 'class_name') {
-        //     col.filters = classList.map(cl => ({
-        //         text: cl.class_name,
-        //         value: cl.class_name,
-        //     }));
-        //     col.onFilter = (value, record) => record.class_name.indexOf(value) === 0
-        //
-        // }
-        return col;
-    });
+    const finalColumns = columns;
 
     return <div className="content-container">
         <div className={"members-info"}>
@@ -274,7 +269,7 @@ export default function GroupInfoDisplay({ groupId }) {
                 pagination={false}
                 scroll={{
                     x: 1000 || columns.reduce((l, n) => n.width ? l + n.width : l, 0),
-                    y: typeof window === "object" ? window.innerHeight - 380 : 200
+                    y: scrollY
                 }}
             />
         </div>

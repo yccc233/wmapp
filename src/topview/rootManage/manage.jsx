@@ -15,6 +15,9 @@ export default function Manage({ month, groupId, classId }) {
     const [managePersonFlag, setManagePersonFlag] = useState(false);
 
     const [columns, setColumns] = useState([]);
+
+    const [scrollY, setScrollY] = useState(200);
+
     const [tableData, setTableData] = useState([]);
     const [tablePage, setTablePage] = useState(1);
 
@@ -236,6 +239,7 @@ export default function Manage({ month, groupId, classId }) {
         makePost("/topview/getLabelNames").then(res => {
             setLabelNameList(res.data);
         });
+        setScrollY(typeof window !== "undefined" ? window.innerHeight - 280 : 200);
     }, []);
 
     const finalColumns = columns;
@@ -288,8 +292,8 @@ export default function Manage({ month, groupId, classId }) {
                 dataSource={showedTableData}
                 bordered={true}
                 scroll={{
-                    x: 1000 || columns.reduce((l, n) => n.width ? l + n.width : l, 0),
-                    y: typeof window === "object" ? window.innerHeight - 280 : 200
+                    x: columns.reduce((l, n) => n.width ? l + n.width : l, 0),
+                    y: scrollY
                 }}
                 pagination={{
                     current: tablePage,
