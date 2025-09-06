@@ -14,7 +14,7 @@ const logFormat = format.printf(({ level, message, timestamp, ...meta }) => {
 
 // 通用日志轮转配置
 const rotateFileOptions = {
-    filename: `logs/${loggerName}-%DATE%.log`,
+    filename: `logs/${loggerName}-server-%DATE%.log`,
     datePattern: "YYYY-MM-DD",
     maxSize: "10m", // 每个文件最大
     maxFiles: 5, // 最多保留文件
@@ -28,7 +28,7 @@ const rotateFileOptions = {
 // 错误日志轮转配置
 const errorRotateFileOptions = {
     ...rotateFileOptions,
-    filename: `logs/${loggerName}-error-%DATE%.log`,
+    filename: `logs/${loggerName}-server-error-%DATE%.log`,
     level: "error" // 只记录错误级别日志
 };
 
