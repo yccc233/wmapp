@@ -6,6 +6,10 @@ if [ -z "$BASH_VERSION" ]; then
     exit $?
 fi
 
+# 定义端口
+FRONTEND_PORT=80
+BACKEND_PORT=2999
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -27,21 +31,20 @@ echo_colored() {
     echo -e "${color}${msg}${NC}"
 }
 
-# 检查应用是否正在运行
+# 检查应用是否正在运行（通过端口检查）
 is_app_running() {
-    # 同时检查前端和后端进程
+    # 检查前端端口
     local frontend_running=0
-    local backend_running=0
-    
-    if pgrep -f "npm run start" > /dev/null; then
+    if netstat -ntnlp 2>/dev/null | grep ":$FRONTEND_PORT " >/dev/null; then
         frontend_running=1
     fi
-    
-    if pgrep -f "npm run server" > /dev/null; then
+
+    # 检查后端端口
+    local backend_running=0
+    if netstat -ntnlp 2>/dev/null | grep ":$BACKEND_PORT " >/dev/null; then
         backend_running=1
     fi
-    
-    # 使用兼容的 test 语法替代 [[ ]]
+
     if [ "$frontend_running" -eq 1 ] && [ "$backend_running" -eq 1 ]; then
         return 0  # 两个都在运行
     elif [ "$frontend_running" -eq 1 ] || [ "$backend_running" -eq 1 ]; then
@@ -51,30 +54,46 @@ is_app_running() {
     fi
 }
 
+# 获取指定端口的进程PID
+get_pid_by_port() {
+    local port=$1
+    # 使用netstat查找端口对应的PID
+    # 注意：可能需要root权限才能查看所有进程的PID
+    local pid=$(netstat -ntnlp 2>/dev/null | grep ":$port " | awk '{print $7}' | cut -d'/' -f1 | head -n 1)
+    echo "$pid"
+}
+
 # 获取当前运行的应用PID
 get_running_pids() {
-    local pids=""
-    pids+=$(pgrep -f "npm run start")
-    pids+=" "
-    pids+=$(pgrep -f "npm run server")
-    echo "$pids"
+    local frontend_pid=$(get_pid_by_port $FRONTEND_PORT)
+    local backend_pid=$(get_pid_by_port $BACKEND_PORT)
+    echo "$frontend_pid $backend_pid" | tr -s ' '
 }
 
 # 停止正在运行的进程
 stop_running_processes() {
-    local pids
-    pids=$(get_running_pids)
-    
-    if [ -z "$pids" ]; then
-        echo_colored "${YELLOW}" "No running processes found."
+    local frontend_pid=$(get_pid_by_port $FRONTEND_PORT)
+    local backend_pid=$(get_pid_by_port $BACKEND_PORT)
+    local pids=()
+
+    if [ -n "$frontend_pid" ] && [ "$frontend_pid" != " " ]; then
+        pids+=($frontend_pid)
+    fi
+
+    if [ -n "$backend_pid" ] && [ "$backend_pid" != " " ]; then
+        pids+=($backend_pid)
+    fi
+
+    if [ ${#pids[@]} -eq 0 ]; then
+        echo_colored "${YELLOW}" "No running processes found on ports $FRONTEND_PORT and $BACKEND_PORT."
         return 0
     fi
-    
-    echo_colored "${YELLOW}" "Stopping running processes (PIDs: $pids)..."
-    
+
+    echo_colored "${YELLOW}" "Stopping running processes (PIDs: ${pids[*]})..."
+
     # 先尝试正常停止
-    kill $pids 2>/dev/null
-    
+    kill "${pids[@]}" 2>/dev/null
+
     # 等待进程结束
     local wait_time=5
     while [ $wait_time -gt 0 ]; do
@@ -85,15 +104,15 @@ stop_running_processes() {
         sleep 1
         wait_time=$((wait_time - 1))
     done
-    
+
     # 强制终止
-    kill -9 $pids 2>/dev/null
+    kill -9 "${pids[@]}" 2>/dev/null
     sleep 1
-    
+
     if ! is_app_running; then
         echo_colored "${GREEN}" "Processes force-stopped successfully."
     else
-        echo_colored "${RED}" "Failed to stop some processes."
+        echo_colored "${RED}" "Failed to stop some processes. You may need to stop them manually."
         return 1
     fi
 }
@@ -117,10 +136,10 @@ clear_next_cache() {
 start_app() {
     is_app_running
     local running_status=$?
-    
+
     case $running_status in
         0)
-            echo_colored "${YELLOW}" "Application is already running. PID: $(get_running_pids)"
+            echo_colored "${YELLOW}" "Application is already running on ports $FRONTEND_PORT and $BACKEND_PORT. PID: $(get_running_pids)"
             return 0
             ;;
         2)
@@ -133,17 +152,17 @@ start_app() {
     esac
 
     echo_colored "${GREEN}" "Starting application components..."
-    
-    # 启动前端
+
+    # 启动前端（假设占用80端口）
     nohup npm run start >> wmapp.log 2>&1 &
     local front_pid=$!
-    echo_colored "${GREEN}" "Frontend started (PID: $front_pid)"
-    
-    # 启动后端
+    echo_colored "${GREEN}" "Frontend started (PID: $front_pid), should be available on port $FRONTEND_PORT"
+
+    # 启动后端（假设占用2999端口）
     nohup npm run server >> wmapp.log 2>&1 &
     local server_pid=$!
-    echo_colored "${GREEN}" "Server started (PID: $server_pid)"
-    
+    echo_colored "${GREEN}" "Server started (PID: $server_pid), should be available on port $BACKEND_PORT"
+
     echo_colored "${GREEN}" "Application started. Check wmapp.log for logs."
 }
 
@@ -155,7 +174,7 @@ show_help() {
     echo "  --build         Build the project"
     echo "  --clear-cache   Clear Next.js cache"
     echo "  --start         Start the application"
-    echo "  --stop          Stop running processes"
+    echo "  --stop          Stop running processes (on ports $FRONTEND_PORT and $BACKEND_PORT)"
     echo "  --restart       Restart the application"
     echo ""
     echo "Examples:"
@@ -172,7 +191,7 @@ main() {
     local start_app_flag=false
     local stop_app_flag=false
     local restart_app_flag=false
-    
+
     # 检查是否没有提供任何参数
     if [ $# -eq 0 ]; then
         show_help
