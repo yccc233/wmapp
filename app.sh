@@ -154,12 +154,13 @@ start_app() {
     echo_colored "${GREEN}" "Starting application components..."
 
     # 启动前端（假设占用80端口）
-    nohup npm run start >> wmapp.log 2>&1 &
+    > logs/wmapp-front.log
+    nohup npm run start >> logs/wmapp-front.log 2>&1 &
     local front_pid=$!
     echo_colored "${GREEN}" "Frontend started (PID: $front_pid), should be available on port $FRONTEND_PORT"
 
     # 启动后端（假设占用2999端口）
-    nohup npm run server >> wmapp.log 2>&1 &
+    nohup npm run server > /dev/null 2>&1 &
     local server_pid=$!
     echo_colored "${GREEN}" "Server started (PID: $server_pid), should be available on port $BACKEND_PORT"
 
