@@ -236,10 +236,11 @@ main() {
                 ;;
         esac
     done
-    # 执行停止操作
+    # 执行停止操作，执行后休息10s，给足停止程序时间
     if [ "$stop_app_flag" = true ]; then
         sleep 1
         stop_running_processes
+        sleep 10
     fi
 
     # 执行安装操作
