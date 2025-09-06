@@ -236,25 +236,28 @@ main() {
                 ;;
         esac
     done
-
     # 执行停止操作
     if [ "$stop_app_flag" = true ]; then
+        sleep 1
         stop_running_processes
     fi
 
     # 执行安装操作
     if [ "$install" = true ]; then
+        sleep 1
         run_command "npm install" || exit 1
     fi
 
     # 执行清除缓存操作
     if [ "$clear_cache" = true ]; then
+        sleep 1
         clear_next_cache || exit 1
     fi
 
     # 执行构建操作
     if [ "$build" = true ]; then
         if run_command "npm run build"; then
+            sleep 1
             echo_colored "${GREEN}" "Project built successfully!"
         else
             exit 1
@@ -264,6 +267,7 @@ main() {
     # 执行重启操作
     if [ "$restart_app_flag" = true ]; then
         if stop_running_processes; then
+            sleep 1
             start_app
         else
             echo_colored "${RED}" "Failed to stop processes. Aborting restart."
@@ -271,6 +275,7 @@ main() {
         fi
     # 执行启动操作
     elif [ "$start_app_flag" = true ]; then
+        sleep 1
         start_app
     fi
 }
