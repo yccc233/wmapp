@@ -1,18 +1,16 @@
-import moment from "moment";
+import logger from "./logger.js";
 
 
 const LOGGER = (req, res, ret) => {
-    // 获取当前时间
-    const currentTime = moment().format("YYYY-MM-DD HH:mm:ss");
     // 获取请求的接口（路径）
     const apiEndpoint = req.originalUrl;
     // 获取请求的参数（查询参数或请求体参数）
     const bodyParams = req.body;
-    const queryStr = JSON.stringify(bodyParams).slice(0, 100);
-    const resultStr = JSON.stringify(ret).slice(0, 100);
-    const logMessage = `[${currentTime}] - ${apiEndpoint} - Query(${queryStr}) - Result(${resultStr})`;
+    const queryStr = JSON.stringify(bodyParams).slice(0, 500);
+    const resultStr = JSON.stringify(ret).slice(0, 500);
+    const logMessage = `${apiEndpoint} - Query(${queryStr}) - Result(${resultStr})`;
     // 打印日志
-    console.log(logMessage);
+    logger.info(logMessage);
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export

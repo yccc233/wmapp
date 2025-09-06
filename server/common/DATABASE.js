@@ -1,4 +1,6 @@
 import sqlite3 from "sqlite3";
+import logger from "./logger.js";
+
 
 const sqlite = sqlite3.verbose();
 
@@ -9,9 +11,9 @@ function initWMAPPDatabase(path = "./database/wmapp.db") {
     if (!db) {
         db = new sqlite.Database(path, (err) => {
             if (err) {
-                console.error(err);
+                logger.error(err);
             } else {
-                console.log(`init the SQLite database (path:${path}) [success]!`);
+                logger.info(`init the SQLite database (${path}) [success]!`);
             }
         });
     }

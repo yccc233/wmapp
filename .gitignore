@@ -41,3 +41,6 @@ next-env.d.ts
 # 应用级别
 wmapp.log
 wmapp.pid
+
+/logs
+/server/database/bak

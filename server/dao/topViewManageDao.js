@@ -362,7 +362,6 @@ const deleteScoreFromMonthAndLabel = async (month, labelIds) => {
               and label_id in (${placeholders})
         `;
         db.run(sql, [month, ...labelIds], function (err) {
-            console.log(err, this);
             if (err) {
                 reject(err);
             } else {
