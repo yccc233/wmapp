@@ -44,3 +44,4 @@ wmapp.pid
 
 /logs
 /server/database/bak
+/server/database/wmapp.db
