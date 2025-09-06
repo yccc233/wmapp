@@ -7,7 +7,7 @@ const LOGGER = (req, res, ret) => {
     // 获取请求的参数（查询参数或请求体参数）
     const bodyParams = req.body;
     const queryStr = JSON.stringify(bodyParams).slice(0, 500);
-    const resultStr = JSON.stringify(ret).slice(0, 500);
+    const resultStr = JSON.stringify(ret).slice(0, 5000);
     const logMessage = `${apiEndpoint} - Query(${queryStr}) - Result(${resultStr})`;
     // 打印日志
     logger.info(logMessage);

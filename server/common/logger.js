@@ -1,32 +1,57 @@
 import winston from "winston";
+import DailyRotateFile from "winston-daily-rotate-file"; // 引入专用的轮转传输器
 import nextConfig from "../../next.config.mjs";
 
 
-const { format, transports } = winston;
+const { format } = winston;
 const { serverName, loggerName } = nextConfig.serverConfig;
-
 
 // 自定义日志格式
 const logFormat = format.printf(({ level, message, timestamp, ...meta }) => {
-    // 拼接自定义元数据
     const metaInfo = Object.keys(meta).length ? JSON.stringify(meta) : "";
     return `${timestamp} [${serverName}][${level.toUpperCase()}] ${message} ${metaInfo}`;
 });
 
+// 通用日志轮转配置
+const rotateFileOptions = {
+    filename: `logs/${loggerName}-%DATE%.log`,
+    datePattern: "YYYY-MM-DD",
+    maxSize: "10m", // 每个文件最大
+    maxFiles: 5, // 最多保留文件
+    zippedArchive: false, // 不压缩归档
+    format: format.combine(
+        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        logFormat
+    )
+};
+
+// 错误日志轮转配置
+const errorRotateFileOptions = {
+    ...rotateFileOptions,
+    filename: `logs/${loggerName}-error-%DATE%.log`,
+    level: "error" // 只记录错误级别日志
+};
+
+// 终端打印
+const consoleLogOptions = {
+    format: format.combine(
+        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        logFormat
+    )
+};
+
 // 创建日志实例
 const logger = winston.createLogger({
-    level: "info", // 日志级别：error > warn > info > verbose > debug > silly
+    level: "info",
     format: format.combine(
-        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), // 添加时间戳
+        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         logFormat
     ),
     transports: [
-        // 所有日志记录到一个文件
-        new transports.File({ filename: `logs/${loggerName}.log` }),
-        // 输出到文件（错误日志单独记录）
-        new transports.File({ filename: `logs/${loggerName}-error.log`, level: "error" }),
-        // 开发环境同时输出到控制台
-        new transports.Console({ format: format.combine(format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), logFormat) })
+        // 使用 DailyRotateFile 而不是普通的 File 传输器
+        new DailyRotateFile(rotateFileOptions),
+        new DailyRotateFile(errorRotateFileOptions),
+        new winston.transports.Console(consoleLogOptions)
     ]
 });
 

@@ -6,7 +6,7 @@ import nextConfig from "../next.config.mjs";
 
 const fsp = fs.promises;
 
-const { databasePath, backUpTime } = nextConfig.serverConfig;
+const { databasePath, backUpTime, backUpMaxCount } = nextConfig.serverConfig;
 
 let lockFlag = false;
 export const backupDataBase = async () => {
@@ -37,6 +37,18 @@ export const backupDataBase = async () => {
             + ".bak" + timestamp
             + "." + fragmentNames[fragmentNames.length - 1];
         const destPath = path.join(bakDir, destName);
+        // 获取现有备份文件列表并按时间排序
+        const files = await fsp.readdir(bakDir);
+        const backupFiles = files.filter(file =>
+            file.startsWith(path.basename(srcPath, path.extname(srcPath)) + ".bak") &&
+            file.endsWith(path.extname(srcPath))
+        ).sort(); // 按文件名排序（时间戳从小到大）
+        // 如果备份文件数量达到backUpMaxCount个，删除最旧的一个
+        if (backupFiles.length >= backUpMaxCount) {
+            const oldestFile = backupFiles[0];
+            await fsp.unlink(path.join(bakDir, oldestFile));
+            logger.info(`备份空间超限，删除备份文件：${oldestFile}`);
+        }
         await fsp.copyFile(srcPath, destPath);
         const elapsedMs = Date.now() - startTime;
         const elapsed = `${elapsedMs}ms (${(elapsedMs / 1000).toFixed(3)}s)`;
@@ -48,16 +60,19 @@ export const backupDataBase = async () => {
     }
 };
 
+
+
 export default function backupDataBaseTask() {
-    const timeFragments = backUpTime.split(":").map(e => Number(e));
+
     setInterval(() => {
         const now = new Date();
+        const dayOfWeek = now.getDay();
         const hours = now.getHours();
         const minutes = now.getMinutes();
         // 检查时间是否为 backUpTime 配置
-        if (hours === timeFragments[0] && minutes === timeFragments[1]) {
+        if (minutes === backUpTime[0] && hours === backUpTime[1] && dayOfWeek === backUpTime[2]) {
             backupDataBase().catch(console.error);
         }
     }, 60 * 1000);
-    logger.info(`备份数据库定时任务启动，每天【${backUpTime}】备份一次（最大一分钟的延迟）`);
+    logger.info(`备份数据库定时任务启动，配置【${backUpTime}】备份一次（最大一分钟的延迟）`);
 }

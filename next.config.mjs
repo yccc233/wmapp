@@ -5,9 +5,10 @@ const nextConfig = {
     serverConfig: {
         serverName: "wmappserver",
         serverPort: 2999,
-        loggerName: "wmapp",
-        databasePath: "./server/database/wmapp.db",
-        backUpTime: "21:56"
+        loggerName: "wmapp",                            // 日志文件的前缀名
+        databasePath: "./server/database/wmapp.db",     // 数据库地址，相对于app.js
+        backUpTime: [59, 23, 6],                        // 分钟，时钟，周几
+        backUpMaxCount: 10                              // 备份数据库文件数量，超出限制的会删除最先备份的
     },
     // antd不参与编译，版本不兼容的bug
     transpilePackages: ["antd", "@ant-design", "rc-util", "rc-pagination", "rc-picker", "rc-notification", "rc-tooltip"],
